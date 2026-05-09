@@ -65,9 +65,9 @@ echo "  Claude: $CLAUDE_BIN" >> "$LOG_FILE"
 set +e
 "$CLAUDE_BIN" \
     --print \
-    --allowedTools "WebFetch" "Bash" "Read" "Write" "Edit" \
+    --dangerously-skip-permissions \
     --add-dir "$SKILL_ROOT" \
-    --max-budget-usd "0.50" \
+    --max-budget-usd "3.00" \
     "/databricks-pulse" \
     >> "$LOG_FILE" 2>&1
 EXIT_CODE=$?
