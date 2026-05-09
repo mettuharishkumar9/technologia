@@ -14,11 +14,14 @@
 import { readFile, mkdir, rm, readdir } from "node:fs/promises";
 import { existsSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 import process from "node:process";
 import { chromium } from "playwright";
 
-const FFMPEG = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\//, "")), "..", "bin", "ffmpeg.exe");
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const BUNDLED_FFMPEG = path.resolve(SCRIPT_DIR, "..", "bin", process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg");
+const FFMPEG = process.env.FFMPEG_BIN || (existsSync(BUNDLED_FFMPEG) ? BUNDLED_FFMPEG : "ffmpeg");
 
 if (process.argv.length < 3) {
   console.error("Usage: node render-video.mjs <run-folder>");
@@ -85,7 +88,8 @@ async function recordWebm(spec, outDir) {
 }
 
 async function main() {
-  if (!existsSync(FFMPEG)) throw new Error(`ffmpeg not found at ${FFMPEG}`);
+  // If FFMPEG is a bare command name, trust PATH; otherwise verify the file exists.
+  if (path.isAbsolute(FFMPEG) && !existsSync(FFMPEG)) throw new Error(`ffmpeg not found at ${FFMPEG}`);
   const spec = JSON.parse(await readFile(path.join(runFolder, "media.spec.json"), "utf8"));
 
   const { webmPath, tmpDir } = await recordWebm(spec, runFolder);
