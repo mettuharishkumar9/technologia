@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quote Card — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:620px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; text-align:center; }
+.variant-btns { display:flex; gap:6px; }
+.vbtn { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid #e2e8f0; background:transparent; color:#64748b; font-family:'Inter',sans-serif; }
+.vbtn.active { background:#1e1b4b; color:#fff; border-color:#1e1b4b; }
+
+.card { width:620px; height:620px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:56px; position:relative; overflow:hidden; box-shadow:0 12px 48px rgba(0,0,0,0.5); }
+
+/* VARIANT: Dark */
+.card.dark { background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 100%); }
+.card.dark .quote-mark { color:rgba(255,54,33,0.15); }
+.card.dark .quote-text { color:#ffffff; }
+.card.dark .quote-context { color:rgba(255,255,255,0.45); }
+.card.dark .author-name { color:#fff; }
+.card.dark .author-role { color:rgba(255,255,255,0.4); }
+.card.dark .card-tag { background:rgba(255,54,33,0.15); color:#ff8c73; border:1px solid rgba(255,54,33,0.25); }
+.card.dark .divider-line { background:rgba(255,255,255,0.1); }
+
+/* VARIANT: Light */
+.card.light { background:#f8fafc; }
+.card.light .quote-mark { color:rgba(0,0,0,0.06); }
+.card.light .quote-text { color:#1e1b4b; }
+.card.light .quote-context { color:#64748b; }
+.card.light .author-name { color:#1e1b4b; }
+.card.light .author-role { color:#94a3b8; }
+.card.light .card-tag { background:rgba(255,54,33,0.08); color:#FF3621; border:1px solid rgba(255,54,33,0.15); }
+.card.light .divider-line { background:#e2e8f0; }
+
+/* VARIANT: Accent (red) */
+.card.accent { background:linear-gradient(135deg,#FF3621 0%,#ff6b35 100%); }
+.card.accent .quote-mark { color:rgba(255,255,255,0.1); }
+.card.accent .quote-text { color:#ffffff; }
+.card.accent .quote-context { color:rgba(255,255,255,0.6); }
+.card.accent .author-name { color:#fff; }
+.card.accent .author-role { color:rgba(255,255,255,0.5); }
+.card.accent .card-tag { background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); }
+.card.accent .divider-line { background:rgba(255,255,255,0.2); }
+
+.card-content { position:relative; z-index:2; width:100%; text-align:center; }
+.card-tag { display:inline-block; font-size:10px; font-weight:700; padding:4px 12px; border-radius:20px; letter-spacing:1px; text-transform:uppercase; margin-bottom:28px; }
+.quote-mark { font-family:'Playfair Display',serif; font-size:100px; line-height:0.8; display:block; margin-bottom:16px; }
+.quote-text { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; line-height:1.4; margin-bottom:20px; }
+.divider-line { width:40px; height:2px; border-radius:1px; margin:0 auto 20px; }
+.author-row { display:flex; align-items:center; justify-content:center; gap:12px; }
+.author-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#1e1b4b,#FF3621); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; flex-shrink:0; }
+.author-name { font-size:14px; font-weight:700; }
+.author-role { font-size:11px; margin-top:1px; }
+.quote-context { font-size:12px; margin-bottom:24px; font-style:italic; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">💬 Quote Card · Day 01 · Genie Code GA</div>
+  <div class="variant-btns">
+    <button class="vbtn active" onclick="setVariant('dark',this)">Dark</button>
+    <button class="vbtn" onclick="setVariant('light',this)">Light</button>
+    <button class="vbtn" onclick="setVariant('accent',this)">Red</button>
+  </div>
+</div>
+
+<div class="card dark" id="theCard">
+  <div class="card-content">
+    <div class="card-tag">Databricks · Mosaic AI · May 2026</div>
+    <div class="quote-mark">"</div>
+    <div class="quote-text">
+      The agentic era for data<br>isn't coming.<br>It's here.
+    </div>
+    <div class="quote-context">Genie Code went GA · 77.1% task completion · May 6, 2026</div>
+    <div class="divider-line"></div>
+    <div class="author-row">
+      <div class="author-avatar">S</div>
+      <div>
+        <div class="author-name">Your Name</div>
+        <div class="author-role">Databricks Architect · @yourhandle</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hint">Dark / Light / Red variants · Screenshot each · 620×620</div>
+
+<script>
+function setVariant(v, btn) {
+  document.getElementById('theCard').className = 'card ' + v;
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

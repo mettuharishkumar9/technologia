@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Visual Templates Gallery — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; color:#f1f5f9; min-height:100vh; padding:40px 32px; }
+.header { text-align:center; margin-bottom:48px; }
+.header h1 { font-size:36px; font-weight:900; background:linear-gradient(135deg,#fff,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+.header p { color:#64748b; font-size:15px; }
+.badge { display:inline-block; background:#FF3621; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:12px; margin-left:10px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; max-width:1200px; margin:0 auto; }
+.card {
+  background:#1e293b; border:1.5px solid #334155; border-radius:16px; overflow:hidden;
+  transition:all 0.2s; cursor:pointer; text-decoration:none; display:block;
+}
+.card:hover { border-color:#FF3621; transform:translateY(-3px); box-shadow:0 8px 32px rgba(255,54,33,0.15); }
+.preview {
+  height:180px; display:flex; align-items:center; justify-content:center;
+  font-size:40px; position:relative; overflow:hidden;
+}
+.preview-inner { text-align:center; z-index:1; }
+.preview-title { font-size:12px; font-weight:800; color:#fff; margin-top:6px; text-transform:uppercase; letter-spacing:1px; }
+.info { padding:16px; }
+.name { font-size:15px; font-weight:700; color:#f1f5f9; margin-bottom:4px; }
+.desc { font-size:12px; color:#64748b; line-height:1.5; margin-bottom:12px; }
+.tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.tag { padding:3px 8px; border-radius:10px; font-size:10px; font-weight:600; color:#fff; }
+.open-btn {
+  display:block; text-align:center; background:#FF3621; color:#fff;
+  padding:8px; border-radius:8px; font-size:13px; font-weight:700;
+  text-decoration:none; transition:background 0.15s;
+}
+.open-btn:hover { background:#d42e1a; }
+.section-label {
+  font-size:11px; font-weight:700; color:#475569; letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:16px; margin-top:32px; max-width:1200px; margin-left:auto; margin-right:auto;
+  padding-top:8px; border-top:1px solid #1e293b;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Visual Templates <span class="badge">10 READY</span></h1>
+  <p>Each template is pre-filled with today's content · Screenshot from browser · One per day</p>
+</div>
+
+<div class="section-label" style="margin-top:0; border-top:none;">📊 Data & Stats</div>
+<div class="grid">
+
+  <a class="card" href="02_stat_card.html">
+    <div class="preview" style="background:linear-gradient(135deg,#1e1b4b,#312e81);">
+      <div class="preview-inner">
+        <div style="font-size:48px;font-weight:900;color:#FF3621;line-height:1;">77.1%</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;">STAT CARD</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Stat / Benchmark Card</div>
+      <div class="desc">Giant number. Bold claim. High-save format for data benchmarks and announcements.</div>
+      <div class="tags"><span class="tag" style="background:#0077B5;">LinkedIn</span><span class="tag" style="background:#E1306C;">Instagram</span></div>
+      <a class="open-btn" href="02_stat_card.html">Open Template →</a>
+    </div>
+  </a>
+
+  <a class="card" href="04_before_after.html">
+    <div class="preview" style="background:#0f172a;">
+      <div class="preview-inner" style="display:flex;gap:8px;">
+        <div style="background:#fee2e2;border-radius:8px;padding:12px 16px;font-size:11px;font-weight:800;color:#dc2626;">BEFORE<br><span style="font-size:9px;font-weight:400;color:#888;">Copilot</span></div>
+        <div style="background:#dcfce7;border-radius:8px;padding:12px 16px;font-size:11px;font-weight:800;color:#16a34a;">AFTER<br><span style="font-size:9px;font-weight:400;color:#888;">Genie Code</span></div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Before / After Comparison</div>
+      <div class="desc">Old way vs new way. Split-screen format. High engagement for tool comparisons.</div>
+      <div class="tags"><span class="tag" style="background:#0077B5;">LinkedIn</span><span class="tag" style="background:#1a1a1a;">Twitter</span></div>
+      <a class="open-btn" href="04_before_after.html">Open Template →</a>
+    </div>
+  </a>
+
+</div>
+
+<div class="section-label">📚 Carousel / Educational</div>
+<div class="grid">
+
+  <a class="card" href="01_tutorial_carousel.html">
+    <div class="preview" style="background:#F5D5C8;">
+      <div class="preview-inner">
+        <div style="font-size:14px;font-weight:900;color:#000;line-height:1.3;">5 Things<br>Genie Code Does<br>That Copilot Can't</div>
+        <div style="margin-top:8px;font-size:10px;color:#666;">SWIPE →</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Tutorial Carousel — Flat</div>
+      <div class="desc">Peach cover + white content slides + CTA end card. The LinkedIn workhorse format.</div>
+      <div class="tags"><span class="tag" style="background:#0077B5;">LinkedIn</span><span class="tag" style="background:#E1306C;">Instagram</span></div>
+      <a class="open-btn" href="01_tutorial_carousel.html">Open Template →</a>
+    </div>
+  </a>
+
+  <a class="card" href="06_paper_quote.html">
+    <div class="preview" style="background:#fef9ef;">
+      <div class="preview-inner" style="max-width:180px;">
+        <div style="font-size:12px;color:#333;line-height:1.6;position:relative;">
+          <span style="background:rgba(0,160,0,0.25);padding:1px 3px;">Context-aware of YOUR<br>Unity Catalog.</span><br>
+          <span style="font-size:10px;color:#888;margin-top:4px;display:block;">Genie Code · 2026</span>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Paper + Highlighter Quote</div>
+      <div class="desc">Warm paper background with marker-highlight on key phrases. Great for tips series.</div>
+      <div class="tags"><span class="tag" style="background:#E1306C;">Instagram</span><span class="tag" style="background:#0077B5;">LinkedIn</span></div>
+      <a class="open-btn" href="06_paper_quote.html">Open Template →</a>
+    </div>
+  </a>
+
+</div>
+
+<div class="section-label">💬 Quote Cards</div>
+<div class="grid">
+
+  <a class="card" href="05_quote_card.html">
+    <div class="preview" style="background:#1e1b4b;padding:20px;">
+      <div class="preview-inner">
+        <div style="font-size:28px;color:rgba(255,255,255,0.15);line-height:1;">"</div>
+        <div style="font-size:12px;color:#fff;font-weight:600;line-height:1.5;max-width:200px;">The agentic era for data isn't coming. It's here.</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Quote Card — Monocolor</div>
+      <div class="desc">Bold insight on a solid color background. Minimal, high-share format.</div>
+      <div class="tags"><span class="tag" style="background:#0077B5;">LinkedIn</span><span class="tag" style="background:#E1306C;">Instagram</span><span class="tag" style="background:#1a1a1a;">Twitter</span></div>
+      <a class="open-btn" href="05_quote_card.html">Open Template →</a>
+    </div>
+  </a>
+
+  <a class="card" href="07_tweet_card.html">
+    <div class="preview" style="background:#15202B;padding:16px;">
+      <div style="background:#192734;border-radius:10px;padding:12px;max-width:220px;text-align:left;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#1e1b4b,#FF3621);"></div>
+          <div><div style="font-size:10px;font-weight:700;color:#fff;">Your Name</div><div style="font-size:9px;color:#8b9dc3;">@yourhandle</div></div>
+        </div>
+        <div style="font-size:10px;color:#fff;line-height:1.5;">77.1% task completion. The next leading agent? 32.1%. 🤖</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Tweet Card — Dark Theme</div>
+      <div class="desc">Your tweet rendered as a visual card. Repurpose threads into carousels.</div>
+      <div class="tags"><span class="tag" style="background:#1a1a1a;">Twitter</span><span class="tag" style="background:#0077B5;">LinkedIn</span></div>
+      <a class="open-btn" href="07_tweet_card.html">Open Template →</a>
+    </div>
+  </a>
+
+</div>
+
+<div class="section-label">📰 News & Media</div>
+<div class="grid">
+
+  <a class="card" href="03_breaking_news.html">
+    <div class="preview" style="background:#111;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:28px;background:#CC0000;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:10px;font-weight:900;color:#fff;letter-spacing:2px;">⚡ BREAKING NEWS</span>
+      </div>
+      <div style="margin-top:28px;padding:8px 16px;text-align:center;">
+        <div style="font-size:11px;font-weight:800;color:#fff;line-height:1.4;">GENIE CODE IS<br>GENERALLY AVAILABLE</div>
+        <div style="font-size:9px;color:#aaa;margin-top:4px;">Databricks · May 6, 2026</div>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:#FF8C00;display:flex;align-items:center;padding:0 8px;">
+        <span style="font-size:8px;font-weight:700;color:#000;white-space:nowrap;">GENIE CODE GA · 77.1% BENCHMARK · MOSAIC AI · DATABRICKS</span>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Breaking News Broadcast</div>
+      <div class="desc">TV broadcast aesthetic with BREAKING banner and news ticker. Perfect for GA announcements.</div>
+      <div class="tags"><span class="tag" style="background:#0077B5;">LinkedIn</span><span class="tag" style="background:#E1306C;">Instagram</span></div>
+      <a class="open-btn" href="03_breaking_news.html">Open Template →</a>
+    </div>
+  </a>
+
+  <a class="card" href="10_newspaper.html">
+    <div class="preview" style="background:#f5f0e8;padding:12px;">
+      <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:6px;">
+        <div style="font-size:14px;font-weight:900;color:#000;letter-spacing:2px;">DATA ENGINEERING TIMES</div>
+      </div>
+      <div style="font-size:10px;font-weight:800;color:#000;line-height:1.4;text-align:center;">GENIE CODE DECLARED<br>GENERALLY AVAILABLE</div>
+      <div style="font-size:8px;color:#444;margin-top:4px;text-align:center;line-height:1.5;">Databricks AI agent achieves 77.1% task<br>completion benchmark, outperforming rivals</div>
+    </div>
+    <div class="info">
+      <div class="name">Newspaper Front Page</div>
+      <div class="desc">Classic newspaper masthead and column layout. Great for weekly roundups and big releases.</div>
+      <div class="tags"><span class="tag" style="background:#0077B5;">LinkedIn</span><span class="tag" style="background:#E1306C;">Instagram</span></div>
+      <a class="open-btn" href="10_newspaper.html">Open Template →</a>
+    </div>
+  </a>
+
+</div>
+
+<div class="section-label">🔐 Creative & Fun</div>
+<div class="grid">
+
+  <a class="card" href="08_top_secret.html">
+    <div class="preview" style="background:#d4c9a8;padding:16px;">
+      <div style="border:2px solid #8b7355;padding:10px;max-width:200px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:6px;">
+          <span style="font-size:10px;font-weight:900;color:#CC0000;border:2px solid #CC0000;padding:2px 8px;letter-spacing:2px;">TOP SECRET</span>
+        </div>
+        <div style="font-size:9px;color:#333;line-height:1.6;font-family:monospace;">SUBJECT: GENIE CODE<br>CLASSIFICATION: GA<br>BENCHMARKS: REDACTED<br>STATUS: ██████████</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Top Secret / Classified</div>
+      <div class="desc">Government document style with stamps and redactions. Great for "insider tips" content.</div>
+      <div class="tags"><span class="tag" style="background:#E1306C;">Instagram</span><span class="tag" style="background:#ff0050;">TikTok</span></div>
+      <a class="open-btn" href="08_top_secret.html">Open Template →</a>
+    </div>
+  </a>
+
+  <a class="card" href="09_futuristic.html">
+    <div class="preview" style="background:#0a0a0f;padding:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(0,255,200,0.03) 21px);"></div>
+      <div style="text-align:center;position:relative;">
+        <div style="font-size:10px;color:#00ffc8;letter-spacing:3px;font-weight:700;">SYSTEM ALERT</div>
+        <div style="font-size:13px;font-weight:900;color:#fff;margin:6px 0;text-shadow:0 0 10px #00ffc8;">GENIE CODE</div>
+        <div style="font-size:9px;color:#00ffc8;opacity:0.7;">STATUS: ONLINE · GA · v1.0</div>
+        <div style="margin-top:8px;font-size:24px;">🤖</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">Futuristic / Cyberpunk</div>
+      <div class="desc">Neon glow, dark background, grid overlay. Perfect for AI and agentic content.</div>
+      <div class="tags"><span class="tag" style="background:#ff0050;">TikTok</span><span class="tag" style="background:#E1306C;">Instagram</span></div>
+      <a class="open-btn" href="09_futuristic.html">Open Template →</a>
+    </div>
+  </a>
+
+</div>
+
+<div style="text-align:center;margin-top:48px;color:#475569;font-size:13px;">
+  DataBrix Social Studio · <a href="../../index.html" style="color:#FF3621;">← Back to Dashboard</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tweet Card — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:560px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; text-align:center; }
+.variant-btns { display:flex; gap:6px; }
+.vbtn { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid #e2e8f0; background:transparent; color:#64748b; font-family:'Inter',sans-serif; }
+.vbtn.active { background:#1a1a1a; color:#fff; border-color:#1a1a1a; }
+
+/* Outer background */
+.outer { width:560px; padding:40px; border-radius:4px; box-shadow:0 12px 48px rgba(0,0,0,0.5); }
+.outer.dark { background:#15202B; }
+.outer.light { background:#F7F9F9; }
+
+/* Tweet card */
+.tweet-card { border-radius:16px; padding:20px; }
+.outer.dark .tweet-card { background:#192734; }
+.outer.light .tweet-card { background:#FFFFFF; border:1px solid #E1E8ED; }
+
+/* Header */
+.tw-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
+.tw-avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#1e1b4b,#FF3621); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; color:#fff; flex-shrink:0; }
+.tw-author { flex:1; }
+.tw-name { font-size:15px; font-weight:700; display:flex; align-items:center; gap:4px; }
+.outer.dark .tw-name { color:#fff; }
+.outer.light .tw-name { color:#0F1419; }
+.tw-verified { color:#1D9BF0; font-size:16px; }
+.tw-handle { font-size:14px; }
+.outer.dark .tw-handle { color:#8899A6; }
+.outer.light .tw-handle { color:#536471; }
+.tw-x { font-size:20px; margin-left:auto; }
+.outer.dark .tw-x { color:#fff; }
+.outer.light .tw-x { color:#0F1419; }
+
+/* Tweet text */
+.tw-text { font-size:18px; line-height:1.6; margin-bottom:16px; }
+.outer.dark .tw-text { color:#FFFFFF; }
+.outer.light .tw-text { color:#0F1419; }
+.tw-text .mention { color:#1D9BF0; }
+.tw-text .hashtag { color:#1D9BF0; }
+.tw-text strong { font-weight:700; }
+
+/* Time */
+.tw-time { font-size:14px; margin-bottom:14px; }
+.outer.dark .tw-time { color:#8899A6; }
+.outer.light .tw-time { color:#536471; }
+
+/* Divider */
+.tw-divider { height:1px; margin-bottom:14px; }
+.outer.dark .tw-divider { background:#38444D; }
+.outer.light .tw-divider { background:#E1E8ED; }
+
+/* Stats */
+.tw-stats { display:flex; gap:20px; margin-bottom:14px; }
+.tw-stat { font-size:14px; }
+.outer.dark .tw-stat { color:#8899A6; }
+.outer.light .tw-stat { color:#536471; }
+.tw-stat strong { font-weight:700; }
+.outer.dark .tw-stat strong { color:#fff; }
+.outer.light .tw-stat strong { color:#0F1419; }
+
+/* Actions */
+.tw-actions { display:flex; justify-content:space-around; }
+.tw-action { font-size:18px; cursor:pointer; opacity:0.5; transition:opacity 0.1s; }
+.tw-action:hover { opacity:1; }
+
+/* Footer branding */
+.tweet-footer { text-align:center; margin-top:16px; font-size:12px; }
+.outer.dark .tweet-footer { color:rgba(255,255,255,0.2); }
+.outer.light .tweet-footer { color:rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">🐦 Tweet Card · Day 01 · Genie Code GA</div>
+  <div class="variant-btns">
+    <button class="vbtn active" onclick="setTheme('dark',this)">Dark</button>
+    <button class="vbtn" onclick="setTheme('light',this)">Light</button>
+  </div>
+</div>
+
+<div class="outer dark" id="outerCard">
+  <div class="tweet-card">
+
+    <div class="tw-header">
+      <div class="tw-avatar">S</div>
+      <div class="tw-author">
+        <div class="tw-name">Your Name <span class="tw-verified">✓</span></div>
+        <div class="tw-handle">@yourhandle</div>
+      </div>
+      <div class="tw-x">𝕏</div>
+    </div>
+
+    <div class="tw-text">
+      Genie Code just went GA on <span class="mention">@Databricks</span> 🤖⚡<br><br>
+      <strong>77.1%</strong> task completion on data science benchmarks.<br>
+      The next leading coding agent? <strong>32.1%</strong>.<br><br>
+      This isn't tab autocomplete. It's a full AI agent that knows your catalog, debugs your pipelines, and builds new ones from a prompt.<br><br>
+      <span class="hashtag">#Databricks</span> <span class="hashtag">#GeniCode</span> <span class="hashtag">#DataEngineering</span> 🧵
+    </div>
+
+    <div class="tw-time">9:00 AM · May 6, 2026 · <strong>Databricks</strong></div>
+
+    <div class="tw-divider"></div>
+
+    <div class="tw-stats">
+      <div class="tw-stat"><strong>142</strong> Retweets</div>
+      <div class="tw-stat"><strong>38</strong> Quotes</div>
+      <div class="tw-stat"><strong>847</strong> Likes</div>
+      <div class="tw-stat"><strong>64</strong> Bookmarks</div>
+    </div>
+
+    <div class="tw-divider"></div>
+
+    <div class="tw-actions">
+      <div class="tw-action">💬</div>
+      <div class="tw-action">🔁</div>
+      <div class="tw-action">❤️</div>
+      <div class="tw-action">🔖</div>
+      <div class="tw-action">📤</div>
+    </div>
+
+  </div>
+  <div class="tweet-footer">@yourhandle · Twitter/X · May 6, 2026</div>
+</div>
+
+<div class="hint">Dark / Light · Screenshot ready · 560px wide</div>
+
+<script>
+function setTheme(t, btn) {
+  document.getElementById('outerCard').className = 'outer ' + t;
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

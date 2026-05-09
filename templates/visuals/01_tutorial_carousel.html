@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tutorial Carousel — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── EDIT CONTENT HERE ── */
+:root {
+  --cover-bg: #F5D5C8;
+  --cover-text: #000000;
+  --content-bg: #FFFFFF;
+  --content-text: #111111;
+  --accent: #000000;
+  --cta-bg: #F5D5C8;
+  --number-bg: #000000;
+  --number-text: #FFFFFF;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:#1a1a2e; display:flex; flex-direction:column; align-items:center; padding:32px 20px; gap:16px; }
+.toolbar {
+  background:#fff; border-radius:12px; padding:14px 20px; width:620px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);
+}
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.toolbar-btns { display:flex; gap:8px; }
+.tbtn {
+  padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; border:none; font-family:'Poppins',sans-serif; transition:all 0.15s;
+}
+.tbtn-prev { background:#f1f5f9; color:#64748b; }
+.tbtn-next { background:#1a1a2e; color:#fff; }
+.tbtn-prev:hover { background:#e2e8f0; }
+.slide-counter { font-size:13px; font-weight:600; color:#64748b; }
+
+/* Slide base */
+.slide {
+  width:620px; min-height:620px; border-radius:0; position:relative;
+  display:none; flex-direction:column; overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.4);
+}
+.slide.active { display:flex; }
+
+/* ── COVER SLIDE ── */
+.slide-cover { background:var(--cover-bg); justify-content:center; padding:48px 44px; }
+.cover-tag { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(0,0,0,0.45); margin-bottom:20px; }
+.cover-title { font-size:40px; font-weight:900; color:var(--cover-text); line-height:1.1; margin-bottom:20px; }
+.cover-author { font-size:14px; font-weight:600; color:rgba(0,0,0,0.5); margin-bottom:32px; }
+.cover-swipe {
+  display:inline-flex; align-items:center; gap:8px; border:2.5px solid var(--cover-text);
+  padding:10px 22px; border-radius:4px; font-size:13px; font-weight:700;
+  color:var(--cover-text); margin-top:auto; align-self:flex-start;
+}
+.cover-number { position:absolute; bottom:32px; right:40px; font-size:120px; font-weight:900; color:rgba(0,0,0,0.06); line-height:1; }
+
+/* ── CONTENT SLIDES ── */
+.slide-content { background:var(--content-bg); padding:44px; justify-content:flex-start; }
+.step-number {
+  width:52px; height:52px; border-radius:50%; background:var(--number-bg);
+  color:var(--number-text); font-size:20px; font-weight:900;
+  display:flex; align-items:center; justify-content:center; margin-bottom:24px; flex-shrink:0;
+}
+.step-heading { font-size:28px; font-weight:800; color:var(--content-text); line-height:1.2; margin-bottom:16px; }
+.step-body { font-size:16px; color:#444; line-height:1.7; flex:1; }
+.step-body strong { color:var(--content-text); }
+.slide-progress { position:absolute; bottom:0; left:0; right:0; height:5px; background:#f0f0f0; }
+.slide-progress-fill { height:100%; background:var(--accent); transition:width 0.3s; }
+
+/* ── CTA SLIDE ── */
+.slide-cta { background:var(--cta-bg); padding:44px; justify-content:center; }
+.cta-emoji { font-size:48px; margin-bottom:16px; }
+.cta-heading { font-size:30px; font-weight:900; color:var(--cover-text); line-height:1.2; margin-bottom:12px; }
+.cta-body { font-size:15px; color:rgba(0,0,0,0.55); line-height:1.6; margin-bottom:32px; }
+.cta-profile { display:flex; align-items:center; gap:14px; margin-top:auto; }
+.cta-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#1e1b4b,#FF3621); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:#fff; flex-shrink:0; }
+.cta-name { font-size:15px; font-weight:700; color:#000; }
+.cta-handle { font-size:12px; color:#666; }
+.cta-follow {
+  margin-left:auto; background:#000; color:#fff; padding:8px 18px;
+  border-radius:4px; font-size:13px; font-weight:700; border:none; cursor:pointer;
+  font-family:'Poppins',sans-serif;
+}
+
+/* Screenshot hint */
+.hint { color:rgba(255,255,255,0.25); font-size:11px; font-family:'Poppins',sans-serif; text-align:center; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">🗂️ Tutorial Carousel · Day 01 · Genie Code GA</div>
+  <div class="toolbar-btns">
+    <span class="slide-counter" id="counter">Slide 1 / 7</span>
+    <button class="tbtn tbtn-prev" onclick="prevSlide()">← Prev</button>
+    <button class="tbtn tbtn-next" onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide slide-cover active" id="slide-1">
+  <div class="cover-tag">Databricks Mosaic AI · May 2026</div>
+  <div class="cover-title">5 Things<br>Genie Code Does<br>That Copilot Can't</div>
+  <div class="cover-author">By Your Name · @yourhandle</div>
+  <div class="cover-swipe">Swipe Right →</div>
+  <div class="cover-number">5</div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide slide-content" id="slide-2">
+  <div class="step-number">1</div>
+  <div class="step-heading">It Knows YOUR<br>Unity Catalog</div>
+  <div class="step-body">
+    Copilot knows code. Genie Code knows <strong>your data</strong>.<br><br>
+    It understands your schemas, tables, lineage, and access policies — not some generic codebase.<br><br>
+    When it suggests code, it's referencing <strong>your actual catalog</strong>, not a hallucination.
+  </div>
+  <div class="slide-progress"><div class="slide-progress-fill" style="width:28%"></div></div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide slide-content" id="slide-3">
+  <div class="step-number">2</div>
+  <div class="step-heading">It Debugs Pipelines<br>Automatically</div>
+  <div class="step-body">
+    Pipeline fails at 3am. You wake up to a resolved issue.<br><br>
+    Genie Code <strong>monitors your Lakeflow pipelines</strong>, identifies failure root causes, and applies fixes — without you opening a ticket.<br><br>
+    This is the grunt work data engineers spend 30% of their time on. Gone.
+  </div>
+  <div class="slide-progress"><div class="slide-progress-fill" style="width:42%"></div></div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide slide-content" id="slide-4">
+  <div class="step-number">3</div>
+  <div class="step-heading">It Builds Pipelines<br>from Plain English</div>
+  <div class="step-body">
+    "Create a pipeline that ingests from Salesforce, joins with our customer table, and writes to the gold layer."<br><br>
+    Genie Code generates a <strong>complete Lakeflow pipeline</strong> from that sentence — including the DLT code, schema definitions, and tests.<br><br>
+    Benchmark: <strong>77.1% task completion</strong> vs 32.1% for the next best agent.
+  </div>
+  <div class="slide-progress"><div class="slide-progress-fill" style="width:56%"></div></div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide slide-content" id="slide-5">
+  <div class="step-number">4</div>
+  <div class="step-heading">It Trains ML Models<br>End-to-End</div>
+  <div class="step-body">
+    Not just "write me a sklearn script." <strong>End-to-end ML</strong>.<br><br>
+    Feature engineering → model training → MLflow experiment tracking → deployment on Mosaic AI Model Serving.<br><br>
+    Genie Code orchestrates the full ML lifecycle <strong>natively inside Databricks</strong>.
+  </div>
+  <div class="slide-progress"><div class="slide-progress-fill" style="width:70%"></div></div>
+</div>
+
+<!-- SLIDE 6 -->
+<div class="slide slide-content" id="slide-6">
+  <div class="step-number">5</div>
+  <div class="step-heading">It Lives Inside<br>Databricks — Natively</div>
+  <div class="step-body">
+    No browser extension. No copy-paste between tabs. No "let me describe my schema to you."<br><br>
+    Genie Code is <strong>built into the Lakeflow Pipelines Editor</strong> (also GA'd May 4). Your IDE, your agent, your catalog — <strong>one surface</strong>.<br><br>
+    That context-awareness is what makes 77.1% possible.
+  </div>
+  <div class="slide-progress"><div class="slide-progress-fill" style="width:84%"></div></div>
+</div>
+
+<!-- SLIDE 7: CTA -->
+<div class="slide slide-cta" id="slide-7">
+  <div class="cta-emoji">🤖</div>
+  <div class="cta-heading">The agentic era<br>for data is here.</div>
+  <div class="cta-body">
+    Genie Code went GA on Databricks — May 6, 2026.<br>
+    Follow for daily updates on Databricks, AI agents,<br>and the future of data engineering.
+  </div>
+  <div class="cta-profile">
+    <div class="cta-avatar">S</div>
+    <div>
+      <div class="cta-name">Your Name</div>
+      <div class="cta-handle">Databricks Architect · Data Platform</div>
+    </div>
+    <button class="cta-follow">+ Follow</button>
+  </div>
+  <div class="slide-progress"><div class="slide-progress-fill" style="width:100%"></div></div>
+</div>
+
+<div class="hint">← → arrow keys or buttons · Screenshot each slide · Open in Chrome for best results</div>
+
+<script>
+let current = 1;
+const total = 7;
+function showSlide(n) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.getElementById('slide-' + n).classList.add('active');
+  document.getElementById('counter').textContent = 'Slide ' + n + ' / ' + total;
+}
+function nextSlide() { if (current < total) { current++; showSlide(current); } }
+function prevSlide() { if (current > 1) { current--; showSlide(current); } }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+</script>
+</body>
+</html>

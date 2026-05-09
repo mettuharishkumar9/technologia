@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stat Card — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg1: #1e1b4b;
+  --bg2: #312e81;
+  --accent: #FF3621;
+  --accent2: #ff8c73;
+  --text: #ffffff;
+  --muted: rgba(255,255,255,0.5);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:620px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; font-family:'Inter',sans-serif; text-align:center; }
+
+.card {
+  width:620px; height:620px;
+  background:linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg1) 100%);
+  position:relative; overflow:hidden; display:flex; flex-direction:column;
+  padding:48px; box-shadow:0 12px 48px rgba(0,0,0,0.5);
+}
+/* Radial glow */
+.card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 75% 40%, rgba(255,54,33,0.18) 0%, transparent 60%);
+}
+/* Grid overlay */
+.card::after {
+  content:''; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size:48px 48px;
+}
+
+.content { position:relative; z-index:2; display:flex; flex-direction:column; height:100%; }
+
+.eyebrow {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,54,33,0.15); border:1px solid rgba(255,54,33,0.3);
+  color:var(--accent2); font-size:11px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; padding:5px 12px; border-radius:20px;
+  margin-bottom:28px; align-self:flex-start;
+}
+
+.main-stat { font-size:108px; font-weight:900; color:var(--accent); line-height:1; letter-spacing:-4px; }
+.main-label { font-size:18px; font-weight:600; color:rgba(255,255,255,0.75); margin-top:8px; line-height:1.4; }
+
+.divider { width:60px; height:4px; background:rgba(255,255,255,0.15); border-radius:2px; margin:24px 0; }
+
+.compare-row { display:flex; align-items:center; gap:16px; margin-top:4px; }
+.compare-item { display:flex; flex-direction:column; gap:3px; }
+.compare-num { font-size:32px; font-weight:800; color:rgba(255,255,255,0.45); }
+.compare-label { font-size:11px; font-weight:600; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:0.5px; }
+.compare-sep { font-size:20px; color:rgba(255,255,255,0.15); font-weight:300; }
+
+.footer { margin-top:auto; display:flex; align-items:center; justify-content:space-between; }
+.source { font-size:11px; color:rgba(255,255,255,0.25); }
+.hashtags { font-size:11px; color:rgba(255,255,255,0.2); }
+
+/* Decorative accent circle */
+.deco { position:absolute; right:-60px; top:-60px; width:240px; height:240px; border-radius:50%; border:2px solid rgba(255,54,33,0.08); z-index:1; }
+.deco2 { position:absolute; right:-30px; top:-30px; width:160px; height:160px; border-radius:50%; border:2px solid rgba(255,54,33,0.12); z-index:1; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">📊 Stat Card · Day 01 · Genie Code GA</div>
+  <div style="font-size:12px;color:#64748b;">Screenshot at 620×620</div>
+</div>
+
+<div class="card">
+  <div class="deco"></div>
+  <div class="deco2"></div>
+  <div class="content">
+    <div class="eyebrow">🚨 Just Went GA — Databricks Mosaic AI</div>
+    <div class="main-stat">77.1%</div>
+    <div class="main-label">Task completion on data science benchmarks<br>by Genie Code — Databricks' AI agent</div>
+    <div class="divider"></div>
+    <div class="compare-row">
+      <div class="compare-item">
+        <div class="compare-num">32.1%</div>
+        <div class="compare-label">Next best coding agent</div>
+      </div>
+      <div class="compare-sep">·</div>
+      <div class="compare-item">
+        <div class="compare-num">2.4×</div>
+        <div class="compare-label">Better performance</div>
+      </div>
+      <div class="compare-sep">·</div>
+      <div class="compare-item">
+        <div class="compare-num">GA</div>
+        <div class="compare-label">May 6, 2026</div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="source">databricks.com · Mosaic AI</div>
+      <div class="hashtags">#Databricks #GeniCode #DataEngineering</div>
+    </div>
+  </div>
+</div>
+
+<div class="hint">Right-click → Save image as · Or use Ctrl+Shift+S in Chrome DevTools</div>
+</body>
+</html>

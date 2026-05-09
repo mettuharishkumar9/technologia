@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Before / After — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:620px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; text-align:center; }
+
+.card { width:620px; height:620px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 12px 48px rgba(0,0,0,0.5); background:#fff; }
+
+/* TOP HEADER */
+.card-header { background:#1e1b4b; padding:20px 28px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.card-header-text { font-size:14px; font-weight:800; color:rgba(255,255,255,0.6); letter-spacing:2px; text-transform:uppercase; }
+.card-header-topic { font-size:16px; font-weight:900; color:#fff; margin-left:10px; }
+
+/* SPLIT */
+.split { flex:1; display:grid; grid-template-columns:1fr 1fr; }
+
+/* BEFORE side */
+.before-side { background:#fff5f5; padding:28px 24px; display:flex; flex-direction:column; border-right:3px solid #fff; }
+.side-label { display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:#fff; font-size:11px; font-weight:900; padding:5px 12px; border-radius:4px; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px; align-self:flex-start; }
+.side-tool { font-size:13px; font-weight:700; color:#991b1b; margin-bottom:16px; }
+.side-items { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.side-item { display:flex; align-items:flex-start; gap:8px; font-size:13px; color:#374151; line-height:1.5; }
+.side-item-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+
+/* AFTER side */
+.after-side { background:#f0fdf4; padding:28px 24px; display:flex; flex-direction:column; }
+.after-side .side-label { background:#16a34a; }
+.after-side .side-tool { color:#166534; }
+.after-side .side-item { color:#374151; }
+
+/* VS badge */
+.vs-badge {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:40px; height:40px; background:#1e1b4b; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:900; color:#fff; z-index:10;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3); border:3px solid #fff;
+}
+
+/* BOTTOM VERDICT */
+.verdict { background:#1e1b4b; padding:16px 28px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.verdict-text { font-size:13px; font-weight:700; color:#fff; }
+.verdict-text span { color:#FF3621; }
+.verdict-stat { font-size:22px; font-weight:900; color:#FF3621; }
+.verdict-stat-label { font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.5px; }
+
+.split { position:relative; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">⚖️ Before / After · Day 01 · Genie Code vs Copilot</div>
+  <div style="font-size:12px;color:#64748b;">Screenshot at 620×620</div>
+</div>
+
+<div class="card">
+
+  <div class="card-header">
+    <span class="card-header-text">Coding Agents for Data Work</span>
+    <span class="card-header-topic">GitHub Copilot vs Genie Code</span>
+  </div>
+
+  <div class="split">
+    <div class="before-side">
+      <div class="side-label">❌ Before</div>
+      <div class="side-tool">GitHub Copilot / Cursor</div>
+      <ul class="side-items">
+        <li class="side-item"><span class="side-item-icon">❌</span>Generic code suggestions only</li>
+        <li class="side-item"><span class="side-item-icon">❌</span>No knowledge of your schemas or catalog</li>
+        <li class="side-item"><span class="side-item-icon">❌</span>Switch between tools constantly</li>
+        <li class="side-item"><span class="side-item-icon">❌</span>Can't monitor or debug pipelines</li>
+        <li class="side-item"><span class="side-item-icon">❌</span>Doesn't understand lineage or policies</li>
+        <li class="side-item"><span class="side-item-icon">❌</span>32.1% task completion on data tasks</li>
+      </ul>
+    </div>
+
+    <div class="vs-badge">VS</div>
+
+    <div class="after-side">
+      <div class="side-label">✅ After</div>
+      <div class="side-tool">Databricks Genie Code</div>
+      <ul class="side-items">
+        <li class="side-item"><span class="side-item-icon">✅</span>Context-aware of YOUR Unity Catalog</li>
+        <li class="side-item"><span class="side-item-icon">✅</span>Knows your schemas, tables & lineage</li>
+        <li class="side-item"><span class="side-item-icon">✅</span>Lives natively inside Databricks</li>
+        <li class="side-item"><span class="side-item-icon">✅</span>Monitors & debugs pipelines automatically</li>
+        <li class="side-item"><span class="side-item-icon">✅</span>Builds Lakeflow pipelines from a prompt</li>
+        <li class="side-item"><span class="side-item-icon">✅</span><strong>77.1%</strong> task completion benchmark</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-text">Genie Code is <span>2.4× better</span> for data work. Just went <span>GA</span> — May 6, 2026.</div>
+    <div style="text-align:right;">
+      <div class="verdict-stat">77.1%</div>
+      <div class="verdict-stat-label">vs 32.1%</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="hint">Screenshot ready · 620×620</div>
+</body>
+</html>

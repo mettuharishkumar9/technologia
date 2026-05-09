@@ -1,0 +1,34 @@
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+
+# Per-run output (regenerated each scan)
+runs/
+
+# State files (machine-local, persisted on the host)
+state/seen.json
+state/published.json
+
+# Logs (machine-local)
+logs/
+
+# Node deps (re-installed per host)
+node_modules/
+package-lock.json
+
+# Bundled binaries (re-downloaded per host)
+bin/ffmpeg.exe
+bin/ffprobe.exe
+bin/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Playwright cache (user-level, per-host)
+.playwright/
+ms-playwright/

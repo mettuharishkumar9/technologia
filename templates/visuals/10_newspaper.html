@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Newspaper — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=UnifrakturMaguntia&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:680px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; text-align:center; }
+
+.paper {
+  width:680px; background:#f5f0e8;
+  padding:28px 32px 32px; overflow:hidden;
+  box-shadow:0 12px 48px rgba(0,0,0,0.5);
+  position:relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #f5f0e8 0%, #ede8d8 100%);
+}
+
+/* MASTHEAD */
+.masthead { text-align:center; border-bottom:4px double #1a1a1a; padding-bottom:10px; margin-bottom:8px; }
+.paper-name { font-family:'Playfair Display',serif; font-size:38px; font-weight:900; color:#1a1a1a; letter-spacing:-1px; line-height:1; }
+.paper-subtitle { font-size:10px; font-style:italic; color:#555; letter-spacing:1px; margin-top:2px; }
+
+.meta-bar { display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#666; letter-spacing:0.5px; padding:6px 0; border-bottom:1px solid #1a1a1a; margin-bottom:12px; }
+.meta-bar strong { color:#1a1a1a; }
+
+/* LEAD STORY */
+.lead { margin-bottom:14px; }
+.label-bar { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.story-label { background:#CC0000; color:#fff; font-size:9px; font-weight:700; padding:2px 8px; letter-spacing:2px; text-transform:uppercase; }
+.headline { font-family:'Playfair Display',serif; font-size:32px; font-weight:900; color:#1a1a1a; line-height:1.1; margin-bottom:6px; }
+.deck { font-family:'Playfair Display',serif; font-size:14px; font-style:italic; color:#444; line-height:1.5; margin-bottom:10px; }
+.byline { font-size:10px; color:#666; letter-spacing:0.5px; border-top:1px solid #ccc; border-bottom:1px solid #ccc; padding:4px 0; margin-bottom:10px; }
+
+/* COLUMNS */
+.columns { display:grid; grid-template-columns:2fr 1fr; gap:16px; }
+.col-left { border-right:1px solid #ccc; padding-right:16px; }
+.col-right { }
+
+.body-text { font-family:'Playfair Display',serif; font-size:12px; color:#222; line-height:1.7; text-align:justify; }
+.body-text .dropcap { float:left; font-size:38px; font-weight:900; line-height:0.8; margin:4px 6px 0 0; color:#1a1a1a; }
+.pull-quote { font-family:'Playfair Display',serif; font-style:italic; font-size:14px; color:#1a1a1a; border-left:3px solid #CC0000; padding:6px 10px; margin:10px 0; background:rgba(204,0,0,0.03); }
+
+/* SIDEBAR */
+.sidebar-head { font-family:'Playfair Display',serif; font-size:13px; font-weight:700; color:#1a1a1a; border-bottom:2px solid #1a1a1a; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; font-size:11px; }
+.stat-box { background:#1a1a1a; color:#fff; padding:12px; margin-bottom:10px; text-align:center; }
+.stat-box .num { font-family:'Playfair Display',serif; font-size:32px; font-weight:900; color:#fff; line-height:1; }
+.stat-box .lbl { font-size:9px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+.sidebar-text { font-size:11px; color:#444; line-height:1.6; font-family:'Playfair Display',serif; }
+.sidebar-item { border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px; }
+.sidebar-item-head { font-size:11px; font-weight:700; color:#1a1a1a; font-family:'Playfair Display',serif; }
+
+/* Footer */
+.paper-footer { border-top:3px double #1a1a1a; padding-top:8px; margin-top:14px; display:flex; justify-content:space-between; font-size:9px; color:#888; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">📰 Newspaper · Day 01 · Genie Code GA</div>
+  <div style="font-size:12px;color:#64748b;">Screenshot at 680px wide</div>
+</div>
+
+<div class="paper">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="paper-name">Data Engineering Times</div>
+    <div class="paper-subtitle">"The World's Most Trusted Source for Data Platform Intelligence"</div>
+  </div>
+
+  <div class="meta-bar">
+    <span><strong>Vol. MMXXVI · No. 127</strong></span>
+    <span>TUESDAY, MAY 6, 2026</span>
+    <span>DATABRICKS · AI · PLATFORM ENGINEERING</span>
+    <span><strong>SPECIAL EDITION</strong></span>
+  </div>
+
+  <!-- LEAD -->
+  <div class="lead">
+    <div class="label-bar">
+      <div class="story-label">⚡ Breaking</div>
+      <div style="font-size:9px;color:#888;letter-spacing:0.5px;">DATABRICKS MOSAIC AI DIVISION</div>
+    </div>
+    <div class="headline">GENIE CODE DECLARED<br>GENERALLY AVAILABLE</div>
+    <div class="deck">Databricks' AI coding agent surpasses all rivals with 77.1% task completion benchmark — announcing a new era of agentic data engineering</div>
+    <div class="byline">By Your Name, Databricks Architect | @yourhandle | May 6, 2026, 9:00 AM ET</div>
+  </div>
+
+  <div class="columns">
+    <div class="col-left">
+      <div class="body-text">
+        <span class="dropcap">D</span>atabricks today announced the general availability of Genie Code, an artificial intelligence coding agent built specifically for the demands of modern data engineering. The announcement, made early Tuesday morning, marks a pivotal shift in how data engineering teams interact with their tools and infrastructure.
+        <br><br>
+        In benchmark testing conducted across real-world data science scenarios, Genie Code achieved a <strong>77.1% task completion rate</strong> — compared to just 32.1% for the nearest competing coding assistant. The 2.4× performance gap has drawn significant attention from data platform leaders across the industry.
+        <br><br>
+        <div class="pull-quote">"This isn't tab autocomplete. It's an AI agent that understands your actual data."</div>
+        Unlike generic coding assistants, Genie Code operates with full awareness of a team's Unity Catalog — including schemas, table lineage, access policies, and pipeline run history. The agent monitors Lakeflow pipelines, diagnoses failures, generates new pipelines from plain English instructions, and trains machine learning models end-to-end.
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="sidebar-head">By The Numbers</div>
+      <div class="stat-box">
+        <div class="num">77.1%</div>
+        <div class="lbl">Task Completion</div>
+      </div>
+      <div class="stat-box" style="background:#CC0000;">
+        <div class="num">2.4×</div>
+        <div class="lbl">vs Competitors</div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="sidebar-head">Also In Today's Edition</div>
+        <div class="sidebar-item">
+          <div class="sidebar-item-head">Lakeflow Connect Free Tier Announced</div>
+          <div class="sidebar-text">100M records/day at no cost. See Page 3.</div>
+        </div>
+        <div class="sidebar-item">
+          <div class="sidebar-item-head">ABAC Goes GA</div>
+          <div class="sidebar-text">Dynamic row-level security without view sprawl. Page 4.</div>
+        </div>
+        <div class="sidebar-item">
+          <div class="sidebar-item-head">Lakebase: Postgres Inside Databricks</div>
+          <div class="sidebar-text">GA on AWS and Azure. Serverless Postgres with branching. Page 2.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paper-footer">
+    <span>databricks.com · Mosaic AI</span>
+    <span>#Databricks #GeniCode #DataEngineering #MosaicAI</span>
+    <span>© 2026 Data Engineering Times</span>
+  </div>
+
+</div>
+
+<div class="hint">Screenshot ready · 680px wide · Great for LinkedIn & Instagram</div>
+</body>
+</html>

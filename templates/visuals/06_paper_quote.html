@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Paper Quote — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:620px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; text-align:center; }
+.variant-btns { display:flex; gap:6px; }
+.vbtn { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid #e2e8f0; background:transparent; color:#64748b; font-family:'Inter',sans-serif; }
+.vbtn.active { background:#1e1b4b; color:#fff; border-color:#1e1b4b; }
+
+.card {
+  width:620px; min-height:620px; padding:52px 56px;
+  display:flex; flex-direction:column;
+  box-shadow:0 8px 40px rgba(0,0,0,0.3), inset 0 0 100px rgba(0,0,0,0.04);
+  position:relative; overflow:hidden;
+}
+.card.white { background:#fefcf5; }
+.card.yellow { background:#fdf6d3; }
+.card.aged { background:#f0e6c8; }
+
+/* Notebook lines */
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+  background:repeating-linear-gradient(transparent, transparent 31px, rgba(150,150,200,0.12) 32px);
+  pointer-events:none;
+}
+/* Left margin line */
+.card::after {
+  content:''; position:absolute; top:0; left:72px; bottom:0; width:1px;
+  background:rgba(200,150,150,0.25); pointer-events:none;
+}
+
+.paper-content { position:relative; z-index:2; }
+
+.paper-tag {
+  display:inline-flex; align-items:center; gap:6px;
+  background:#1e1b4b; color:#fff; font-family:'Caveat',cursive;
+  font-size:16px; font-weight:600; padding:4px 14px; border-radius:2px;
+  margin-bottom:28px; transform:rotate(-1deg); display:inline-block;
+  box-shadow:2px 2px 6px rgba(0,0,0,0.15);
+}
+
+.quote-number { font-family:'Caveat',cursive; font-size:20px; color:#999; margin-bottom:8px; }
+
+.quote-line {
+  font-family:'Caveat',cursive; font-size:26px; font-weight:600;
+  color:#1a1a1a; line-height:1.5; margin-bottom:10px; position:relative;
+}
+.highlight {
+  position:relative; display:inline;
+  background:linear-gradient(180deg, transparent 50%, var(--hl-color, rgba(0,180,0,0.3)) 50%);
+  padding:0 2px;
+}
+
+.quote-divider { height:2px; background:rgba(0,0,0,0.08); margin:20px 0; border-radius:1px; }
+
+.quote-source {
+  display:flex; align-items:center; gap:10px; margin-top:4px;
+}
+.source-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#1e1b4b,#FF3621); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; }
+.source-name { font-family:'Caveat',cursive; font-size:18px; font-weight:600; color:#333; }
+.source-role { font-family:'Caveat',cursive; font-size:14px; color:#888; margin-top:-2px; }
+
+.paper-deco { position:absolute; top:12px; right:28px; font-size:11px; color:#ccc; font-family:'Caveat',cursive; transform:rotate(8deg); }
+
+/* Sticky tape effect top */
+.tape { position:absolute; top:-4px; left:50%; transform:translateX(-50%); width:60px; height:20px; background:rgba(200,200,150,0.4); border-radius:2px; z-index:3; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">📄 Paper Quote · Day 01 · Genie Code GA</div>
+  <div class="variant-btns">
+    <button class="vbtn active" onclick="setPaper('white',this)">White</button>
+    <button class="vbtn" onclick="setPaper('yellow',this)">Yellow</button>
+    <button class="vbtn" onclick="setPaper('aged',this)">Aged</button>
+  </div>
+</div>
+
+<div class="card white" id="paperCard">
+  <div class="tape"></div>
+  <div class="paper-deco">May 6, 2026 📌</div>
+  <div class="paper-content">
+
+    <div class="paper-tag">🤖 Genie Code · GA Notes</div>
+
+    <div class="quote-number">// 01</div>
+    <div class="quote-line">
+      Genie Code isn't just <span class="highlight" style="--hl-color:rgba(0,180,0,0.3);">tab autocomplete.</span><br>
+      It's a full AI agent that knows<br>
+      <span class="highlight" style="--hl-color:rgba(255,180,0,0.35);">your Unity Catalog.</span>
+    </div>
+
+    <div class="quote-divider"></div>
+
+    <div class="quote-number">// 02</div>
+    <div class="quote-line">
+      <span class="highlight" style="--hl-color:rgba(0,120,255,0.2);">77.1% task completion</span> on data<br>
+      science benchmarks. The next best?<br>
+      <span class="highlight" style="--hl-color:rgba(255,80,80,0.25);">32.1%.</span> Not even close.
+    </div>
+
+    <div class="quote-divider"></div>
+
+    <div class="quote-number">// 03</div>
+    <div class="quote-line">
+      The agentic era for data<br>
+      <span class="highlight" style="--hl-color:rgba(0,180,0,0.3);">isn't coming.</span><br>
+      It's here. 🏁
+    </div>
+
+    <div style="margin-top:28px;">
+      <div class="quote-source">
+        <div class="source-avatar">S</div>
+        <div>
+          <div class="source-name">Your Name</div>
+          <div class="source-role">Databricks Architect · @yourhandle</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hint">White / Yellow / Aged variants · Screenshot ready · 620px wide</div>
+
+<script>
+function setPaper(v, btn) {
+  document.getElementById('paperCard').className = 'card ' + v;
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

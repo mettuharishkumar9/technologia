@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Futuristic / Cyberpunk — DataBrix Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; gap:16px; }
+.toolbar { background:#fff; border-radius:12px; padding:12px 20px; width:620px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.toolbar-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+.hint { color:rgba(255,255,255,0.25); font-size:11px; text-align:center; }
+.variant-btns { display:flex; gap:6px; }
+.vbtn { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid #e2e8f0; background:transparent; color:#64748b; font-family:'Inter',sans-serif; }
+.vbtn.active { background:#0a0a0f; color:#00ffc8; border-color:#00ffc8; }
+
+.card {
+  width:620px; height:620px; position:relative; overflow:hidden;
+  box-shadow:0 12px 48px rgba(0,0,0,0.8);
+}
+
+/* VARIANT: Cyan */
+.card.cyan { background:#0a0a0f; }
+.card.cyan .glow-color { color:#00ffc8; text-shadow:0 0 20px #00ffc8, 0 0 40px rgba(0,255,200,0.3); }
+.card.cyan .border-color { border-color:#00ffc8; box-shadow:0 0 10px rgba(0,255,200,0.2); }
+.card.cyan .accent-line { background:#00ffc8; box-shadow:0 0 8px #00ffc8; }
+.card.cyan .tag-bg { background:rgba(0,255,200,0.08); border:1px solid rgba(0,255,200,0.3); color:#00ffc8; }
+.card.cyan .muted { color:rgba(0,255,200,0.4); }
+.card.cyan .grid-line { background:rgba(0,255,200,0.03); }
+.card.cyan .stat-accent { color:#00ffc8; text-shadow:0 0 20px #00ffc8; }
+
+/* VARIANT: Magenta */
+.card.magenta { background:#0a0008; }
+.card.magenta .glow-color { color:#ff00ff; text-shadow:0 0 20px #ff00ff, 0 0 40px rgba(255,0,255,0.3); }
+.card.magenta .border-color { border-color:#ff00ff; box-shadow:0 0 10px rgba(255,0,255,0.2); }
+.card.magenta .accent-line { background:#ff00ff; box-shadow:0 0 8px #ff00ff; }
+.card.magenta .tag-bg { background:rgba(255,0,255,0.08); border:1px solid rgba(255,0,255,0.3); color:#ff00ff; }
+.card.magenta .muted { color:rgba(255,0,255,0.4); }
+.card.magenta .grid-line { background:rgba(255,0,255,0.03); }
+.card.magenta .stat-accent { color:#ff00ff; text-shadow:0 0 20px #ff00ff; }
+
+/* Grid overlay */
+.grid-overlay {
+  position:absolute; inset:0; pointer-events:none; z-index:1;
+  background-image:
+    linear-gradient(rgba(0,255,200,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,200,0.04) 1px, transparent 1px);
+  background-size:40px 40px;
+}
+.card.magenta .grid-overlay {
+  background-image:
+    linear-gradient(rgba(255,0,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,0,255,0.04) 1px, transparent 1px);
+}
+
+/* Scanlines */
+.scanlines {
+  position:absolute; inset:0; pointer-events:none; z-index:2;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 3px);
+}
+
+/* Corner brackets */
+.corner { position:absolute; width:24px; height:24px; z-index:3; }
+.corner.tl { top:20px; left:20px; border-top:2px solid; border-left:2px solid; }
+.corner.tr { top:20px; right:20px; border-top:2px solid; border-right:2px solid; }
+.corner.bl { bottom:20px; left:20px; border-bottom:2px solid; border-left:2px solid; }
+.corner.br { bottom:20px; right:20px; border-bottom:2px solid; border-right:2px solid; }
+
+/* Main content */
+.cyber-content { position:absolute; inset:0; z-index:4; display:flex; flex-direction:column; padding:40px 44px; }
+.cyber-eyebrow { font-family:'Orbitron',monospace; font-size:9px; letter-spacing:4px; text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.cyber-dot { width:6px; height:6px; border-radius:50%; animation:blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+.accent-line { height:2px; width:60px; margin-bottom:20px; }
+
+.cyber-title { font-family:'Orbitron',monospace; font-size:36px; font-weight:900; color:#fff; line-height:1.2; margin-bottom:6px; letter-spacing:-1px; }
+.cyber-title .glow-color { }
+.cyber-subtitle { font-family:'Orbitron',monospace; font-size:14px; font-weight:400; color:rgba(255,255,255,0.5); margin-bottom:28px; letter-spacing:2px; }
+
+.tag-bg { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:600; padding:5px 12px; border-radius:2px; font-family:'Orbitron',monospace; letter-spacing:1px; margin-bottom:24px; }
+
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:auto; }
+.cyber-stat { padding:14px 16px; border:1px solid; border-radius:2px; position:relative; }
+.cyber-stat::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; }
+.stat-val { font-family:'Orbitron',monospace; font-size:28px; font-weight:900; line-height:1; margin-bottom:4px; }
+.stat-lbl { font-size:10px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; }
+
+.cyber-footer { display:flex; align-items:center; justify-content:space-between; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+.cyber-source { font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; font-family:'Orbitron',monospace; }
+.cyber-handle { font-size:10px; color:rgba(255,255,255,0.25); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">🤖 Futuristic · Day 01 · Genie Code GA</div>
+  <div class="variant-btns">
+    <button class="vbtn active" onclick="setVariant('cyan',this)">Cyan</button>
+    <button class="vbtn" onclick="setVariant('magenta',this)">Magenta</button>
+  </div>
+</div>
+
+<div class="card cyan" id="cyberCard">
+  <div class="grid-overlay"></div>
+  <div class="scanlines"></div>
+  <div class="corner tl border-color"></div>
+  <div class="corner tr border-color"></div>
+  <div class="corner bl border-color"></div>
+  <div class="corner br border-color"></div>
+
+  <div class="cyber-content">
+
+    <div class="cyber-eyebrow glow-color">
+      <div class="cyber-dot" style="background:currentColor;"></div>
+      SYSTEM ONLINE · DATABRICKS MOSAIC AI · MAY 6 2026
+    </div>
+
+    <div class="accent-line accent-line"></div>
+
+    <div class="cyber-title">
+      <span class="glow-color">GENIE</span><br>CODE_GA
+    </div>
+    <div class="cyber-subtitle">AI AGENT · DATA ENGINEERING · UNITY CATALOG</div>
+
+    <div class="tag-bg">
+      ⚡ STATUS: GENERALLY AVAILABLE
+    </div>
+
+    <div class="stats-grid">
+      <div class="cyber-stat border-color">
+        <div class="accent-line" style="height:100%;width:3px;position:absolute;top:0;left:0;"></div>
+        <div class="stat-val stat-accent">77.1%</div>
+        <div class="stat-lbl">Task Completion</div>
+      </div>
+      <div class="cyber-stat border-color">
+        <div class="accent-line" style="height:100%;width:3px;position:absolute;top:0;left:0;"></div>
+        <div class="stat-val stat-accent">2.4×</div>
+        <div class="stat-lbl">vs Next Agent</div>
+      </div>
+      <div class="cyber-stat border-color">
+        <div class="accent-line" style="height:100%;width:3px;position:absolute;top:0;left:0;"></div>
+        <div class="stat-val stat-accent">100%</div>
+        <div class="stat-lbl">Catalog Context</div>
+      </div>
+      <div class="cyber-stat border-color">
+        <div class="accent-line" style="height:100%;width:3px;position:absolute;top:0;left:0;"></div>
+        <div class="stat-val stat-accent">3×</div>
+        <div class="stat-lbl">Platforms (AWS/Az/GCP)</div>
+      </div>
+    </div>
+
+    <div class="cyber-footer">
+      <div class="cyber-source">DATABRICKS.COM · MOSAIC-AI</div>
+      <div class="cyber-handle">#GeniCode #DataEngineering</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hint">Cyan / Magenta variants · Screenshot ready · 620×620</div>
+
+<script>
+function setVariant(v, btn) {
+  document.getElementById('cyberCard').className = 'card ' + v;
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
