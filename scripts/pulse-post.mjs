@@ -154,21 +154,31 @@ function markRunPublished(folder, modeLabel, postIds) {
 }
 
 // ── Markdown parsers ───────────────────────────────────────────────────────────
+// Strip frontmatter (leading blank lines, `# heading`, `**metadata**`, `---` divider)
+// and return the rest as-is. Works for drafts written in either:
+//   (a) day02_lakebase format with `# heading` + `**metadata**` + `---` then body
+//   (b) "just write the body straight away" format
+// For both LinkedIn and IG, the body+hashtags are returned as one string —
+// LinkedIn API takes that as `commentary`; IG takes it as `caption`.
+function stripFrontmatter(md) {
+  const lines = md.trim().split("\n");
+  let i = 0;
+  while (i < lines.length) {
+    const t = lines[i].trim();
+    // Frontmatter: blank, H1 (`# Foo`, with space — NOT `#Hashtag`), bold metadata, or `---`
+    if (t === "" || t === "---" || /^#\s/.test(t) || /^\*\*/.test(t)) {
+      i++;
+    } else {
+      break;
+    }
+  }
+  return lines.slice(i).join("\n").trim();
+}
 function parseInstagram(md) {
-  const parts = md.split("---");
-  const body = (parts[1] || "").trim();
-  const hashSection = parts[2] || "";
-  const hashMatch = hashSection.match(/(#\w[\w\d]*)(\s+#\w[\w\d]*)*/);
-  const hashtags = hashMatch ? hashMatch[0].trim() : "";
-  return hashtags ? `${body}\n\n${hashtags}` : body;
+  return stripFrontmatter(md);
 }
 function parseLinkedIn(md) {
-  const parts = md.split("---");
-  const body = (parts[1] || "").trim();
-  const lines = md.trim().split("\n");
-  const last = lines[lines.length - 1].trim();
-  if (last.startsWith("#") && !body.endsWith(last)) return `${body}\n\n${last}`;
-  return body;
+  return stripFrontmatter(md);
 }
 
 // ── HTTP helpers ───────────────────────────────────────────────────────────────
