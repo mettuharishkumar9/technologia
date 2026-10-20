@@ -62,6 +62,18 @@ Apply recency cutoff: drop anything older than 24 hours from now.
 
 **Empty fallback:** If fewer than 3 items remain after dedupe + 24h cutoff, expand to 48h. If still <3, expand to 72h. If still <3 after 72h, write `slow-day.md` to the run folder explaining the situation and **stop without drafting**.
 
+### Step 2b — Scope filter (hard rule, applied before scoring)
+
+The column is about **platform engineering, data engineering, solution engineering and infrastructure on Databricks**. Drop any item — regardless of score — that is:
+
+- a **customer case study / customer story** ("How <Company> is building…", "<Company> achieves…", "powered by Databricks", customer spotlights, partner success stories, quotes-from-customers posts);
+- a partner/marketplace announcement, event recap, webinar, awards, hiring, earnings, or leadership thought-piece without a concrete technical change;
+- a pure business-outcome story whose only numbers are a customer's ROI/TCO claims.
+
+Keep items whose substance is **engineering**: compute and serverless, networking and private connectivity, security and compliance, Unity Catalog and governance mechanics, Lakeflow / pipelines / streaming / CDC, Delta / Iceberg / storage and performance, Databricks SQL and warehousing internals, Workflows and Jobs, DevOps (Asset Bundles, Terraform, CI/CD, Git), cost / FinOps / system tables, observability and monitoring, ML/AI *platform* infrastructure (MLflow, Model Serving, AI Gateway, Vector Search), release notes of any of these, and community threads about real engineering problems. When a case study is the only vehicle for a genuinely new technical capability, use the **product docs or release note** for that capability as the source instead — never the case study.
+
+Record dropped items with the reason `out_of_scope` in `ranked.json` so the choice is auditable.
+
 ### Step 3 — Score and rank
 
 For each surviving item, compute three sub-scores in [0, 1]:
@@ -90,6 +102,8 @@ Before drafting, sanity-check the #1 pick with this question (think it through, 
 > Does this item contain a concrete technical claim — a new feature, an API change, a measurable improvement, or a GA/preview milestone? OR — is it a community thread that surfaces a real engineering problem readers are actually hitting?
 
 If the answer is **no** (pure marketing fluff, hiring announcement, generic thought-leadership with no technical substance), demote the item: take the next highest-scoring item that passes the check. If none of the top 3 passes, write `slow-day.md` and stop.
+
+Second question, also mandatory: **Is this an engineering/infra topic (Step 2b), not a customer story?** A case study never passes this gate, even if it mentions a product. Prefer a modest release note about compute, networking, governance, pipelines, storage, SQL, DevOps or cost over a glossy customer post every time.
 
 ### Step 5 — Draft top 1 (two parallel writes)
 
