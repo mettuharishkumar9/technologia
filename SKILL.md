@@ -1,6 +1,6 @@
 ---
 name: databricks-pulse
-description: Scan Databricks-owned content (blog, release notes, community) for what's new in the last 24 hours, rank top 3 by engagement/recency/topic-match, and draft a LinkedIn long-form post + Instagram Reel script for the #1 pick in the user's voice. Use when the user invokes /databricks-pulse, asks "what's new in Databricks today," requests fresh content drafts based on Databricks news, or when a scheduled CronCreate job fires this skill.
+description: Scan Databricks-owned content (blog, release notes, community) for what's new in the last 24 hours, rank top 3 by engagement/recency/topic-match, and turn the #1 pick into the daily Insurance Lens — a real, sourced insurance situation mapped onto the feature — as a LinkedIn caption + 13-slide carousel (multi-image post) plus an Instagram Reel script. Use when the user invokes /databricks-pulse, asks "what's new in Databricks today," requests fresh content drafts based on Databricks news, or when a scheduled cron job fires this skill.
 ---
 
 # Databricks Pulse
@@ -20,12 +20,13 @@ User says any of:
 Always read these in parallel before doing anything else:
 
 1. `~/.claude/skills/databricks-pulse/config/taxonomy.json` — the keyword list for topic matching
-2. `~/.claude/skills/databricks-pulse/config/voice_linkedin.md` — LinkedIn voice template (REQUIRES 10–14 hashtags at end)
-3. `~/.claude/skills/databricks-pulse/config/voice_instagram.md` — Reel voice template
-4. `~/.claude/skills/databricks-pulse/config/author.json` — author byline. NEVER invent a value — always pull it from `lower_name_full` in this file.
-5. `~/.claude/skills/databricks-pulse/config/templates_catalog.json` — visual template guide for Step 6
-6. `~/.claude/skills/databricks-pulse/state/seen.json` — items already processed
-7. `~/.claude/skills/databricks-pulse/state/published.json` — what was last posted (for template variety check)
+2. `~/.claude/skills/databricks-pulse/config/voice_linkedin.md` — LinkedIn voice template: insurance-storytelling format (REQUIRES 10–14 hashtags at end)
+3. `~/.claude/skills/databricks-pulse/config/industry_lens.md` — verified real-situation bank (with links), research rules, feature→workflow mapping, and the `carousel.json` schema. Used for LinkedIn ONLY.
+4. `~/.claude/skills/databricks-pulse/config/voice_instagram.md` — Reel voice template (feature-first, unchanged by the industry lens)
+5. `~/.claude/skills/databricks-pulse/config/author.json` — author byline. NEVER invent a value — always pull it from `lower_name_full` in this file.
+6. `~/.claude/skills/databricks-pulse/config/templates_catalog.json` — visual template guide for Step 6
+7. `~/.claude/skills/databricks-pulse/state/seen.json` — items already processed
+8. `~/.claude/skills/databricks-pulse/state/published.json` — what was last posted (for template variety check)
 
 ## The five steps
 
@@ -94,7 +95,7 @@ If the answer is **no** (pure marketing fluff, hiring announcement, generic thou
 
 Draft LinkedIn and Instagram **independently from the source**, not derived from each other.
 
-**LinkedIn long-form** — follow `voice_linkedin.md`. Audience: data engineers, platform engineers, architects. Length 200–400 words. Casual educator tone, 2–4 emojis max, English (not Hinglish).
+**LinkedIn — Insurance Lens** — follow `voice_linkedin.md` + `industry_lens.md`. The post opens on a **real, documented insurance situation** (a named catastrophe, regulatory deadline, fraud study, market event or public case study — with the regulator's or industry body's numbers, each linked in `sources.md`) and maps the feature onto it in seven beats: situation → what it means for a data team → the catch/before → the feature (facts only from the Databricks source) → after → beyond + caveats → question. Run the per-run procedure in `industry_lens.md` (classify feature → pick a situation type different from yesterday's → pick/research a situation, rotating regions → write the beats). Plain conversational English, short sentences, 0–2 emojis. Caption body 300–450 words, **≤ 2,800 characters total**. Write the same beats into `carousel.json` (13 slides, schema in `industry_lens.md`). Never name the author's employer; never attribute a workflow or constraint to a named company; no number without a link.
 
 **Instagram Reel script** — follow `voice_instagram.md`. Brisk Hinglish, no emojis, hook + 3 beats + comment-trigger CTA. Hook ≤2 lines, speakable in <4 seconds, never starts with "Aaj main" or "Is video mein".
 
@@ -118,7 +119,7 @@ The MSYS/Git Bash on Windows has broken tzdata for `TZ='Asia/Kolkata'` — it re
 
 1. `sources.json` — raw items pulled from all three surfaces (full data, not just top 3)
 2. `ranked.json` — top 3 with full score breakdown
-3. `linkedin.md` — long-form post for #1 (MUST end with 10–14 hashtags per voice_linkedin.md)
+3. `linkedin.md` — Insurance Lens caption for #1 (≤ 2,800 chars; ends with `Slides 👇 Sources on the last one.`, `Source: <url>`, then 10–14 hashtags incl. 2–3 insurance tags) **and** `carousel.json` — the 13-slide Insurance Lens carousel (schema in `industry_lens.md`) **and** `sources.md` — Primary / Supporting / Honesty notes / Re-verify before publishing, with a URL for every number used
 4. `instagram.md` — Reel script for #1 (Hinglish, no emojis)
 5. `instagram_caption.md` — STATIC IG caption for #1 (English+light Hinglish, emojis OK, 25–30 hashtags, this is what the auto-poster publishes — see Social_Media_Project/weeks/week01_may06/day02_lakebase/instagram.md as a reference format)
 6. `alternatives.md` — one-line summary of #2 and #3 with their scores and URLs
@@ -135,6 +136,12 @@ The MSYS/Git Bash on Windows has broken tzdata for `TZ='Asia/Kolkata'` — it re
 **Render videos:**
 
 11. Run `node ~/.claude/skills/databricks-pulse/scripts/render-video.mjs <run-folder>` — produces `square.mp4`, `vertical.mp4`, `linkedin.png` (frame at 3s), `cover.jpg` (frame at 1.5s).
+
+**Build + render the Insurance Lens carousel (LinkedIn multi-image post):**
+
+12. Make sure `carousel.json` (Step 6, item 3) follows the schema in `industry_lens.md`: 13 slides in the fixed type order, `date_label` from `now-ist.mjs` (e.g. `15 OCT 2026`), `topic_tag` = the feature in caps, exact figures with their source labels on slide 2, sources + honesty note on slide 13. No emojis on slides.
+13. Run `node ~/.claude/skills/databricks-pulse/scripts/build-carousel.mjs <run-folder>` — fills the Style 25 "Front Page" template (`templates/carousel/front-page.html`) → `<run>/carousel.html`. It fails loudly if a slide's text is too long for its slot; shorten the text in `carousel.json` and re-run rather than accepting overflow.
+14. Run `node ~/.claude/skills/databricks-pulse/scripts/render-carousel.mjs <run-folder>` — Playwright renders `carousel.html?slide=N` at 1080×1350 → `<run>/carousel/slide-01.png … slide-13.png` + `carousel/manifest.json`. `pulse-post.mjs` publishes these as the multi-image post (it falls back to `linkedin.png` only if the manifest is missing).
 
 ### Step 7 — Update state
 
@@ -160,7 +167,8 @@ Schema:
 Output a concise summary:
 - How many items pulled per source
 - Top 3 with scores and URLs (markdown links)
-- Path to the run folder so the user can review drafts
+- The real situation used (event, date, place, source body) and the situation type, so rotation can be checked at a glance
+- Path to the run folder so the user can review drafts, and how many carousel slides rendered (expect 13)
 - If `slow-day.md` was written, say so and stop
 
 ## Critical rules
@@ -169,4 +177,5 @@ Output a concise summary:
 - **Independent dual-format gen.** Don't write LinkedIn first then condense to Reel. Write each fresh from the source.
 - **Empty days are fine.** If 72h yields nothing of substance, say so. Don't manufacture content.
 - **State is authoritative.** Always update `seen.json` after a run. An item drafted once never gets drafted again.
-- **Voice consistency.** LinkedIn = casual educator + emojis + English. Reel = brisk Hinglish + zero emojis. Never blend.
+- **Voice consistency.** LinkedIn = Insurance Lens (real situation → workload → catch → feature → after → caveats → question), plain conversational English, 0–2 emojis, ≤ 2,800 chars. Reel = feature-first brisk Hinglish, zero emojis — the Reel does NOT get the insurance situation. Never blend.
+- **Real, not fictional.** The situation is a documented event with linked figures from a regulator or industry body; no invented scenes, no number without a link, estimates labelled as estimates. Feature facts come only from the Databricks source. Never name the author's employer; never attribute a workflow or constraint to a named company.

@@ -1,101 +1,80 @@
-# LinkedIn Long-form Voice
+# LinkedIn Voice — Insurance Lens (real situation → feature)
 
-**Audience:** Data engineers, platform engineers, ML engineers, data architects. Senior practitioners — not C-suite, not beginners.
+**What a post is:** a real, documented situation from the insurance world, the data problem it created, and exactly where today's Databricks feature would slot in. Not a fictional scene. Not a feature announcement. A true story with the feature mapped onto it.
 
-**Tone:** Casual educator. Like a senior engineer breaking down a new release for their team over coffee. Confident but never preachy. Curious, not defensive.
+**Audience:** Data engineers, platform engineers, ML engineers, architects — especially in or around insurance. Senior practitioners, but assume they don't know insurance jargon. Define terms inline the first time.
 
-**Length:** 200–400 words. If you're past 400, you're explaining too much.
+**Tone:** Plain conversational English. Short sentences. Like explaining to a colleague over coffee. No metaphors, no scene-setting adjectives, no drama. The real numbers carry the weight.
 
-**Language:** English. No Hinglish. No corporate-speak ("synergy", "unlock value", "best-in-class", "industry-leading"). No LinkedIn-influencer fluff ("Here's what most engineers miss…", "Game-changer", "Let me explain…").
+**Lens:** Insurance, always. Read `config/industry_lens.md` first — it has the verified situation bank, the feature→workflow mapping, the research rules, and the output format for the carousel.
 
-## Structure
+**Two outputs share one story:** `linkedin.md` (the caption) and `carousel.json` (13 slides). Same beats, same numbers, same sources. Write the beats once, then render them into both.
 
-```
-[Hook — 1 line]
+## The beats (caption paragraphs = carousel slides)
 
-[Beat 1 — what changed, in plain terms]
+| # | Beat | Caption | Slide |
+|---|---|---|---|
+| 1 | **Situation** — date, place, event, the regulator's or industry body's numbers | para 1 | 1 cover (giant number) + 2 what happened |
+| 2 | **What it means for a data team** — the workload the situation creates | para 2 | 3 |
+| 3 | **The catch** — where the data lives / what blocks the obvious fix | para 3 | 4 the catch + 5 before |
+| 4 | **The feature** — what shipped, status, how it works, the key options. Facts ONLY from the Databricks source | para 4 | 6 feature + 7 how it works + 8 options |
+| 5 | **After** — the situation replayed with the feature in place | para 5 | 9 after + 10 before-vs-after |
+| 6 | **Beyond + caveats** — one or two other uses; what's still preview/missing | para 6 | 11 |
+| 7 | **Question** — aimed at people who run insurance data platforms | last line | 12 takeaway + CTA |
+| — | Sources + honesty note | one `Source:` line | 13 |
 
-[Beat 2 — why it matters / what it replaces / what problem it solves]
+## Caption rules (`linkedin.md`)
 
-[Beat 3 — practical implication for a data engineer or architect]
+- **Length:** 300–450 words in the body. **Hard cap 2,800 characters total** including the Source line and hashtags (LinkedIn truncates at 3,000).
+- **Line 1** is the situation: a date, a place, an event — or the number. Never the feature, never "Databricks".
+  - ✅ "On 28 September 2022, Hurricane Ian hit Florida. Within two weeks, insurers had logged about 449,000 claims."
+  - ❌ "Databricks just launched…" · ❌ "Picture a claims team…" · ❌ "Big news!"
+- **Numbers in prose are rounded** ("about 449,000", "$10.3 billion"); **exact figures go on the slides** and in `sources.md`.
+- **Attribute every number inline** ("according to the Florida Office of Insurance Regulation") and add "as of <month year>" when it's a running total.
+- **Explain, don't narrate.** "Here's the catch." "Think about what that means for a claims data team." Short connective sentences are fine; adjectives and metaphors are not.
+- **Define jargon in one clause** on first use: "FNOL — the first notice of loss, the moment a claim is reported".
+- **Emojis:** 0–2 in the whole caption, only 🔒 ⚡ 📊 🧠 🔧 🚀 where they aid scanning. Never 🎉 🔥 💯 ❤️ 👏 🙌.
+- **End with:** the question → `Slides 👇 Sources on the last one.` → `Source: <Databricks URL>` → hashtag line.
+- **Hashtags:** 10–14, single line, `#Databricks` first. Buckets: brand/product (3–4) · category (3–4: `#DataEngineering #DataPlatform #PlatformEngineering #DataGovernance`) · insurance (2–3: `#Insurtech #InsuranceData #ClaimsAnalytics #Underwriting #Actuarial #Reinsurance #CatastropheClaims`) · audience (1–2: `#DataEngineers #SolutionArchitect`). CamelCase, no spaces.
 
-[Optional Beat 4 — caveats, trade-offs, or what's still missing]
+## Truth rules (non-negotiable)
 
-[CTA — one question that invites a real reply]
-
-Source: <url>
-```
-
-## Hook patterns
-
-Pick one fresh angle per post. Rotate so output doesn't get formulaic:
-
-- **Surprising fact**: "Databricks just shipped X. The interesting part isn't X — it's Y."
-- **Contrast with status quo**: "For years we've done X with Y. The new approach drops Y entirely."
-- **Direct callout**: "If you're running [specific stack], this changes how you'd architect [specific thing]."
-- **Question hook**: "What does it look like when [vendor] decides [specific problem] is a first-class concern?"
-
-Never start with: "Big news!", "Excited to share", "Just dropped 🔥", "Mind = blown".
-
-## Emoji rules
-
-2–4 max. Only where they aid scannability, not as decoration:
-- 🚀 launch / GA milestone
-- ⚡ performance / speed
-- 🔒 governance / security
-- 📊 analytics / BI
-- 🧠 AI / ML
-- 🔧 tooling / infra
-
-Never use: 🎉 🔥 💯 ❤️ 👏 🙌 — these read as influencer-pandering.
-
-## CTA patterns
-
-The CTA is a **question**, not a call to follow / like / share. Pick one:
-
-- "Has anyone tried this in prod yet? What's your migration path looking like?"
-- "Where does this leave [competing tool / approach]?"
-- "Anyone testing this on [specific scale or workload]? Curious what the latency profile looks like."
-- "What's the first workload you'd move to this?"
+1. **The situation is real.** Pick it from the verified bank in `industry_lens.md`, or research a new one with WebSearch during the run. A situation = a named event, deadline, case or public case study, with a date and a place.
+2. **No number without a link.** Every figure must have a URL in `sources.md`, and the carousel's slide 13 lists the sources. Prefer regulators and industry bodies (state insurance regulators, IRDAI, GDV, ICA, TCIP, FLOIR, TDI) over news estimates; name the body in the text.
+3. **Feature facts come only from the Databricks source** — status, clouds, modes, limits. Add nothing. If the source doesn't say it, the post doesn't say it.
+4. **Never attribute a workflow or a constraint to a named company.** "The claims system (Guidewire, Duck Creek, or an in-house database) sits on the company's private network" describes how insurers generally work — it does not claim any Florida carrier had that problem. Say so in the honesty note.
+5. **Named organisations only if** they are public institutions (regulators, catastrophe pools, industry associations) or the source names them (e.g., a Databricks customer story). **Never the author's employer.**
+6. **Rotate.** Not the same situation type (catastrophe / regulatory deadline / fraud / market event / public case study) two days in a row; not the same event within 30 days; vary regions (US, India, Europe, UK, APAC, Middle East). Check the last five runs' `sources.md`.
+7. **Honest fit.** If the feature has no truthful insurance mapping, choose a smaller true one (a chargeback report, a CI/CD step for a pricing model) rather than stretching a story.
 
 ## What to avoid
 
-- Don't restate the source verbatim. Add interpretation.
-- Don't list features bullet-by-bullet (that's what release notes are for).
-- Don't compare to vendors you don't deeply know — only Snowflake, BigQuery, Synapse, dbt, Airflow are fair game.
-- Don't predict outcomes ("This will revolutionize…"). Stay grounded in what's shipping today.
+- Restating the Databricks blog. The post interprets the feature through the situation.
+- Feature bullet lists in the caption. The comparison and the "after" carry the detail.
+- Comparing to vendors you don't deeply know — only Snowflake, BigQuery, Synapse, dbt, Airflow are fair game.
+- Predictions ("this will transform insurance"). Stay with what shipped and what happened.
+- Disaster language. The numbers are serious enough on their own.
 
-## Hashtags (REQUIRED — match the reference project format)
-
-Every LinkedIn post must end with a single line of 10–14 hashtags after the source URL. Format and conventions:
-- Single line, space-separated
-- Mix three buckets:
-  - **Brand / product** (3–5): `#Databricks #UnityCatalog #Lakehouse #MLflow` — specific to whatever the post is about
-  - **Category** (4–6): `#DataEngineering #DataPlatform #DataArchitecture #ModernDataStack #PlatformEngineering #DataGovernance`
-  - **Audience** (2–3): `#DataEngineers #SolutionArchitect #MLOps`
-- CamelCase compounds (e.g. `#UnityCatalog`, not `#unitycatalog`)
-- No spaces inside a tag
-- Maximum 14 — beyond that LinkedIn deprioritizes
-
-Always include `#Databricks` as the first tag.
-
-## Source attribution
-
-End the body with `Source: <url>` BEFORE the hashtag line. Hallucinations die when there's a link to check.
-
-## Final structure
+## Final caption shape
 
 ```
-[Hook]
+[Situation — dated, placed, numbered, attributed]
 
-[Beat 1]
-[Beat 2]
-[Beat 3]
-[Optional Beat 4]
+[What it means for a data team]
 
-[CTA question]
+[The catch / before]
 
-Source: <url>
+[The feature — status, how it works, key options] 🔒
 
-#Databricks #Tag2 #Tag3 ... (10–14 total)
+[After — the situation replayed]
+
+[Beyond + caveat]
+
+[Question]
+
+Slides 👇 Sources on the last one.
+
+Source: <Databricks URL>
+
+#Databricks #Tag2 … (10–14)
 ```

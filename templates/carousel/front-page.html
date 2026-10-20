@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<!-- Style 25 "Front Page" - Insurance Lens carousel template.
+     Filled by scripts/build-carousel.mjs from carousel.json; the slot tokens are TITLE, TOTAL, DOWNLOAD_PREFIX and SLIDES in double curly braces.
+     Reference issue: databricks-linkedin-series/carousels/lens-01-private-network-gateway -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --cream: #F7F3EA;
+  --cream-2: #FBF8F1;
+  --ink: #111111;
+  --navy: #1F2A44;
+  --red: #FF3621;
+  --grey: #8A8378;
+  --hair: rgba(17, 17, 17, 0.25);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #0f1014; font-family: 'Inter', sans-serif; color: #fff; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+.topbar { position: sticky; top: 0; z-index: 100; background: rgba(15,16,20,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #1f2128; padding: 14px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.topbar h1 { font-size: 16px; font-weight: 700; margin-right: auto; letter-spacing: -0.2px; }
+.topbar h1 .accent { color: var(--red); }
+.topbar .nav-group { display: flex; align-items: center; gap: 8px; background: #1a1c22; border-radius: 10px; padding: 4px; }
+.topbar button { font-family: inherit; font-size: 14px; font-weight: 600; border: none; cursor: pointer; border-radius: 8px; padding: 9px 14px; transition: all .15s; color: #fff; }
+.topbar button.nav-btn { background: transparent; color: #c8d0db; width: 36px; height: 36px; padding: 0; font-size: 16px; }
+.topbar button.nav-btn:hover { background: #2a2d35; color: #fff; }
+.topbar .counter { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; color: #c8d0db; min-width: 50px; text-align: center; }
+.topbar .download-btn { background: var(--red); padding: 10px 18px; font-weight: 700; box-shadow: 0 4px 14px rgba(255, 54, 33, 0.4); }
+.topbar .download-btn:hover { transform: translateY(-1px); }
+.topbar .download-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.viewer-wrap { display: flex; justify-content: center; padding: 32px 16px 16px; }
+.viewer { position: relative; width: min(1080px, calc(100vw - 32px)); aspect-ratio: 1080 / 1350; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6); }
+.stage { position: absolute; top: 0; left: 0; width: 1080px; height: 1350px; transform-origin: top left; }
+.slide { position: absolute; inset: 0; width: 1080px; height: 1350px; overflow: hidden; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* === Style 25 — Front Page === */
+/* Newsprint cream sheet, ink black type, one red accent. Typography and rules carry the design:
+   no shadows, no gradients, no icons. */
+.sheet {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 64px 72px 176px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* masthead + rule (every slide) */
+.masthead { display: flex; justify-content: space-between; align-items: center; }
+.masthead .brand { display: flex; align-items: center; gap: 14px; font-size: 22px; color: var(--ink); }
+.masthead .brand .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.masthead .dateline { font-size: 22px; color: var(--grey); }
+.rule { height: 4px; background: var(--ink); margin-top: 18px; }
+
+/* kicker + headline */
+.kicker { margin-top: 30px; font-size: 24px; color: var(--red); }
+.headline {
+  margin-top: 22px;
+  font-family: 'Anton', 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 84px;
+  line-height: 1.0;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+.headline.sz-76 { font-size: 76px; }
+.headline.sz-80 { font-size: 80px; }
+.headline.sz-88 { font-size: 88px; }
+
+/* body region: fills the space between headline and footer */
+.body { margin-top: 40px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.body.center { justify-content: center; }
+
+/* arrow bullets */
+.bullets { list-style: none; }
+.bullets li { display: flex; align-items: flex-start; gap: 22px; padding: 30px 0; font-size: 38px; font-weight: 500; line-height: 1.3; color: var(--ink); }
+.bullets li + li { border-top: 1px solid var(--hair); }
+.bullets li:first-child { padding-top: 0; }
+.bullets li:last-child { padding-bottom: 0; }
+.bullets .arrow { color: var(--red); font-weight: 600; flex-shrink: 0; width: 46px; }
+.bullets .txt { flex: 1; }
+.bullets .src { display: block; margin-top: 10px; font-size: 20px; color: var(--grey); letter-spacing: 0.1em; }
+
+/* note: hairline above, navy */
+.note { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--hair); font-size: 34px; font-weight: 500; line-height: 1.35; color: var(--navy); }
+.note.src-note { margin-top: 28px; padding-top: 0; border-top: none; font-size: 22px; color: var(--grey); }
+
+/* cards: 2px ink border, cream fill, 6px radius, no shadow */
+.card { border: 2px solid var(--ink); border-radius: 6px; background: var(--cream-2); padding: 28px 32px; }
+
+/* slide 4: vertical flow */
+.flow .card { font-size: 38px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+.flow .card .sub { color: var(--navy); font-weight: 500; }
+.flow .down { text-align: center; color: var(--red); font-weight: 600; font-size: 56px; line-height: 1; padding: 14px 0; }
+
+/* slide 6: feature */
+.status { margin-top: 24px; font-size: 26px; color: var(--red); letter-spacing: 0.08em; }
+.feature-card { padding: 52px 56px; font-size: 38px; font-weight: 500; line-height: 1.45; color: var(--ink); }
+
+/* slide 7: numbered steps */
+.steps { display: flex; flex-direction: column; }
+.step { display: flex; align-items: center; gap: 28px; padding: 30px 0; }
+.step + .step { border-top: 1px solid var(--hair); }
+.step:first-child { padding-top: 0; }
+.step .n { font-family: 'Anton', sans-serif; font-weight: 400; font-size: 96px; line-height: 1; color: var(--red); width: 96px; flex-shrink: 0; }
+.step .t { font-size: 38px; font-weight: 500; line-height: 1.3; color: var(--ink); }
+
+/* slide 8: two cards */
+.two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.two-up .card h3 { font-family: 'Anton', sans-serif; font-weight: 400; font-size: 40px; line-height: 1.05; letter-spacing: -0.005em; color: var(--ink); margin-bottom: 18px; }
+.two-up .card p { font-size: 36px; font-weight: 500; line-height: 1.35; color: var(--navy); }
+
+/* slide 10: before / after columns */
+.cmp { display: grid; grid-template-columns: 1fr 1fr; }
+.cmp .cell { padding: 34px 28px 34px 0; font-size: 36px; font-weight: 500; line-height: 1.3; color: var(--navy); border-bottom: 1px solid var(--hair); }
+.cmp .cell.r { padding: 32px 0 32px 28px; }
+.cmp .cell.l { border-right: 1px solid var(--hair); }
+.cmp .cell.head { padding-top: 0; padding-bottom: 20px; font-size: 26px; }
+.cmp .cell.head.l { color: var(--grey); }
+.cmp .cell.head.r { color: var(--red); }
+.cmp .cell.last { border-bottom: none; }
+
+/* labelled boxes (caveat, honesty note) */
+.box { margin-top: 36px; border: 2px solid var(--ink); border-radius: 6px; background: var(--cream-2); padding: 26px 32px; }
+.box .label { font-size: 22px; color: var(--red); margin-bottom: 12px; }
+.box p { font-size: 34px; font-weight: 500; line-height: 1.35; color: var(--ink); }
+.box.honesty { margin-top: 28px; }
+.box.honesty p { font-size: 30px; color: var(--navy); }
+
+/* slide 12: takeaway */
+.lead { font-size: 38px; font-weight: 500; line-height: 1.35; color: var(--navy); }
+.cta { margin-top: auto; padding-top: 48px; display: flex; flex-wrap: wrap; gap: 14px; }
+.pill { border: 2px solid var(--ink); border-radius: 999px; padding: 14px 26px; font-size: 24px; color: var(--ink); letter-spacing: 0.08em; }
+
+/* slide 13: sources */
+.sources { display: flex; flex-direction: column; }
+.src-row { display: flex; align-items: flex-start; gap: 24px; padding: 18px 0; }
+.src-row + .src-row { border-top: 1px solid var(--hair); }
+.src-row:first-child { padding-top: 0; }
+.src-row .n { font-size: 26px; color: var(--red); width: 62px; flex-shrink: 0; padding-top: 6px; }
+.src-row .t { font-size: 32px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+.src-row .s { margin-top: 8px; font-size: 22px; color: var(--grey); letter-spacing: 0.08em; }
+
+/* slide 1: cover */
+.cover-pill { margin-top: 30px; align-self: flex-start; display: inline-flex; border: 2px solid var(--red); border-radius: 999px; color: var(--red); font-size: 24px; padding: 12px 26px; }
+.cover-stat { font-family: 'Anton', sans-serif; font-weight: 400; font-size: 250px; line-height: 0.95; letter-spacing: -0.01em; color: var(--red); }
+.cover-headline { margin-top: 14px; font-family: 'Anton', 'Inter', sans-serif; font-weight: 400; font-size: 96px; line-height: 1.0; letter-spacing: -0.005em; color: var(--ink); }
+.cover-deck { margin-top: 32px; font-size: 36px; font-weight: 500; line-height: 1.3; color: var(--navy); }
+
+/* footer (every slide) */
+.footer { position: absolute; left: 72px; right: 72px; bottom: 56px; padding-top: 22px; border-top: 1px solid var(--hair); display: flex; justify-content: space-between; align-items: center; }
+.footer .byline { font-size: 26px; font-weight: 600; color: var(--ink); }
+.footer .page { font-size: 26px; color: var(--grey); font-variant-numeric: tabular-nums; }
+
+/* dots etc */
+.dots-bar { display: flex; justify-content: center; gap: 8px; padding: 8px 16px 32px; flex-wrap: wrap; }
+.dot-pip { width: 28px; height: 6px; background: #2a2d35; border-radius: 3px; cursor: pointer; transition: all 0.2s; border: none; padding: 0; }
+.dot-pip:hover { background: #3a4654; }
+.dot-pip.active { background: var(--red); width: 44px; }
+.hint { text-align: center; font-size: 12px; color: #6b7785; padding: 0 16px 32px; letter-spacing: 0.3px; }
+.hint kbd { background: #2a2d35; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: #c8d0db; font-size: 11px; margin: 0 2px; }
+.export-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 200; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: white; font-weight: 600; }
+.export-overlay.show { display: flex; }
+.export-overlay .progress { width: 320px; height: 8px; background: #2a2d35; border-radius: 4px; overflow: hidden; }
+.export-overlay .progress-fill { height: 100%; background: var(--red); width: 0; transition: width 0.2s; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>{{TITLE}}</h1>
+  <div class="nav-group">
+    <button class="nav-btn" id="prev">‹</button>
+    <span class="counter" id="counter">1 / {{TOTAL}}</span>
+    <button class="nav-btn" id="next">›</button>
+  </div>
+  <button class="download-btn" id="download-all">⬇  Download all {{TOTAL}} PNGs</button>
+</header>
+
+<div class="viewer-wrap"><div class="viewer"><div class="stage" id="stage">
+
+{{SLIDES}}
+
+</div></div></div>
+
+<div class="dots-bar" id="dots-bar"></div>
+<div class="hint">Use <kbd>←</kbd> / <kbd>→</kbd> to navigate · <kbd>Download all</kbd> to export {{TOTAL}} PNGs at 1080×1350</div>
+<div class="export-overlay" id="export-overlay">
+  <div id="export-status">Preparing export…</div>
+  <div class="progress"><div class="progress-fill" id="export-progress"></div></div>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let idx = 0;
+const counter = document.getElementById('counter');
+const dotsBar = document.getElementById('dots-bar');
+const stage = document.getElementById('stage');
+const viewer = document.querySelector('.viewer');
+slides.forEach((_, i) => { const b = document.createElement('button'); b.className = 'dot-pip' + (i === 0 ? ' active' : ''); b.onclick = () => show(i); dotsBar.appendChild(b); });
+const dots = Array.from(dotsBar.children);
+function show(i) { slides[idx].classList.remove('active'); dots[idx].classList.remove('active'); idx = (i + total) % total; slides[idx].classList.add('active'); dots[idx].classList.add('active'); counter.textContent = `${idx + 1} / ${total}`; }
+document.getElementById('prev').onclick = () => show(idx - 1);
+document.getElementById('next').onclick = () => show(idx + 1);
+document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') show(idx - 1); else if (e.key === 'ArrowRight') show(idx + 1); });
+function fit() { stage.style.transform = `scale(${viewer.clientWidth / 1080})`; }
+fit(); window.addEventListener('resize', fit);
+const overlay = document.getElementById('export-overlay');
+const status = document.getElementById('export-status');
+const progress = document.getElementById('export-progress');
+const downloadBtn = document.getElementById('download-all');
+async function downloadAll() {
+  downloadBtn.disabled = true; overlay.classList.add('show'); status.textContent = 'Loading fonts…'; progress.style.width = '0%';
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
+  const originalActive = idx; const originalTransform = stage.style.transform; stage.style.transform = '';
+  for (let i = 0; i < slides.length; i++) {
+    const slide = slides[i];
+    status.textContent = `Rendering slide ${i + 1} of ${slides.length}…`;
+    progress.style.width = `${(i / slides.length) * 100}%`;
+    slides.forEach((s, j) => { s.classList.remove('active'); s.style.opacity = j === i ? '1' : '0'; s.style.zIndex = j === i ? '10' : '1'; });
+    slide.classList.add('active');
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const canvas = await html2canvas(slide, { width: 1080, height: 1350, scale: 2, backgroundColor: null, useCORS: true, logging: false, windowWidth: 1080, windowHeight: 1350 });
+    const a = document.createElement('a');
+    a.download = `{{DOWNLOAD_PREFIX}}-slide-${String(i + 1).padStart(2, '0')}.png`;
+    a.href = canvas.toDataURL('image/png');
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    await new Promise(r => setTimeout(r, 250));
+  }
+  progress.style.width = '100%'; status.textContent = 'Done — check your Downloads folder.';
+  stage.style.transform = originalTransform;
+  slides.forEach((s, j) => { s.style.opacity = ''; s.style.zIndex = ''; s.classList.toggle('active', j === originalActive); });
+  idx = originalActive; fit();
+  setTimeout(() => { overlay.classList.remove('show'); downloadBtn.disabled = false; }, 1200);
+}
+downloadBtn.addEventListener('click', downloadAll);
+
+/* EXPORT-MODE-INJECTION-V1 */
+// Hidden export mode: ?slide=N renders slide N at clean 1080x1350 (no chrome) for headless capture.
+(function(){
+  var params = new URLSearchParams(location.search);
+  var sn = params.get('slide');
+  if (!sn) return;
+  ['.topbar', '.dots-bar', '.hint', '.export-overlay'].forEach(function(s){
+    var el = document.querySelector(s); if (el) el.remove();
+  });
+  var wrap = document.querySelector('.viewer-wrap');
+  if (wrap) wrap.setAttribute('style', 'padding:0;margin:0;display:block;');
+  var viewer = document.querySelector('.viewer');
+  if (viewer) viewer.setAttribute('style', 'width:1080px;height:1350px;border-radius:0;box-shadow:none;');
+  document.documentElement.style.cssText = 'margin:0;padding:0;background:#000;';
+  document.body.style.cssText = 'margin:0;padding:0;background:#000;';
+  var idx = parseInt(sn) - 1;
+  if (typeof show === 'function') {
+    show(idx);
+  } else {
+    document.querySelectorAll('.slide').forEach(function(s, i){ s.classList.toggle('active', i === idx); });
+  }
+  setTimeout(function(){ if (typeof fit === 'function') fit(); }, 100);
+})();
+</script>
+</body>
+</html>

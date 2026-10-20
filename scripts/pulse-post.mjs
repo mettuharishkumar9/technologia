@@ -1,17 +1,25 @@
 #!/usr/bin/env node
-// Post a databricks-pulse run to LinkedIn via Composio MCP.
+// Post a databricks-pulse run to LinkedIn via the Composio CLI.
 // LinkedIn-only — Instagram posting removed.
 //
+// Media: if the run has an Insurance Lens carousel (carousel/manifest.json written by
+// render-carousel.mjs, 2–20 PNGs) it is published as a LinkedIn multi-image post;
+// otherwise the single linkedin.png / whiteboard.png is used.
+//
 // Usage:
-//   node pulse-post.mjs [<run-folder>] [--auto-pick] [--dry-run]
-//     <run-folder>   explicit run to publish
-//     --auto-pick    find latest unposted run automatically (uses state/published.json)
-//     --dry-run      everything except the actual publish
+//   node pulse-post.mjs [<run-folder>] [--auto-pick] [--dry-run] [--max-age-hours 36]
+//     <run-folder>       explicit run to publish
+//     --auto-pick        publish the newest unposted run that is younger than --max-age-hours;
+//                        older unposted runs are recorded as skipped in state/published.json
+//                        so a backlog is never drained one post at a time
+//     --dry-run          everything except the actual publish (and no state writes)
+//     --max-age-hours N  freshness window for --auto-pick (default 36)
 
-import https from "node:https";
 import { readFileSync, statSync, existsSync, readdirSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
+import os from "node:os";
 import { fileURLToPath } from "node:url";
 
 // ── Config (read from .env at the skill root) ─────────────────────────────────
@@ -22,25 +30,37 @@ import { fileURLToPath } from "node:url";
     process.loadEnvFile(envPath);
   }
 }
-const COMPOSIO_KEY = process.env.COMPOSIO_API_KEY;
-const MCP_HOST = process.env.COMPOSIO_MCP_HOST || "connect.composio.dev";
-const MCP_PATH = process.env.COMPOSIO_MCP_PATH || "/mcp";
 const LINKEDIN_URN = process.env.LINKEDIN_URN;
-for (const [k, v] of Object.entries({ COMPOSIO_API_KEY: COMPOSIO_KEY, LINKEDIN_URN })) {
-  if (!v) {
-    console.error(`Missing required env var: ${k}. Set it in ~/.claude/skills/databricks-pulse/.env`);
-    process.exit(2);
-  }
+const COMPOSIO_BIN = process.env.COMPOSIO_BIN || path.join(os.homedir(), ".composio", "composio");
+if (!LINKEDIN_URN) {
+  console.error("Missing required env var: LINKEDIN_URN. Set it in ~/.claude/skills/databricks-pulse/.env");
+  process.exit(2);
+}
+if (!existsSync(COMPOSIO_BIN)) {
+  console.error(`Composio CLI not found at ${COMPOSIO_BIN}. Install via: curl -fsSL https://composio.dev/install | bash`);
+  process.exit(2);
 }
 
 // ── CLI ────────────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
 if (args.includes("--help")) {
-  console.error("Usage: node pulse-post.mjs [<run-folder>] [--auto-pick] [--dry-run]");
+  console.error("Usage: node pulse-post.mjs [<run-folder>] [--auto-pick] [--dry-run] [--max-age-hours 36]");
   process.exit(2);
 }
 const DRY_RUN = args.includes("--dry-run");
 const AUTO_PICK = args.includes("--auto-pick");
+let MAX_AGE_HOURS = 36;
+{
+  const i = args.indexOf("--max-age-hours");
+  if (i >= 0) {
+    MAX_AGE_HOURS = parseFloat(args[i + 1]);
+    if (!(MAX_AGE_HOURS > 0)) {
+      console.error("Error: --max-age-hours needs a positive number.");
+      process.exit(2);
+    }
+    args.splice(i, 2); // remove flag + value so it is not mistaken for the run folder
+  }
+}
 
 const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RUNS_DIR = path.join(SKILL_ROOT, "runs");
@@ -56,23 +76,55 @@ function writePublishedState(state) {
   writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
 }
 
+// Run folders are named YYYY-MM-DD-HHMM in IST (see now-ist.mjs).
+function runFolderTime(name) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})$/.exec(name);
+  if (!m) return null;
+  const [y, mo, d, hh, mm] = m.slice(1).map(Number);
+  return new Date(Date.UTC(y, mo - 1, d, hh - 5, mm - 30)); // IST → UTC
+}
+
+function hasPostableMedia(folder) {
+  return (
+    existsSync(path.join(folder, "carousel", "manifest.json")) ||
+    existsSync(path.join(folder, "linkedin.png")) ||
+    existsSync(path.join(folder, "whiteboard.png"))
+  );
+}
+
+// Newest unposted run within the freshness window. Older unposted runs are recorded as
+// skipped (unless --dry-run) so they are never considered again.
 function findLatestUnpostedRun() {
   if (!existsSync(RUNS_DIR)) throw new Error(`No runs directory: ${RUNS_DIR}`);
   const state = readPublishedState();
-  const postedSet = new Set(state.history.map((h) => h.run).filter(Boolean));
+  const seen = new Set(state.history.map((h) => h.run).filter(Boolean));
   const candidates = readdirSync(RUNS_DIR)
     .filter((n) => /^\d{4}-\d{2}-\d{2}-\d{4}$/.test(n))
-    .filter((n) => !postedSet.has(n))
+    .filter((n) => !seen.has(n))
     .sort()
     .reverse();
+  const now = Date.now();
+  const maxAgeMs = MAX_AGE_HOURS * 3600 * 1000;
+  let pick = null;
+  const stale = [];
   for (const name of candidates) {
+    const t = runFolderTime(name);
+    const ageMs = t ? now - t.getTime() : Infinity;
+    if (ageMs > maxAgeMs) {
+      stale.push(name);
+      continue;
+    }
     const folder = path.join(RUNS_DIR, name);
-    const hasText = existsSync(path.join(folder, "linkedin.md"));
-    const hasImage =
-      existsSync(path.join(folder, "linkedin.png")) || existsSync(path.join(folder, "whiteboard.png"));
-    if (hasText && hasImage) return folder;
+    if (!pick && existsSync(path.join(folder, "linkedin.md")) && hasPostableMedia(folder)) pick = folder;
   }
-  return null;
+  if (stale.length && !DRY_RUN) {
+    const ts = new Date().toISOString();
+    for (const name of stale) {
+      state.history.push({ run: name, skipped_at: ts, reason: `older than ${MAX_AGE_HOURS}h at auto-pick` });
+    }
+    writePublishedState(state);
+  }
+  return { pick, staleCount: stale.length };
 }
 
 let runFolder;
@@ -82,7 +134,10 @@ if (AUTO_PICK) {
     console.error("Error: --auto-pick and explicit run folder are mutually exclusive.");
     process.exit(2);
   }
-  const found = findLatestUnpostedRun();
+  const { pick: found, staleCount } = findLatestUnpostedRun();
+  if (staleCount) {
+    console.log(`auto-pick: ${staleCount} unposted run(s) older than ${MAX_AGE_HOURS}h ${DRY_RUN ? "would be" : "were"} marked skipped in published.json`);
+  }
   if (!found) {
     const ts = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
     const line = `[${ts}] auto-pick: no unposted runs found in ${RUNS_DIR}. Exiting cleanly.`;
@@ -141,95 +196,55 @@ function stripFrontmatter(md) {
   return lines.slice(i).join("\n").trim();
 }
 
-// ── HTTP + Composio MCP ───────────────────────────────────────────────────────
-function httpsPost(host, urlPath, headers, body) {
-  return new Promise((resolve, reject) => {
-    const buf = typeof body === "string" ? Buffer.from(body) : body;
-    const opts = { hostname: host, path: urlPath, method: "POST", headers: { ...headers, "Content-Length": buf.length } };
-    const req = https.request(opts, (res) => {
-      const chunks = [];
-      res.on("data", (c) => chunks.push(c));
-      res.on("end", () => resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString() }));
-    });
-    req.on("error", reject);
-    req.write(buf);
-    req.end();
+// ── Composio CLI shell-out ────────────────────────────────────────────────────
+function composioExecute(slug, data) {
+  const proc = spawnSync(COMPOSIO_BIN, ["execute", slug, "-d", JSON.stringify(data)], {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
   });
-}
-
-async function mcpCall(toolName, mcpArgs) {
-  const body = JSON.stringify({ jsonrpc: "2.0", id: Date.now(), method: "tools/call", params: { name: toolName, arguments: mcpArgs } });
-  const res = await httpsPost(MCP_HOST, MCP_PATH, {
-    "x-consumer-api-key": COMPOSIO_KEY,
-    "Content-Type": "application/json",
-    Accept: "application/json, text/event-stream",
-  }, body);
-  const lines = res.body.trim().split("\n");
-  for (const line of lines) {
-    if (line.startsWith("data:")) {
-      const json = JSON.parse(line.slice(6));
-      const text = json?.result?.content?.[0]?.text;
-      if (text) return JSON.parse(text);
-    }
+  if (proc.status !== 0) {
+    throw new Error(`composio execute ${slug} failed (exit ${proc.status}): ${proc.stderr || proc.stdout}`);
   }
-  throw new Error(`MCP call ${toolName} returned no data. Body: ${res.body.slice(0, 500)}`);
+  const jsonStart = proc.stdout.indexOf("{");
+  if (jsonStart < 0) throw new Error(`composio execute ${slug}: no JSON in stdout: ${proc.stdout.slice(0, 400)}`);
+  return JSON.parse(proc.stdout.slice(jsonStart));
 }
 
-// ── Upload + Post ──────────────────────────────────────────────────────────────
-async function uploadToComposioS3(filePath) {
-  log(`Uploading ${path.basename(filePath)} to Composio S3...`);
-  const b64 = readFileSync(filePath).toString("base64");
-  const remoteName = `/home/user/${path.basename(filePath)}`;
-  const code = `
-import base64
-img = base64.b64decode("""${b64}""")
-with open('${remoteName}', 'wb') as f:
-    f.write(img)
-result, error = upload_local_file('${remoteName}')
-if error:
-    print('ERROR:', error)
-else:
-    print('S3KEY:', result.get('s3key',''))
-`;
-  const res = await mcpCall("COMPOSIO_REMOTE_WORKBENCH", {
-    code_to_execute: code,
-    thought: "Upload image to S3 for LinkedIn post",
-    current_step: "UPLOADING_IMAGE",
-  });
-  const stdout = res?.data?.results?.stdout || res?.data?.stdout || "";
-  const match = stdout.match(/S3KEY:\s*(.+)/);
-  if (!match) throw new Error(`S3 upload failed. stdout: ${stdout}`);
-  log(`  → s3key: ${match[1].trim()}`);
-  return match[1].trim();
+// ── Image selection ───────────────────────────────────────────────────────────
+// Prefer the Insurance Lens carousel (carousel/manifest.json from render-carousel.mjs →
+// LinkedIn multi-image post, 2–20 images). Fall back to the single linkedin.png / whiteboard.png.
+function pickImages(folder) {
+  const manifestPath = path.join(folder, "carousel", "manifest.json");
+  if (existsSync(manifestPath)) {
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    const files = (manifest.slides || []).map((rel) => path.join(folder, rel)).filter((f) => existsSync(f));
+    if (files.length > 20) throw new Error(`carousel has ${files.length} slides; LinkedIn allows at most 20 images per post`);
+    if (files.length >= 2) return files;
+    log(`  carousel manifest found but only ${files.length} usable PNG(s) — falling back to a single image`);
+  }
+  for (const name of ["linkedin.png", "whiteboard.png"]) {
+    const f = path.join(folder, name);
+    if (existsSync(f)) return [f];
+  }
+  throw new Error(`No carousel/manifest.json, linkedin.png or whiteboard.png in ${folder}`);
 }
 
-async function postLinkedIn(s3key, text) {
-  log("LinkedIn: creating post...");
-  const res = await mcpCall("COMPOSIO_MULTI_EXECUTE_TOOL", {
-    tools: [
-      {
-        tool_slug: "LINKEDIN_CREATE_LINKED_IN_POST",
-        arguments: {
-          author: LINKEDIN_URN,
-          commentary: text,
-          images: [{ name: "post_image.png", mimetype: "image/png", s3key }],
-        },
-      },
-    ],
-    sync_response_to_workbench: false,
-    thought: "Create LinkedIn post with image",
-    current_step: "POSTING_LINKEDIN",
+async function postLinkedIn(imageFiles, text) {
+  log(`LinkedIn: creating ${imageFiles.length > 1 ? `multi-image post (${imageFiles.length} images)` : "post"}...`);
+  const res = composioExecute("LINKEDIN_CREATE_LINKED_IN_POST", {
+    author: LINKEDIN_URN,
+    commentary: text,
+    images: imageFiles,
   });
-  const result = res?.data?.results?.[0]?.response;
-  if (!result?.successful) throw new Error(`LinkedIn post failed: ${JSON.stringify(res)}`);
+  if (!res?.successful) throw new Error(`LinkedIn post failed: ${JSON.stringify(res).slice(0, 500)}`);
   const postId =
-    result?.data?.x_restli_id ||
-    result?.data?.id ||
-    result?.data?.urn ||
-    result?.data?.postUrn ||
+    res?.data?.x_restli_id ||
+    res?.data?.id ||
+    res?.data?.urn ||
+    res?.data?.postUrn ||
     null;
   log(`  LinkedIn published ✓${postId ? `  post_urn=${postId}` : ""}`);
-  if (!postId) log(`  (post URN not surfaced — full response: ${JSON.stringify(result?.data || {}).slice(0, 300)})`);
+  if (!postId) log(`  (post URN not surfaced — full response: ${JSON.stringify(res?.data || {}).slice(0, 300)})`);
   return postId;
 }
 
@@ -239,14 +254,15 @@ async function main() {
   log(`Run folder: ${runFolder}`);
   if (DRY_RUN) log("DRY RUN: no actual publish.");
 
-  // Pick the LinkedIn image — prefer linkedin.png (frame from video), fall back to whiteboard.png.
-  let imageFile = path.join(runFolder, "linkedin.png");
-  if (!existsSync(imageFile)) imageFile = path.join(runFolder, "whiteboard.png");
-  if (!existsSync(imageFile)) throw new Error(`No linkedin.png or whiteboard.png in ${runFolder}`);
+  const imageFiles = pickImages(runFolder);
 
   const liText = stripFrontmatter(readFileSync(path.join(runFolder, "linkedin.md"), "utf8"));
+  if (liText.length > 3000) {
+    throw new Error(`LinkedIn caption is ${liText.length} chars; the limit is 3,000. Shorten linkedin.md.`);
+  }
   log(`LI body: ${liText.length} chars`);
-  log(`Image:   ${imageFile} (${Math.round(statSync(imageFile).size / 1024)} KB)`);
+  const totalKb = Math.round(imageFiles.reduce((s, f) => s + statSync(f).size, 0) / 1024);
+  log(`Images:  ${imageFiles.length} file(s), ${totalKb} KB — ${imageFiles.map((f) => path.basename(f)).join(", ")}`);
 
   if (DRY_RUN) {
     log("DRY-RUN preview (first 400 chars of body):");
@@ -254,8 +270,7 @@ async function main() {
     return;
   }
 
-  const s3key = await uploadToComposioS3(imageFile);
-  const liPostId = await postLinkedIn(s3key, liText);
+  const liPostId = await postLinkedIn(imageFiles, liText);
 
   log("=== Pulse Post Complete ===");
   markRunPublished(runFolder, { liPostId });
