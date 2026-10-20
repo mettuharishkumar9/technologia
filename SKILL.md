@@ -60,7 +60,7 @@ For each item from all three sources:
 
 Apply recency cutoff: drop anything older than 24 hours from now.
 
-**Empty fallback:** If fewer than 3 items remain after dedupe + 24h cutoff, expand to 48h. If still <3, expand to 72h. If still <3 after 72h, write `slow-day.md` to the run folder explaining the situation and **stop without drafting**.
+**Empty fallback (one post per run is the goal — a slow day is the last resort):** If fewer than 3 in-scope items remain after dedupe + 24h cutoff, expand to 48h → 72h → **7 days → 14 days**. A feature that shipped 10 days ago and was never published is still fresh to the audience; prefer it over an empty day. Within a widened window, prefer items never drafted, then GA/Public Preview release notes about compute, networking, governance, pipelines, storage, SQL, DevOps, cost or observability. Only if **no in-scope, never-published item exists within 14 days** write `slow-day.md` and stop. A single in-scope survivor is enough to draft — a "narrow" release note (e.g., a system-tables fix) is a legitimate issue: lead with the real situation it serves (audit, chargeback, metering) and keep the feature section short.
 
 ### Step 2b — Scope filter (hard rule, applied before scoring)
 
