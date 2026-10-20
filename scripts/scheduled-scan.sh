@@ -62,13 +62,16 @@ echo "  Claude: $CLAUDE_BIN" >> "$LOG_FILE"
 
 # Run the skill non-interactively, with tools pre-allowed and a budget cap.
 # stderr → log file. stdout also → log (claude prints its own narration).
+# stdin is closed on purpose: `claude --print` reads stdin as part of the prompt, so a manual
+# `ssh host 'bash -s' <<EOF` invocation would otherwise feed the rest of the script to Claude.
 set +e
 "$CLAUDE_BIN" \
     --print \
     --dangerously-skip-permissions \
     --add-dir "$SKILL_ROOT" \
-    --max-budget-usd "3.00" \
+    --max-budget-usd "4.00" \
     "/databricks-pulse" \
+    < /dev/null \
     >> "$LOG_FILE" 2>&1
 EXIT_CODE=$?
 set -e
