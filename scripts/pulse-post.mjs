@@ -249,8 +249,17 @@ async function postLinkedIn(imageFiles, text) {
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────────
+// Publishing kill switch: if state/POSTING_PAUSED exists, nothing is published — by cron,
+// by hand, or by auto-pick — until the owner deletes the file. Dry runs still work.
+const PAUSE_FILE = path.join(SKILL_ROOT, "state", "POSTING_PAUSED");
+
 async function main() {
   log(`=== Pulse Post Starting ===`);
+  if (existsSync(PAUSE_FILE) && !DRY_RUN) {
+    const why = readFileSync(PAUSE_FILE, "utf8").trim();
+    log(`PAUSED: ${PAUSE_FILE} exists${why ? ` — ${why}` : ""}. Nothing published. Delete the file to resume.`);
+    return;
+  }
   log(`Run folder: ${runFolder}`);
   if (DRY_RUN) log("DRY RUN: no actual publish.");
 
