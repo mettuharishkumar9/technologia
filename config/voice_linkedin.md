@@ -66,6 +66,8 @@ The numbers live in tables. The reasons behind them live in documents: policy PD
 ## Rules
 
 - **Facts only from the Databricks source** (release note, docs page, blog). Every number, limit, date, format and billing line must be in the source. If the source has no limits or billing info, drop that bullet — don't guess. 2–3 bullets per section is the norm; a section with nothing factual to say is removed entirely (except "My take").
+- **No inferred mechanics, costs or performance.** Don't explain *why* the old way was slow/expensive, don't predict spend or speed changes, don't describe edge-case behaviour (what happens on later edits, via API, etc.) unless the source says it. This applies to the gap paragraph and to "My take" too. (First live draft, 9 Nov 2026, invented "one cold-start wait, one line on the bill" and "spend will drift down" — both cut.)
+- **Status words are literal.** Only write "Generally Available", "Public Preview" or "Beta" when the source uses that label for this item. A default/behaviour change with no label is "per the release note dated <date>", not GA.
 - **Date** in line 2 is the release-note date in `D Mon YYYY` form.
 - **"When I'd use it"** names workload types and concrete examples, never a named company or employer.
 - **"My take"** is opinion, clearly the author's; it may not introduce new facts.
