@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!--
+  c04_ga_announcement — 1200x800 landscape. Launch / status-change card: hero headline,
+  description, dark API panel, illustrative floating cards on the right, 4 feature items,
+  lavender note strip, byline.
+
+  FILL GUIDE (max characters are for the default type sizes; the renderer fails on overflow)
+  TOP-LEFT     Databricks mark + "databricks" wordmark text — fixed, do not change.
+  HERO
+    hero-1     data-fit="hero-1"   feature name, ≤ 23 chars, one line (navy).
+    hero-2     data-fit="hero-2"   status line, ≤ 28 chars, one line. Examples:
+                                   "Is Now Generally Available!" | "Is Now in Public Preview" |
+                                   "Is Now in Beta". The red spark marks after it are decorative.
+    desc       data-fit="desc"     ≤ 230 chars, 4 lines max. <b> allowed for emphasis.
+  API PANEL    data-fit="api"      header label ≤ 12 chars ("API", "CLI", "SQL", "Terraform").
+                                   2–5 rows: <div class="row"><span class="v v-post">POST</span>
+                                   <span class="p">/path</span></div>. Verb classes: v-post | v-get |
+                                   v-patch | v-put | v-delete | v-cmd (generic command keyword).
+                                   Path ≤ 28 chars. Copy endpoints/commands from the docs.
+  ILLUSTRATION (right) — all text slots are short labels; no third-party logos, Lucide icon + text.
+    uc card    data-fit="uc"       title ≤ 16 chars ("Unity Catalog"); tree of 1 root + 2–4 children,
+                                   each ≤ 16 chars. Delete rows freely.
+    main card  data-fit="main"     Lucide icon in the shield tile (default "lock"), title ≤ 2 lines of
+                                   ≤ 14 chars, 2–4 pills ≤ 14 chars each. Pill colours:
+                                   pill-red | pill-blue | pill-green | pill-amber | pill-purple.
+    side card  data-fit="side"     Lucide icon + label ≤ 14 chars (e.g. "Terraform", "REST API",
+                                   "Databricks CLI"). Product name in text only.
+  FEATURES (exactly 4)  each: Lucide icon, title data-fit="fN-title" ≤ 24 chars (2 lines allowed),
+                        text data-fit="fN-text" ≤ 80 chars (3 lines max, ~2 preferred).
+                        Icon tint: ic-teal | ic-blue | ic-purple | ic-amber | ic-red | ic-green.
+  NOTE STRIP   data-fit="note"     OPTIONAL caveat ≤ 110 chars, one line; <b> for the status word.
+                                   Delete <div class="note"> to drop it.
+  BYLINE       fixed: Harish Mettu · Databricks Platform Engineer (from config/author.json).
+    source     data-fit="source"   OPTIONAL ≤ 60 chars, e.g. "Source: Databricks release notes, Nov 2026".
+    hashtags   data-fit="hashtags" 3–4 tags ≤ 60 chars, #Databricks first. Delete to drop.
+
+  Sample: Data Classification API + Terraform resource GA (auto_tag_configs still Public Preview).
+  Honesty: status, endpoints and caveats must come from the Databricks release note for the run.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1200x800">
+<title>c04 GA announcement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0E2340;
+    --blue: #1D4F91;
+    --ink: #33425A;
+    --muted: #5E6B80;
+    --red: #FF3621;
+    --teal: #18A3A0;
+    --line: #E3E8F0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  #card {
+    width: 1200px; height: 800px; overflow: hidden; position: relative;
+    font-family: Inter, system-ui, sans-serif; color: var(--ink);
+    background: linear-gradient(180deg, #F7F9FC 0%, #FFFFFF 60%, #F6F8FC 100%);
+  }
+
+  /* ---------- hero zone (absolute layout) ---------- */
+  .hero { position: absolute; left: 0; top: 0; width: 1200px; height: 500px; }
+  .bg-shape {
+    position: absolute; left: 520px; top: 0; width: 680px; height: 500px;
+    background:
+      radial-gradient(420px 300px at 70% 40%, rgba(40,120,150,0.55), rgba(40,120,150,0) 70%),
+      linear-gradient(135deg, #0F2A44 0%, #153B57 55%, #1C4D66 100%);
+    clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%, 12% 62%);
+  }
+  .bg-shape::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(115deg, rgba(255,255,255,0.06) 0 18%, transparent 18% 100%),
+      linear-gradient(65deg, transparent 0 62%, rgba(255,255,255,0.05) 62% 74%, transparent 74%);
+  }
+  .ghost { position: absolute; border-radius: 10px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.08); }
+  .ghost::before, .ghost::after { content: ""; position: absolute; left: 14px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.14); }
+  .ghost::before { top: 16px; width: 55%; } .ghost::after { top: 30px; width: 35%; }
+  .fade-left {
+    position: absolute; left: 0; top: 0; width: 760px; height: 500px;
+    background: linear-gradient(90deg, #F7F9FC 0%, #F7F9FC 62%, rgba(247,249,252,0) 100%);
+    clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+  }
+  svg.wires { position: absolute; left: 0; top: 0; }
+
+  .brand { position: absolute; left: 44px; top: 34px; display: flex; align-items: center; gap: 12px; }
+  .brand .dbx-mark { width: 40px; height: 42px; }
+  .brand .word { font-family: Poppins, Inter, sans-serif; font-weight: 600; font-size: 34px; line-height: 42px; color: #1B2431; letter-spacing: -0.5px; }
+
+  .hero-1 {
+    position: absolute; left: 44px; top: 94px; width: 690px; height: 70px;
+    font-family: Poppins, Inter, sans-serif; font-weight: 800; font-size: 50px; line-height: 70px;
+    color: var(--navy); letter-spacing: -1px; white-space: nowrap; overflow: hidden;
+  }
+  .hero-2-wrap { position: absolute; left: 44px; top: 160px; display: flex; align-items: center; gap: 14px; }
+  .hero-2 {
+    max-width: 640px; height: 56px; font-family: Poppins, Inter, sans-serif; font-weight: 700;
+    font-size: 40px; line-height: 56px; color: var(--blue); letter-spacing: -0.6px; white-space: nowrap; overflow: hidden;
+  }
+  .spark { position: relative; width: 30px; height: 40px; flex: 0 0 30px; }
+  .spark i { position: absolute; left: 4px; height: 4px; border-radius: 2px; background: var(--red); transform-origin: left center; }
+  .spark i:nth-child(1) { top: 8px; width: 20px; transform: rotate(-35deg); }
+  .spark i:nth-child(2) { top: 19px; width: 24px; }
+  .spark i:nth-child(3) { top: 30px; width: 20px; transform: rotate(35deg); }
+
+  .desc {
+    position: absolute; left: 44px; top: 232px; width: 560px; height: 108px;
+    font-size: 17.5px; line-height: 27px; color: #26344B; overflow: hidden;
+  }
+  .desc b { color: var(--navy); }
+
+  .api {
+    position: absolute; left: 236px; top: 350px; width: 360px; height: 138px;
+    background: #121B2B; border-radius: 12px; border: 1px solid #2A3A55; overflow: hidden;
+    box-shadow: 0 14px 30px rgba(10,25,45,0.30);
+  }
+  .api-head { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 30px; background: #1A2538; border-bottom: 1px solid #26354E; }
+  .api-head .lbl { font: 700 12.5px/30px "JetBrains Mono", monospace; color: #DCE6F5; letter-spacing: 0.5px; }
+  .api-head .dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3A4B66; margin-left: 5px; }
+  .api-rows { padding: 8px 14px 0; }
+  .api .row { display: flex; gap: 12px; font: 500 14px/22px "JetBrains Mono", monospace; color: #DCE6F5; white-space: nowrap; }
+  .api .row + .row { border-top: 1px solid rgba(255,255,255,0.05); }
+  .v { flex: 0 0 62px; font-weight: 700; }
+  .v-post { color: #FF6B5A; } .v-get { color: #5CC8FF; } .v-patch { color: #FFC24B; }
+  .v-put { color: #B794FF; } .v-delete { color: #FF5C8A; } .v-cmd { color: #6FE3A8; }
+
+  /* floating cards */
+  .fcard { position: absolute; background: #FFFFFF; border-radius: 14px; box-shadow: 0 18px 40px rgba(5,20,40,0.28); overflow: hidden; }
+  .uc { left: 870px; top: 58px; width: 290px; height: 196px; padding: 16px 18px; }
+  .uc-head { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; color: var(--navy); height: 26px; }
+  .uc-head .dbx-mark { width: 20px; height: 21px; }
+  .uc-tree { margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: #FAFBFD; }
+  .tnode { display: flex; align-items: center; gap: 8px; font: 500 13.5px/24px "JetBrains Mono", monospace; color: #26344B; white-space: nowrap; }
+  .tnode svg { width: 16px; height: 16px; stroke-width: 2.2; }
+  .tnode.root svg { color: #2F6BEA; }
+  .tnode.child { padding-left: 22px; position: relative; }
+  .tnode.child::before { content: ""; position: absolute; left: 7px; top: -12px; height: 24px; width: 10px; border-left: 1.5px solid #C9D3E2; border-bottom: 1.5px solid #C9D3E2; border-bottom-left-radius: 4px; }
+  .tnode.child svg { color: #3B82F6; fill: #DBEAFE; }
+
+  .main { left: 690px; top: 200px; width: 226px; height: 286px; padding: 18px 18px 16px; text-align: center; }
+  .shield { width: 74px; height: 80px; margin: 0 auto; position: relative; }
+  .shield svg.sh { width: 74px; height: 80px; }
+  .shield .lock { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); color: #fff; }
+  .shield .lock svg { width: 30px; height: 30px; stroke-width: 2.4; }
+  .main-title { margin-top: 10px; font-family: Poppins, Inter, sans-serif; font-weight: 700; font-size: 20px; line-height: 24px; color: var(--navy); }
+  .pills { margin-top: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+  .pill { padding: 4px 11px; border-radius: 7px; font-size: 13px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+  .pill-red { background: #FFE4E1; color: #C53A2A; } .pill-blue { background: #DDEBFF; color: #2557B8; }
+  .pill-green { background: #DDF4E6; color: #1B7F4A; } .pill-amber { background: #FFF0CC; color: #A26A00; }
+  .pill-purple { background: #EDE4FF; color: #6B3FD4; }
+  .skel { margin: 12px auto 0; height: 7px; border-radius: 4px; background: #E8EDF4; }
+
+  .side { left: 950px; top: 300px; width: 200px; height: 150px; padding: 18px; }
+  .side-ico { width: 46px; height: 46px; border-radius: 12px; background: #EFE7FF; color: #6B3FD4; display: flex; align-items: center; justify-content: center; }
+  .side-ico svg { width: 26px; height: 26px; stroke-width: 2.1; }
+  .side-label { margin-top: 10px; font-family: Poppins, Inter, sans-serif; font-weight: 700; font-size: 19px; line-height: 24px; color: var(--navy); white-space: nowrap; }
+  .side .skel { margin: 10px 0 0; }
+
+  /* ---------- features ---------- */
+  .features {
+    position: absolute; left: 44px; top: 514px; width: 1112px; height: 124px;
+    display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+  }
+  .feat { display: flex; gap: 12px; padding: 4px 16px; min-width: 0; }
+  .feat + .feat { border-left: 1px solid var(--line); }
+  .feat:first-child { padding-left: 0; }
+  .f-ico { flex: 0 0 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .f-ico svg { width: 23px; height: 23px; stroke-width: 2; }
+  .ic-teal { background: #DFF5F3; color: #0F8F8C; } .ic-blue { background: #E2ECFF; color: #2F6BEA; }
+  .ic-purple { background: #ECE5FF; color: #6B3FD4; } .ic-amber { background: #FFF0D2; color: #B67800; }
+  .ic-red { background: #FFE6E1; color: #E0371F; } .ic-green { background: #DFF4E7; color: #1E9E5A; }
+  .f-tx { min-width: 0; flex: 1; }
+  .f-title { font-weight: 700; font-size: 16.5px; line-height: 21px; max-height: 42px; color: var(--navy); overflow: hidden; }
+  .f-text { margin-top: 5px; font-size: 13.5px; line-height: 19px; height: 57px; color: var(--ink); overflow: hidden; }
+
+  /* ---------- note ---------- */
+  .note {
+    position: absolute; left: 44px; top: 656px; width: 1112px; height: 56px;
+    background: linear-gradient(90deg, #EEE8FC 0%, #F4F0FD 100%); border: 1px solid #DED3F7; border-radius: 14px;
+    display: flex; align-items: center; gap: 14px; padding: 0 18px; overflow: hidden;
+  }
+  .note .n-ico { flex: 0 0 34px; height: 34px; border-radius: 50%; background: #6B3FD4; color: #fff; display: flex; align-items: center; justify-content: center; }
+  .note .n-ico svg { width: 18px; height: 18px; stroke-width: 2.2; }
+  .note .n-text { font-size: 16px; line-height: 22px; color: #3A2E66; white-space: nowrap; overflow: hidden; height: 22px; flex: 1; }
+  .note .n-text strong { color: #5B2FC9; font-weight: 800; }
+  .note .n-text b { color: #5B2FC9; font-weight: 700; }
+
+  /* ---------- byline ---------- */
+  .byline { position: absolute; left: 44px; right: 44px; top: 730px; height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .by { display: flex; align-items: center; gap: 10px; }
+  .by .avatar { width: 30px; height: 30px; border-radius: 50%; background: #1B3139; color: #fff; display: flex; align-items: center; justify-content: center; font: 700 12px Inter, sans-serif; flex: 0 0 30px; }
+  .by .name { font-size: 14px; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .by .name span { font-weight: 500; color: var(--muted); }
+  .source { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; height: 18px; line-height: 18px; max-width: 380px; }
+  .hashtags { font-size: 13.5px; font-weight: 600; color: #3A5A8C; white-space: nowrap; overflow: hidden; height: 18px; line-height: 18px; max-width: 420px; }
+  .hashtags span + span { margin-left: 12px; }
+  .by-right { display: flex; align-items: center; gap: 22px; }
+</style>
+</head>
+<body>
+<div id="card">
+
+  <div class="hero">
+    <div class="bg-shape"></div>
+    <div class="fade-left"></div>
+    <div class="ghost" style="left:760px;top:40px;width:96px;height:56px"></div>
+    <div class="ghost" style="left:1010px;top:470px;width:130px;height:24px"></div>
+    <div class="ghost" style="left:640px;top:30px;width:70px;height:44px;opacity:.6"></div>
+
+    <!-- dashed connectors between floating cards (decorative) -->
+    <svg class="wires" width="1200" height="500" viewBox="0 0 1200 500">
+      <g fill="none" stroke="#3FD0C4" stroke-width="2.2" stroke-dasharray="6 6" opacity="0.9">
+        <path d="M916 300 H950"/>
+        <path d="M800 206 V150 H870"/>
+        <path d="M596 420 H690"/>
+      </g>
+      <g fill="#3FD0C4"><circle cx="870" cy="150" r="4"/><circle cx="950" cy="300" r="4"/><circle cx="690" cy="420" r="4"/></g>
+    </svg>
+
+    <div class="brand">
+      <svg class="dbx-mark" viewBox="0 0 40 42" width="40" height="42" aria-label="Databricks">
+        <path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/>
+      </svg>
+      <div class="word">databricks</div>
+    </div>
+
+    <div class="hero-1" data-fit="hero-1">Data Classification API</div>
+    <div class="hero-2-wrap">
+      <div class="hero-2" data-fit="hero-2">Is Now Generally Available!</div>
+      <div class="spark"><i></i><i></i><i></i></div>
+    </div>
+
+    <div class="desc" data-fit="desc">The Data Classification API and its Terraform resource are now <b>Generally Available</b>, so teams can manage Data Classification configuration programmatically on Databricks.</div>
+
+    <div class="api" data-fit="api">
+      <div class="api-head"><span class="lbl">API</span><span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="api-rows">
+        <div class="row"><span class="v v-post">POST</span><span class="p">/catalog-config</span></div>
+        <div class="row"><span class="v v-get">GET</span><span class="p">/catalog-config</span></div>
+        <div class="row"><span class="v v-patch">PATCH</span><span class="p">/catalog-config</span></div>
+        <div class="row"><span class="v v-delete">DELETE</span><span class="p">/catalog-config</span></div>
+      </div>
+    </div>
+
+    <!-- Unity Catalog tree card -->
+    <div class="fcard uc" data-fit="uc">
+      <div class="uc-head">
+        <svg class="dbx-mark" viewBox="0 0 40 42" width="20" height="21" aria-label="Databricks">
+          <path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/>
+        </svg>
+        Unity Catalog
+      </div>
+      <div class="uc-tree">
+        <div class="tnode root"><i data-lucide="database"></i>catalog</div>
+        <div class="tnode child"><i data-lucide="folder"></i>schema_1</div>
+        <div class="tnode child"><i data-lucide="folder"></i>schema_2</div>
+        <div class="tnode child"><i data-lucide="folder"></i>schema_3</div>
+      </div>
+    </div>
+
+    <!-- central feature card -->
+    <div class="fcard main" data-fit="main">
+      <div class="shield">
+        <svg class="sh" viewBox="0 0 74 80"><defs><linearGradient id="shg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22B8B0"/><stop offset="1" stop-color="#0E8C8A"/></linearGradient></defs>
+          <path d="M37 3 68 14v22c0 20-13.5 33.5-31 41C19.5 69.5 6 56 6 36V14Z" fill="url(#shg)"/></svg>
+        <span class="lock"><i data-lucide="lock"></i></span>
+      </div>
+      <div class="main-title">Data<br>Classification</div>
+      <div class="pills">
+        <span class="pill pill-red">PII</span>
+        <span class="pill pill-blue">Financial</span>
+        <span class="pill pill-green">Confidential</span>
+      </div>
+      <div class="skel" style="width:80%"></div>
+      <div class="skel" style="width:55%;margin-top:7px"></div>
+    </div>
+
+    <!-- integration card (no third-party logo: Lucide icon + text) -->
+    <div class="fcard side" data-fit="side">
+      <div class="side-ico"><i data-lucide="file-code-2"></i></div>
+      <div class="side-label">Terraform</div>
+      <div class="skel" style="width:85%"></div>
+      <div class="skel" style="width:55%;margin-top:7px"></div>
+    </div>
+  </div>
+
+  <!-- FEATURES (exactly 4) -->
+  <div class="features">
+    <div class="feat">
+      <div class="f-ico ic-teal"><i data-lucide="settings"></i></div>
+      <div class="f-tx"><div class="f-title" data-fit="f1-title">Programmatic Management</div><div class="f-text" data-fit="f1-text">Create, read, update and delete catalog configuration with standard API calls.</div></div>
+    </div>
+    <div class="feat">
+      <div class="f-ico ic-blue"><i data-lucide="folder-tree"></i></div>
+      <div class="f-tx"><div class="f-title" data-fit="f2-title">Schema-Level Control</div><div class="f-text" data-fit="f2-text">Include or exclude specific schemas. If neither is set, all schemas are scanned.</div></div>
+    </div>
+    <div class="feat">
+      <div class="f-ico ic-purple"><i data-lucide="code-xml"></i></div>
+      <div class="f-tx"><div class="f-title" data-fit="f3-title">Infrastructure as Code</div><div class="f-text" data-fit="f3-text">Manage classification config as code with the Terraform resource.</div></div>
+    </div>
+    <div class="feat">
+      <div class="f-ico ic-amber"><i data-lucide="landmark"></i></div>
+      <div class="f-tx"><div class="f-title" data-fit="f4-title">Stronger Governance</div><div class="f-text" data-fit="f4-text">Plug classification into automated deploy and governance workflows.</div></div>
+    </div>
+  </div>
+
+  <!-- OPTIONAL note strip -->
+  <div class="note">
+    <div class="n-ico"><i data-lucide="flask-conical"></i></div>
+    <div class="n-text" data-fit="note"><strong>Note:</strong> The auto-tagging configuration (auto_tag_configs) remains in <b>Public Preview</b>.</div>
+  </div>
+
+  <!-- BYLINE -->
+  <div class="byline">
+    <div class="by">
+      <div class="avatar">HM</div>
+      <div class="name">Harish Mettu <span>· Databricks Platform Engineer</span></div>
+    </div>
+    <div class="by-right">
+      <div class="source" data-fit="source">Source: Databricks release notes</div>
+      <div class="hashtags" data-fit="hashtags"><span>#Databricks</span><span>#UnityCatalog</span><span>#DataGovernance</span></div>
+    </div>
+  </div>
+
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

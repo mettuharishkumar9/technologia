@@ -2,9 +2,9 @@
 // Post a databricks-pulse run to LinkedIn via the Composio CLI.
 // LinkedIn-only — Instagram posting removed.
 //
-// Media: if the run has an Insurance Lens carousel (carousel/manifest.json written by
-// render-carousel.mjs, 2–20 PNGs) it is published as a LinkedIn multi-image post;
-// otherwise the single linkedin.png / whiteboard.png is used.
+// Media: if the run has a carousel (carousel/manifest.json listing
+// 2–20 PNGs) it is published as a LinkedIn multi-image post;
+// otherwise the card image post.png (render-card.mjs), falling back to linkedin.png / whiteboard.png.
 //
 // Usage:
 //   node pulse-post.mjs [<run-folder>] [--auto-pick] [--dry-run] [--max-age-hours 36]
@@ -211,8 +211,8 @@ function composioExecute(slug, data) {
 }
 
 // ── Image selection ───────────────────────────────────────────────────────────
-// Prefer the Insurance Lens carousel (carousel/manifest.json from render-carousel.mjs →
-// LinkedIn multi-image post, 2–20 images). Fall back to the single linkedin.png / whiteboard.png.
+// Prefer a carousel if one exists (carousel/manifest.json →
+// LinkedIn multi-image post, 2–20 images). Otherwise the card image post.png (render-card.mjs), then linkedin.png / whiteboard.png.
 function pickImages(folder) {
   const manifestPath = path.join(folder, "carousel", "manifest.json");
   if (existsSync(manifestPath)) {
@@ -222,11 +222,11 @@ function pickImages(folder) {
     if (files.length >= 2) return files;
     log(`  carousel manifest found but only ${files.length} usable PNG(s) — falling back to a single image`);
   }
-  for (const name of ["linkedin.png", "whiteboard.png"]) {
+  for (const name of ["post.png", "linkedin.png", "whiteboard.png"]) {
     const f = path.join(folder, name);
     if (existsSync(f)) return [f];
   }
-  throw new Error(`No carousel/manifest.json, linkedin.png or whiteboard.png in ${folder}`);
+  throw new Error(`No carousel/manifest.json, post.png, linkedin.png or whiteboard.png in ${folder}`);
 }
 
 async function postLinkedIn(imageFiles, text) {

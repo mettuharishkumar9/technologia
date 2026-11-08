@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<!--
+  c06_use_skip — 1080x1080, static. "What it is / how it works / when to use it" square:
+  headline + tagline + BETA badge, 3 numbered steps, Use-it-for vs Skip-it-for panels, stat pill.
+  Sample = Databricks Solution Builder (Beta).
+
+  FILL GUIDE (max characters are for the default font sizes; renderer fails on overflow)
+  ─────────────────────────────────────────────────────────────────────────────────────
+  HEADER
+    [data-fit=title]     "Databricks" (red, fixed) + .hl pill = feature name, max ~16 chars.
+    [data-fit=tagline]   short slogan between em-dashes, max ~26 chars ("Describe it. Ship it.").
+                         .badge = release status, 4–8 chars (BETA | PREVIEW | GA). For GA use class
+                         "badge ga" (green).
+  STEPS  (exactly 3 .step columns; titles [data-fit=step-N] max ~20 chars)
+    Step 1  .prompt card: [data-fit=prompt-label] max 16 ("EXAMPLE PROMPT"),
+            [data-fit=prompt] example user prompt max ~95 chars (4 lines). Quote it from the docs
+            or keep the "Example" label.  "Start from" + 1–2 .opt rows (Lucide icon + max 18 chars).
+            Optional: delete .start block and the prompt card grows.
+    Step 2  .win = generic app-window ILLUSTRATION (not a product screenshot). Edit
+            [data-fit=win-title] max 16, .win-tag max 8, sidebar labels (5, max 10 each),
+            [data-fit=win-heading] max 22, 3 .tpl mini cards (title max 10).
+            The "Illustration" caption must stay.
+    Step 3  4 .out tiles (Lucide icon + label max 11) + dark .code tile [data-fit=code] max 18.
+  USE / SKIP  (two panels, 3 .row each; 2–3 rows OK)
+    [data-fit=use-N] / [data-fit=skip-N]  Lucide icon + text max ~22 chars. Panel titles fixed-ish
+    ("Use it for" / "Skip it for", max 14).
+  FOOTER
+    byline fixed (Harish Mettu / Databricks Platform Engineer, avatar HM).
+    [data-fit=stats] red pill, 2–3 .seg segments "<b>26</b> capabilities", each max ~14 chars total.
+    Every number must come from the Databricks source.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1080x1080">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  #card {
+    width: 1080px; height: 1080px; overflow: hidden; position: relative;
+    padding: 30px 34px 28px; display: flex; flex-direction: column;
+    font-family: Inter, sans-serif; color: #10222C;
+    background:
+      radial-gradient(620px 420px at 100% 0%, rgba(255,120,100,.16), rgba(255,120,100,0) 70%),
+      radial-gradient(800px 520px at 0% 100%, rgba(120,210,235,.35), rgba(120,210,235,0) 70%),
+      linear-gradient(170deg, #F7FBFD 0%, #EAF5FA 55%, #DCEFF6 100%);
+  }
+  .deco-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .deco { position: absolute; right: -40px; top: -30px; width: 230px; opacity: .07; }
+
+  /* ---------- header ---------- */
+  .title {
+    height: 82px; overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 16px;
+    font: 800 54px/1 Poppins, sans-serif; letter-spacing: -1px;
+  }
+  .title .dbx-mark { width: 62px; height: 65px; flex: 0 0 62px; }
+  .title .brand { color: #FF3621; }
+  .hl { background: #FFD43B; color: #10222C; padding: 6px 20px 8px; border-radius: 16px; box-shadow: 0 4px 0 rgba(16,34,44,.10); }
+  .tagline {
+    margin-top: 6px; height: 56px; overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 18px;
+    font: 800 38px/1 Poppins, sans-serif; color: #10222C;
+  }
+  .dash { width: 38px; height: 5px; border-radius: 3px; background: #F5A524; flex: 0 0 38px; }
+  .badge { background: #E5322D; color: #fff; font: 800 20px/1 Inter, sans-serif; letter-spacing: 1.5px; padding: 9px 16px; border-radius: 20px; }
+  .badge.ga { background: #158A4C; }
+
+  /* ---------- steps ---------- */
+  .steps { margin-top: 22px; display: flex; align-items: stretch; height: 404px; flex: 0 0 404px; }
+  .step { display: flex; flex-direction: column; min-width: 0; }
+  .step.s1, .step.s3 { width: 288px; flex: 0 0 288px; }
+  .step.s2 { flex: 1; }
+  .shead { height: 40px; display: flex; align-items: center; gap: 10px; font: 700 23px/1 Poppins, sans-serif; white-space: nowrap; overflow: hidden; }
+  .num {
+    width: 34px; height: 34px; flex: 0 0 34px; border-radius: 10px; background: #12313D; color: #fff;
+    display: flex; align-items: center; justify-content: center; font: 800 19px/1 Poppins, sans-serif;
+  }
+  .sbody {
+    margin-top: 12px; flex: 1; min-height: 0; border-radius: 20px; background: rgba(255,255,255,.85);
+    border: 2px solid #DCE7EE; box-shadow: 0 8px 24px rgba(16,34,44,.07); padding: 14px; display: flex; flex-direction: column;
+  }
+  .chev { width: 30px; flex: 0 0 30px; display: flex; align-items: center; justify-content: center; padding-top: 52px; }
+  .chev svg { width: 26px; height: 26px; color: #12828F; stroke-width: 3; }
+
+  /* step 1 */
+  .s1 .sbody { border-color: #F6D78A; background: rgba(255,251,240,.92); }
+  .prompt { flex: 1; min-height: 0; background: #FFF4D6; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; }
+  .prompt-lbl { font: 800 15px/1 Inter, sans-serif; letter-spacing: 1px; color: #D9480F; height: 18px; overflow: hidden; white-space: nowrap; }
+  .prompt-txt { margin-top: 10px; font: 500 20px/1.32 Inter, sans-serif; color: #1D2F38; flex: 1; min-height: 0; overflow: hidden; }
+  .start { margin-top: 12px; }
+  .start-lbl { font: 700 15px/1 Inter, sans-serif; color: #4A5D68; margin-bottom: 8px; }
+  .opt {
+    height: 40px; display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid #E3EAF0; border-radius: 10px;
+    padding: 0 12px; font: 600 17px/1 Inter, sans-serif; white-space: nowrap; overflow: hidden;
+  }
+  .opt + .opt { margin-top: 8px; }
+  .opt svg { width: 20px; height: 20px; flex: 0 0 20px; }
+
+  /* step 2: generic window illustration */
+  .s2 .sbody { padding: 12px; background: #F1F5F8; }
+  .win { flex: 1; min-height: 0; background: #fff; border-radius: 12px; border: 1.5px solid #D6E0E7; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .win-bar { height: 40px; flex: 0 0 40px; display: flex; align-items: center; gap: 7px; padding: 0 12px; border-bottom: 1.5px solid #E6EDF2; }
+  .win-bar i.d { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .win-title { margin-left: 8px; display: flex; align-items: center; gap: 7px; font: 700 16px/1 Poppins, sans-serif; white-space: nowrap; overflow: hidden; flex: 1; height: 20px; }
+  .win-title .dbx-mark { width: 16px; height: 17px; flex: 0 0 16px; }
+  .win-tag { font: 800 11px/1 Inter, sans-serif; letter-spacing: 1px; color: #0E6F4E; background: #D9F5E8; border: 1.5px solid #9EDFC1; border-radius: 8px; padding: 5px 8px; }
+  .win-main { flex: 1; display: flex; min-height: 0; }
+  .side { width: 100px; flex: 0 0 100px; border-right: 1.5px solid #E6EDF2; padding: 10px 8px; display: flex; flex-direction: column; gap: 6px; }
+  .side div { height: 22px; display: flex; align-items: center; gap: 6px; font: 500 11px/1 Inter, sans-serif; color: #56707D; border-radius: 6px; padding: 0 5px; white-space: nowrap; overflow: hidden; }
+  .side div.on { background: #E3EEFF; color: #1F5FBF; font-weight: 700; }
+  .side svg { width: 12px; height: 12px; flex: 0 0 12px; }
+  .content { flex: 1; min-width: 0; padding: 12px; display: flex; flex-direction: column; gap: 9px; }
+  .win-h { font: 700 15px/1 Poppins, sans-serif; height: 18px; overflow: hidden; white-space: nowrap; }
+  .ph { height: 7px; border-radius: 4px; background: #E8EEF2; }
+  .search { height: 24px; border-radius: 7px; border: 1.5px solid #E1E8ED; display: flex; align-items: center; gap: 6px; padding: 0 8px; font: 500 10px/1 Inter, sans-serif; color: #91A3AE; }
+  .search svg { width: 11px; height: 11px; }
+  .tpls { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; min-height: 0; }
+  .tpl { border: 1.5px solid #E1E8ED; border-radius: 8px; padding: 7px; display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
+  .tpl .thumb { height: 62px; border-radius: 5px; background: linear-gradient(135deg, var(--a), var(--b)); position: relative; }
+  .tpl .thumb::after { content: ""; position: absolute; left: 8px; bottom: 6px; width: 34px; height: 26px;
+    background:
+      linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.92)) 0 100% / 7px 45% no-repeat,
+      linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.92)) 9px 100% / 7px 80% no-repeat,
+      linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.92)) 18px 100% / 7px 60% no-repeat,
+      linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.92)) 27px 100% / 7px 100% no-repeat; }
+  .tpl b { font: 700 10px/1.2 Inter, sans-serif; color: #1D2F38; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+  .tpl .ph { height: 5px; }
+  .tpl .go { display: block; margin-top: auto; height: 16px; border-radius: 5px; background: #E8F0FE; border: 1px solid #C9DAF8; }
+  .illus { position: absolute; left: 10px; bottom: 9px; font: 600 10px/1 Inter, sans-serif; color: #7D919C; background: rgba(255,255,255,.92); padding: 3px 6px; border-radius: 5px; border: 1px solid #E1E8ED; font-style: italic; }
+
+  /* step 3 */
+  .s3 .sbody { border-color: #A9E0C4; background: rgba(240,251,245,.92); padding: 12px; gap: 10px; }
+  .outs { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; min-height: 0; }
+  .out {
+    background: #fff; border: 1.5px solid #D5EBDF; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    font: 700 17px/1 Poppins, sans-serif; white-space: nowrap; overflow: hidden;
+  }
+  .out svg { width: 32px; height: 32px; color: #E5322D; stroke-width: 2; }
+  .code {
+    height: 78px; flex: 0 0 78px; background: #12232D; color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px;
+    font: 700 21px/1 Poppins, sans-serif; white-space: nowrap; overflow: hidden;
+  }
+  .code svg { width: 30px; height: 30px; color: #6FD3FF; stroke-width: 2.5; }
+
+  /* ---------- use / skip ---------- */
+  .us { margin-top: 28px; display: flex; gap: 22px; height: 282px; flex: 0 0 282px; }
+  .panel { flex: 1; min-width: 0; background: rgba(255,255,255,.9); border-radius: 22px; border: 2px solid #DCE7EE; box-shadow: 0 8px 24px rgba(16,34,44,.07); padding: 16px 18px; display: flex; flex-direction: column; }
+  .ptitle { height: 44px; display: flex; align-items: center; gap: 12px; font: 800 27px/1 Poppins, sans-serif; white-space: nowrap; overflow: hidden; }
+  .tick { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; }
+  .tick svg { width: 26px; height: 26px; stroke-width: 3.2; }
+  .use .tick { background: #1E9E5A; } .skip .tick { background: #E5322D; }
+  .rows { margin-top: 12px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .row {
+    flex: 1; max-height: 58px; display: flex; align-items: center; gap: 16px; padding: 0 16px; border-radius: 12px;
+    font: 600 20px/1 Inter, sans-serif; white-space: nowrap; overflow: hidden;
+  }
+  .use .row { background: #EEF8F2; } .skip .row { background: #FCF0EF; }
+  .row svg { width: 26px; height: 26px; flex: 0 0 26px; stroke-width: 2; }
+  .use .row svg { color: #158A4C; } .skip .row svg { color: #D2342A; }
+
+  /* ---------- footer ---------- */
+  .footer { margin-top: auto; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+  .byline { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 50px; height: 50px; border-radius: 50%; background: #1B3139; color: #fff; display: flex; align-items: center; justify-content: center; font: 700 18px Inter, sans-serif; box-shadow: 0 0 0 3px #fff, 0 3px 10px rgba(16,34,44,.18); }
+  .by-name { font: 700 19px/1.15 Poppins, sans-serif; }
+  .by-role { font: 500 14px/1.2 Inter, sans-serif; color: #3E5561; }
+  .stats {
+    height: 66px; max-width: 680px; overflow: hidden; white-space: nowrap; background: #E5322D; color: #fff; border-radius: 33px;
+    padding: 0 34px; display: flex; align-items: center; font: 700 25px/1 Poppins, sans-serif; box-shadow: 0 8px 22px rgba(229,50,45,.28);
+  }
+  .stats .seg b { color: #FFE45C; font-weight: 800; font-size: 30px; margin-right: 6px; }
+  .stats .seg + .seg::before { content: ""; display: inline-block; width: 2px; height: 30px; background: rgba(255,255,255,.55); margin: 0 22px; vertical-align: -5px; }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="deco-wrap"><svg class="deco" viewBox="0 0 40 42"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg></div>
+
+  <!-- HEADER -->
+  <div class="title" data-fit="title">
+    <svg class="dbx-mark" viewBox="0 0 40 42" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+    <span class="brand">Databricks</span><span class="hl">Solution Builder</span>
+  </div>
+  <div class="tagline" data-fit="tagline"><i class="dash"></i>Describe it. Ship it.<i class="dash"></i><span class="badge">BETA</span></div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step s1">
+      <div class="shead" data-fit="step-1"><span class="num">1</span>Describe it</div>
+      <div class="sbody">
+        <div class="prompt">
+          <div class="prompt-lbl" data-fit="prompt-label">EXAMPLE PROMPT</div>
+          <div class="prompt-txt" data-fit="prompt">Build a predictive maintenance solution for our plants, with a dashboard and a Genie space.</div>
+        </div>
+        <div class="start">
+          <div class="start-lbl">Start from</div>
+          <div class="opt" data-fit="opt-1"><i data-lucide="sparkles" style="color:#F08C00"></i>Synthetic data</div>
+          <div class="opt" data-fit="opt-2"><i data-lucide="database" style="color:#2B7CD3"></i>Your own tables</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chev"><i data-lucide="chevron-right"></i></div>
+
+    <div class="step s2">
+      <div class="shead" data-fit="step-2"><span class="num">2</span>Agent builds it all</div>
+      <div class="sbody">
+        <div class="win">
+          <div class="win-bar">
+            <i class="d" style="background:#FF5F57"></i><i class="d" style="background:#FEBC2E"></i><i class="d" style="background:#28C840"></i>
+            <div class="win-title" data-fit="win-title"><svg class="dbx-mark" viewBox="0 0 40 42"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>Databricks App</div>
+            <span class="win-tag">HOSTED</span>
+          </div>
+          <div class="win-main">
+            <div class="side">
+              <div><i data-lucide="house"></i>Home</div>
+              <div class="on"><i data-lucide="layout-template"></i>Templates</div>
+              <div><i data-lucide="folder"></i>Projects</div>
+              <div><i data-lucide="activity"></i>Status</div>
+              <div><i data-lucide="settings"></i>Settings</div>
+            </div>
+            <div class="content">
+              <div class="win-h" data-fit="win-heading">Template library</div>
+              <div class="ph" style="width:85%"></div>
+              <div class="search"><i data-lucide="search"></i>Search templates…</div>
+              <div class="tpls">
+                <div class="tpl"><div class="thumb" style="--a:#FFB199;--b:#FF6A4D"></div><b>Supply</b><div class="ph"></div><div class="ph" style="width:70%"></div><div class="ph" style="width:45%"></div><i class="go"></i></div>
+                <div class="tpl"><div class="thumb" style="--a:#9AD8FF;--b:#3C8CE7"></div><b>Sales</b><div class="ph"></div><div class="ph" style="width:60%"></div><div class="ph" style="width:50%"></div><i class="go"></i></div>
+                <div class="tpl"><div class="thumb" style="--a:#B7F0C9;--b:#29A86A"></div><b>Portfolio</b><div class="ph"></div><div class="ph" style="width:75%"></div><div class="ph" style="width:40%"></div><i class="go"></i></div>
+              </div>
+            </div>
+          </div>
+          <span class="illus">Illustration</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chev"><i data-lucide="chevron-right"></i></div>
+
+    <div class="step s3">
+      <div class="shead" data-fit="step-3"><span class="num">3</span>Review &amp; customize</div>
+      <div class="sbody">
+        <div class="outs">
+          <div class="out" data-fit="out-1"><i data-lucide="workflow"></i>Pipelines</div>
+          <div class="out" data-fit="out-2"><i data-lucide="layout-dashboard"></i>Dashboards</div>
+          <div class="out" data-fit="out-3"><i data-lucide="sparkles"></i>Genie</div>
+          <div class="out" data-fit="out-4"><i data-lucide="app-window"></i>Live App</div>
+        </div>
+        <div class="code" data-fit="code">Real code, yours <i data-lucide="code-xml"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USE / SKIP -->
+  <div class="us">
+    <div class="panel use">
+      <div class="ptitle"><span class="tick"><i data-lucide="check"></i></span>Use it for</div>
+      <div class="rows">
+        <div class="row" data-fit="use-1"><i data-lucide="presentation"></i>Customer demos</div>
+        <div class="row" data-fit="use-2"><i data-lucide="flask-conical"></i>Internal POCs</div>
+        <div class="row" data-fit="use-3"><i data-lucide="factory"></i>Industry blueprints</div>
+      </div>
+    </div>
+    <div class="panel skip">
+      <div class="ptitle"><span class="tick"><i data-lucide="x"></i></span>Skip it for</div>
+      <div class="rows">
+        <div class="row" data-fit="skip-1"><i data-lucide="server"></i>Production workspaces</div>
+        <div class="row" data-fit="skip-2"><i data-lucide="users"></i>Org-wide sharing</div>
+        <div class="row" data-fit="skip-3"><i data-lucide="life-buoy"></i>Data you can't lose</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="byline">
+      <div class="avatar">HM</div>
+      <div><div class="by-name">Harish Mettu</div><div class="by-role">Databricks Platform Engineer</div></div>
+    </div>
+    <div class="stats" data-fit="stats">
+      <span class="seg"><b>26</b>capabilities</span><span class="seg"><b>4</b>industries</span><span class="seg"><b>5</b>patterns</span>
+    </div>
+  </div>
+</div>
+<script>lucide.createIcons();</script>
+</body>
+</html>

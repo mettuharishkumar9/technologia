@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--
+  c05_equation — 1200x900 — "A + B = C" explainer: red headline, bold equation row,
+  three matching illustrations, then "Read the docs" + byline cards.
+
+  Use when a feature is best explained as two existing building blocks that combine into a
+  new capability (e.g. row tracking + table versions = automatic CDF).
+
+  FILL GUIDE
+  - headline        [data-fit="headline"]  2–3 lines, max ~120 chars (Poppins 600 42px, box 1120x168).
+  - equation row    3 terms, [data-fit="term-a|term-b|term-c"], max ~20 chars each (1 line, nowrap).
+                    The red ＋ / ＝ signs are fixed. Each term sits centered above its illustration.
+  - illustrations   one column per term (same order). Each "doc" = a file card (folded corner).
+                    Colour classes: .doc.blue (inputs) / .doc.orange (result).
+       .tag         optional small bold label in the card corner (e.g. v1, v2), max 4 chars.
+       .kv rows     1–3 rows per card: <div class="row"><span class="k" data-fit="kv-key">key</span><span class="v" data-fit="kv-value">value</span></div>
+                    key max ~12 chars, value max ~10 chars; every cell carries data-fit="kv-key" / "kv-value" (keep it).
+                    Use .row.stack for a 2-line key-over-value cell (as in the version cards).
+       Column B variant ".versions": two stacked cards + a clock arrow between them (time / versions).
+                    Use it when the middle term is about history, versions or time travel;
+                    otherwise replace it with a single .doc like column A.
+  - docs card       [data-fit="docs-title"] max ~22 chars (default "Read the docs");
+                    [data-fit="docs-url"] the real docs URL without https://, max ~58 chars.
+  - byline card     fixed: HM avatar (or config/author_photo.png as <img class="avatar">),
+                    Harish Mettu / Databricks Platform Engineer + Databricks mark. Do not edit.
+  - Values in the cards are an Example unless copied from the docs — never invent metrics.
+
+  Sample: Automatic change data feed (docs.databricks.com/aws/en/tables/features/change-data-feed):
+  computes row-level changes at read time using row tracking, so MERGE/UPDATE writes get faster
+  and storage drops vs legacy CDF; same table_changes() / readChangeFeed APIs.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1200x900">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #fff; }
+  #card {
+    width: 1200px; height: 900px; position: relative; overflow: hidden;
+    background: #fff; font-family: Inter, Arial, sans-serif; color: #111;
+  }
+  .headline {
+    position: absolute; left: 40px; top: 34px; width: 1120px; height: 168px; overflow: hidden;
+    font-family: Poppins, Inter, sans-serif; font-weight: 600; font-size: 42px; line-height: 56px;
+    letter-spacing: -.4px; color: #E3000F; text-wrap: balance;
+  }
+
+  /* shared 5-column grid so terms line up with their illustrations */
+  .grid { position: absolute; left: 40px; width: 1120px; display: grid;
+          grid-template-columns: 310px 60px 380px 60px 310px; align-items: center; }
+  .eq { top: 236px; height: 70px; }
+  .term { font-family: Poppins, Inter, sans-serif; font-weight: 700; font-size: 32px; line-height: 70px;
+          letter-spacing: -.5px; color: #111; text-align: center; white-space: nowrap; overflow: hidden; height: 70px; }
+  .sign { font-family: Poppins, sans-serif; font-weight: 800; font-size: 64px; line-height: 70px;
+          color: #E3000F; text-align: center; }
+
+  .band { position: absolute; left: 0; top: 322px; width: 1200px; height: 330px;
+          background: linear-gradient(180deg, #fff 0%, #F6F8FA 18%, #F6F8FA 82%, #fff 100%); }
+  .diagram { top: 322px; height: 330px; }
+  .cell { position: relative; height: 330px; display: flex; align-items: center; justify-content: center; }
+  .sign.big { font-size: 84px; }
+
+  /* file card with folded corner (outline drawn by script from the element size) */
+  .doc { position: relative; box-sizing: border-box; padding: 34px 24px 24px; }
+  .doc > svg.shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: 0; }
+  .doc > *:not(svg) { position: relative; z-index: 1; }
+  .doc.blue   { --line: #2F7FD8; --fill: #EAF3FD; --fold: #CFE3F9; }
+  .doc.orange { --line: #F08C1A; --fill: #FFF4E6; --fold: #FBD9AE; }
+  .tag { font-family: Poppins, sans-serif; font-weight: 700; font-size: 30px; line-height: 30px;
+         color: #1F6FC9; margin: -14px 0 10px -4px; }
+
+  .kv { background: #fff; border: 1.5px solid #D5DCE3; border-radius: 8px; overflow: hidden; }
+  .kv .row { display: flex; height: 62px; border-top: 1.5px solid #D5DCE3; }
+  .kv .row:first-child { border-top: 0; }
+  .kv .k { flex: 0 0 52%; display: flex; align-items: center; justify-content: center;
+           background: #EEF1F4; font-size: 22px; font-weight: 600; color: #333; border-right: 1.5px solid #D5DCE3;
+           white-space: nowrap; overflow: hidden; }
+  .kv .v { flex: 1; display: flex; align-items: center; justify-content: center;
+           font-family: Poppins, sans-serif; font-size: 28px; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; }
+  .kv .row.stack { flex-direction: column; height: 92px; }
+  .kv .row.stack .k { flex: 0 0 40px; border-right: 0; border-bottom: 1.5px solid #D5DCE3; }
+  .kv .row.stack .v { flex: 1; }
+  .orange .kv .k { background: #fff; font-family: Poppins, sans-serif; font-size: 28px; font-weight: 700; color: #111; flex-basis: 34%; }
+  .orange .kv .v { font-family: Inter, sans-serif; font-size: 21px; font-weight: 600; color: #444; justify-content: flex-start; padding-left: 14px; }
+
+  .doc-a { width: 270px; height: 180px; display: flex; flex-direction: column; justify-content: center; padding-top: 26px; }
+  .doc-c { width: 300px; height: 240px; display: flex; flex-direction: column; justify-content: center; padding-top: 30px; }
+
+  .versions { position: relative; width: 380px; height: 330px; }
+  .versions .doc { position: absolute; width: 200px; height: 196px; }
+  .versions .v1 { left: 8px; top: 56px; }
+  .versions .v2 { left: 172px; top: 112px; box-shadow: none; }
+  .versions .clock { position: absolute; left: 118px; top: 6px; width: 170px; height: 90px; }
+
+  .foot { position: absolute; left: 40px; top: 704px; width: 1120px; height: 150px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .fcard { box-sizing: border-box; border: 2px solid #F3C9B8; border-radius: 18px; background: #fff;
+           padding: 0 30px; display: flex; align-items: center; gap: 22px;
+           box-shadow: 0 6px 18px rgba(16,24,40,.06); }
+  .fcard .ico { flex: 0 0 64px; height: 64px; border-radius: 16px; background: #FFF1EC;
+                display: flex; align-items: center; justify-content: center; color: #FF3621; }
+  .fcard .ico svg { width: 34px; height: 34px; }
+  .fcard .txt { flex: 1; min-width: 0; }
+  .docs-title { font-family: Poppins, sans-serif; font-weight: 700; font-size: 28px; line-height: 38px; color: #1B3139;
+                height: 38px; white-space: nowrap; overflow: hidden; }
+  .docs-url { font-family: Inter, sans-serif; font-size: 18px; line-height: 26px; color: #1F6FC9;
+              text-decoration: underline; text-underline-offset: 3px; height: 52px; overflow: hidden; word-break: break-all; margin-top: 4px; }
+  .avatar { flex: 0 0 72px; width: 72px; height: 72px; border-radius: 50%; background: #1B3139; color: #fff;
+            display: flex; align-items: center; justify-content: center; font: 700 26px Inter, sans-serif; object-fit: cover; }
+  .who b { display: block; font-family: Poppins, sans-serif; font-size: 28px; line-height: 38px; font-weight: 700; color: #1B3139; }
+  .who span { display: block; font-size: 19px; line-height: 28px; color: #5F6B73; font-weight: 600; }
+  .fcard .dbx-mark { flex: 0 0 auto; width: 44px; height: 46px; margin-left: auto; }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="headline" data-fit="headline">Automatic Change Data Feed (CDF) is here to speed up writes, cut storage, and feed Change Data Capture (CDC)</div>
+
+  <div class="grid eq">
+    <div class="term" data-fit="term-a">Row tracking</div>
+    <div class="sign">+</div>
+    <div class="term" data-fit="term-b">Table versions</div>
+    <div class="sign">=</div>
+    <div class="term" data-fit="term-c">Automatic CDF</div>
+  </div>
+
+  <div class="band"></div>
+  <div class="grid diagram">
+    <!-- A -->
+    <div class="cell">
+      <div class="doc blue doc-a">
+        <div class="kv">
+          <div class="row"><span class="k" data-fit="kv-key">row_id</span><span class="v" data-fit="kv-value">1</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cell"><div class="sign big">+</div></div>
+    <!-- B: versions variant -->
+    <div class="cell">
+      <div class="versions">
+        <svg class="clock" viewBox="0 0 170 90" fill="none" stroke="#E3000F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 70 C 30 30, 60 18, 70 18"/>
+          <path d="M100 18 C 120 18, 145 34, 152 66"/>
+          <path d="M141 56 L152 70 L162 54"/>
+          <circle cx="85" cy="22" r="18" fill="#fff"/>
+          <path d="M85 12 V22 L93 27"/>
+        </svg>
+        <div class="doc blue v1">
+          <div class="tag">v1</div>
+          <div class="kv">
+            <div class="row stack"><span class="k" data-fit="kv-key">quantity</span><span class="v" data-fit="kv-value">20</span></div>
+          </div>
+        </div>
+        <div class="doc blue v2">
+          <div class="tag">v2</div>
+          <div class="kv">
+            <div class="row stack"><span class="k" data-fit="kv-key">quantity</span><span class="v" data-fit="kv-value">21</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cell"><div class="sign big">=</div></div>
+    <!-- C -->
+    <div class="cell">
+      <div class="doc orange doc-c">
+        <div class="kv">
+          <div class="row"><span class="k" data-fit="kv-key">20</span><span class="v" data-fit="kv-value">→ before</span></div>
+          <div class="row"><span class="k" data-fit="kv-key">21</span><span class="v" data-fit="kv-value">→ after</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="fcard">
+      <div class="ico"><i data-lucide="book-open"></i></div>
+      <div class="txt">
+        <div class="docs-title" data-fit="docs-title">Read the docs</div>
+        <div class="docs-url" data-fit="docs-url">docs.databricks.com/aws/en/tables/features/change-data-feed</div>
+      </div>
+    </div>
+    <div class="fcard">
+      <div class="avatar">HM</div>
+      <div class="who"><b>Harish Mettu</b><span>Databricks Platform Engineer</span></div>
+      <svg class="dbx-mark" viewBox="0 0 40 42" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+    </div>
+  </div>
+</div>
+<script>
+  // Draw the folded-corner outline for every .doc from its own size (no timers).
+  document.querySelectorAll('.doc').forEach(function (d) {
+    var w = d.offsetWidth, h = d.offsetHeight, f = 34, r = 12;
+    var body = 'M' + r + ' 0 H' + (w - f) + ' L' + w + ' ' + f + ' V' + (h - r) + ' Q' + w + ' ' + h + ' ' + (w - r) + ' ' + h +
+               ' H' + r + ' Q0 ' + h + ' 0 ' + (h - r) + ' V' + r + ' Q0 0 ' + r + ' 0 Z';
+    var fold = 'M' + (w - f) + ' 0 V' + (f - 6) + ' Q' + (w - f) + ' ' + f + ' ' + (w - f + 6) + ' ' + f + ' H' + w;
+    d.insertAdjacentHTML('afterbegin',
+      '<svg class="shape" viewBox="0 0 ' + w + ' ' + h + '">' +
+      '<path d="' + body + '" fill="var(--fill)" stroke="var(--line)" stroke-width="3" stroke-linejoin="round" style="filter:drop-shadow(0 6px 10px rgba(16,24,40,.10))"/>' +
+      '<path d="' + fold + ' Z" fill="var(--fold)" stroke="var(--line)" stroke-width="3" stroke-linejoin="round"/></svg>');
+  });
+</script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

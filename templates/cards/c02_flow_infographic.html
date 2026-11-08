@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<!--
+  c02_flow_infographic — 1200x800 landscape. "How it works" flow: 3 or 4 numbered step
+  columns with arrows, a takeaways band, and a byline footer.
+
+  FILL GUIDE (max characters are for the default type sizes; the renderer fails on overflow)
+  HEADER
+    title        data-fit="title"     ≤ 34 chars total. Wrap the highlighted part in
+                                      <span class="accent">…</span> (red). Optional accent.
+    kicker       data-fit="kicker"    OPTIONAL second headline line, ≤ 46 chars. Delete the div to drop it.
+    subtitle     data-fit="subtitle"  ≤ 95 chars, one line.
+    badge        data-fit="badge"     OPTIONAL, top-right. Class on .badge picks the colour:
+                                      badge-beta | badge-preview | badge-ga | badge-new.
+                                      label ≤ 16 chars, note ≤ 80 chars (2 lines). Delete the whole
+                                      <div class="badge"> to drop it (the title then gets full width).
+  STEPS (3 or 4)  — each <div class="step s-N"> is one column; between columns sits one
+                    <div class="arrow">. For 3 columns delete the last .step AND the .arrow before it
+                    (columns re-flow automatically). Accent colour per column = class s-yellow |
+                    s-blue | s-green | s-purple | s-red (any order).
+    num          the digit in .num (1–4)
+    step title   data-fit="stepN-title"  ≤ 18 chars (4 cols) / ≤ 26 chars (3 cols)
+    step sub     data-fit="stepN-sub"    ≤ 32 chars (4 cols) / ≤ 44 chars (3 cols)
+    step body    data-fit="stepN-body"   a stack of blocks, mix 1–3 of:
+       .code     dark terminal snippet. <div class="code-head"> label ≤ 14 chars ("terminal",
+                 "Example", "agent.toml"). <pre> lines ≤ 28 chars (4 cols) / ≤ 44 (3 cols), ≤ 5 lines.
+                 Use \ continuations instead of long lines. Copy commands from the docs or label "Example".
+                 Colour helpers inside <pre>: <span class="c-cmd">, <span class="c-flag">, <span class="c-dim">.
+       .bullets  <ul> of 3–5 items, each ≤ 28 chars. <ul class="bullets checks"> for green ticks.
+       .chips    3–5 pills with a Lucide icon, each ≤ 18 chars.
+       .iconcap  big Lucide icon tile + caption ≤ 60 chars.
+       .caption  plain explanatory text ≤ 110 chars (4 cols) / ≤ 160 (3 cols). Usually last.
+  TAKEAWAYS BAND
+    heading      data-fit="band-title"  ≤ 40 chars ("Key takeaways", "Databricks-managed capabilities")
+    band sub     data-fit="band-sub"    OPTIONAL ≤ 100 chars; delete the div to drop it.
+    items        4–6 <div class="tk">: Lucide icon name, title data-fit="tkN-title" ≤ 22 chars,
+                 text data-fit="tkN-text" ≤ 40 chars (6 items) / ≤ 80 (4 items), 3 lines max. Columns auto-size.
+                 Tint per item: tk-yellow | tk-blue | tk-green | tk-purple | tk-red | tk-teal.
+  FOOTER
+    byline       fixed: Harish Mettu · Databricks Platform Engineer (from config/author.json)
+    tagline      data-fit="tagline"  OPTIONAL ≤ 50 chars after the byline; delete to drop.
+    hashtags     data-fit="hashtags" 3–5 tags, ≤ 70 chars total, #Databricks first.
+
+  Sample: Databricks Agent Bricks CLI (init → develop → configure → deploy).
+  Honesty: commands/status must come from the Databricks docs or release note for the run.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1200x800">
+<title>c02 flow infographic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0E2340;
+    --ink: #33425A;
+    --muted: #5E6B80;
+    --red: #FF3621;
+    --line: #E3E8F0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  #card {
+    width: 1200px; height: 800px; overflow: hidden; position: relative;
+    font-family: Inter, system-ui, sans-serif; color: var(--ink);
+    background:
+      radial-gradient(900px 420px at 100% 0%, #EEF3FF 0%, rgba(238,243,255,0) 70%),
+      radial-gradient(700px 380px at 0% 100%, #FFF4EE 0%, rgba(255,244,238,0) 70%),
+      #F8FAFD;
+    padding: 30px 36px 22px;
+    display: flex; flex-direction: column;
+  }
+
+  /* ---------- header ---------- */
+  .header { position: relative; display: flex; justify-content: space-between; gap: 24px; flex: 0 0 auto; }
+  .head-text { flex: 1 1 auto; min-width: 0; }
+  .title {
+    font-family: Poppins, Inter, sans-serif; font-weight: 800; font-size: 44px; line-height: 58px;
+    height: 58px; color: var(--navy); letter-spacing: -0.8px; white-space: nowrap; overflow: hidden;
+  }
+  .title .accent { color: var(--red); }
+  .kicker {
+    font-family: Poppins, Inter, sans-serif; font-weight: 700; font-size: 26px; line-height: 34px;
+    height: 34px; color: var(--navy); letter-spacing: -0.3px; white-space: nowrap; overflow: hidden;
+  }
+  .subtitle {
+    margin-top: 4px; font-size: 18px; line-height: 26px; height: 26px; color: var(--muted);
+    white-space: nowrap; overflow: hidden;
+  }
+  .badge {
+    flex: 0 0 260px; height: 92px; border-radius: 14px; padding: 12px 16px;
+    border: 1px solid; overflow: hidden; align-self: flex-start;
+  }
+  .badge .b-label { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 17px; line-height: 22px; }
+  .badge .b-label svg { width: 18px; height: 18px; stroke-width: 2.4; }
+  .badge .b-note { margin-top: 4px; font-size: 13px; line-height: 18px; color: var(--ink); }
+  .badge-beta    { background: #EAF1FF; border-color: #C9DAFF; } .badge-beta .b-label    { color: #2456D6; }
+  .badge-preview { background: #F3EDFF; border-color: #DCCEFF; } .badge-preview .b-label { color: #6B3FD4; }
+  .badge-ga      { background: #E8F7EE; border-color: #BFE7CF; } .badge-ga .b-label      { color: #12824A; }
+  .badge-new     { background: #FFF0EC; border-color: #FFD2C6; } .badge-new .b-label     { color: #E02E14; }
+
+  /* ---------- steps ---------- */
+  .steps { flex: 1 1 auto; min-height: 0; display: flex; align-items: stretch; margin-top: 18px; }
+  .arrow { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; color: #3B4A63; }
+  .arrow svg { width: 22px; height: 22px; stroke-width: 2.6; }
+  .step {
+    flex: 1 1 0; min-width: 0; border-radius: 18px; padding: 16px 16px 14px;
+    border: 1.5px solid var(--sb); background: linear-gradient(180deg, var(--sbg) 0%, #FFFFFF 140%);
+    display: flex; flex-direction: column; box-shadow: 0 6px 18px rgba(14,35,64,0.05);
+  }
+  .s-yellow { --sa: #E8A100; --sbg: #FFF7E1; --sb: #F6DD9C; --st: #FFE9B0; }
+  .s-blue   { --sa: #2F6BEA; --sbg: #EAF1FF; --sb: #C3D6FB; --st: #D6E4FF; }
+  .s-green  { --sa: #1E9E5A; --sbg: #E8F7EE; --sb: #B9E3C9; --st: #CFEFDC; }
+  .s-purple { --sa: #7B4BDB; --sbg: #F3EDFF; --sb: #D8C9F8; --st: #E5DAFF; }
+  .s-red    { --sa: #F0432A; --sbg: #FFF0EC; --sb: #FBCBBF; --st: #FFDCD3; }
+  .step-head { display: flex; gap: 12px; align-items: flex-start; flex: 0 0 auto; }
+  .num {
+    flex: 0 0 36px; height: 36px; border-radius: 50%; background: var(--sa); color: #fff;
+    font: 800 18px/36px Poppins, Inter, sans-serif; text-align: center;
+  }
+  .step-titles { min-width: 0; flex: 1; }
+  .step-title {
+    font-family: Poppins, Inter, sans-serif; font-weight: 700; font-size: 20px; line-height: 26px; height: 26px;
+    color: var(--navy); white-space: nowrap; overflow: hidden;
+  }
+  .step-sub { font-size: 13.5px; line-height: 18px; height: 18px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+  .step-body {
+    flex: 1 1 auto; min-height: 0; overflow: hidden; margin-top: 14px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .code { background: #17202E; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(14,35,64,0.18); flex: 0 0 auto; }
+  .code-head {
+    display: flex; align-items: center; gap: 6px; padding: 7px 10px; background: #202B3C;
+    font: 500 10.5px/14px "JetBrains Mono", monospace; color: #8A98B0;
+  }
+  .code-head i, .code-head .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .code-head .d1 { background: #FF5F57; } .code-head .d2 { background: #FEBC2E; } .code-head .d3 { background: #28C840; }
+  .code-head .lbl { margin-left: 6px; }
+  .code pre {
+    margin: 0; padding: 10px 12px 11px; font: 500 13px/20px "JetBrains Mono", monospace; color: #E6EDF7;
+    white-space: pre; overflow: hidden;
+  }
+  .c-cmd { color: #7CC4FF; } .c-flag { color: #FFC66D; } .c-dim { color: #7D8AA3; }
+
+  .bullets { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .bullets li { position: relative; padding-left: 16px; font-size: 15px; line-height: 20px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+  .bullets li::before { content: ""; position: absolute; left: 2px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--sa); }
+  .bullets.checks li { padding-left: 24px; }
+  .bullets.checks li::before {
+    left: 0; top: 1px; width: 17px; height: 17px; border-radius: 50%; background: var(--sa);
+    -webkit-mask: none;
+  }
+  .bullets.checks li::after {
+    content: ""; position: absolute; left: 5.5px; top: 4px; width: 4px; height: 8px;
+    border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+
+  .chips { display: flex; flex-direction: column; gap: 7px; }
+  .chip {
+    display: flex; align-items: center; gap: 9px; background: #FFFFFF; border: 1px solid var(--sb);
+    border-radius: 9px; padding: 8px 11px; font-size: 14.5px; font-weight: 600; color: var(--navy);
+    white-space: nowrap; overflow: hidden; line-height: 18px;
+  }
+  .chip svg { width: 16px; height: 16px; color: var(--sa); flex: 0 0 16px; stroke-width: 2.2; }
+
+  .iconcap { display: flex; align-items: center; gap: 12px; }
+  .iconcap .tile {
+    flex: 0 0 54px; height: 54px; border-radius: 14px; background: var(--st); color: var(--sa);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .iconcap .tile svg { width: 28px; height: 28px; stroke-width: 2; }
+  .iconcap .cap { font-size: 14.5px; line-height: 20px; color: var(--ink); font-weight: 500; }
+
+  .caption { font-size: 15px; line-height: 22px; color: var(--ink); }
+  .caption b { color: var(--navy); }
+
+  /* ---------- takeaways band ---------- */
+  .band {
+    flex: 0 0 auto; margin-top: 16px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 18px;
+    padding: 14px 18px 16px; box-shadow: 0 6px 18px rgba(14,35,64,0.05);
+  }
+  .band-title {
+    font-family: Poppins, Inter, sans-serif; font-weight: 800; font-size: 21px; line-height: 26px; height: 26px;
+    color: var(--navy); white-space: nowrap; overflow: hidden;
+  }
+  .band-sub { font-size: 13.5px; line-height: 18px; height: 18px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+  .tks { margin-top: 12px; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; }
+  .tk {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px 10px; border-radius: 12px;
+    background: var(--tbg); min-width: 0; height: 90px;
+  }
+  .tk .ico {
+    flex: 0 0 38px; height: 38px; border-radius: 10px; background: #FFFFFF; color: var(--ta);
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(14,35,64,0.08);
+  }
+  .tk .ico svg { width: 21px; height: 21px; stroke-width: 2.2; }
+  .tk .tx { min-width: 0; flex: 1; }
+  .tk-title { font-weight: 700; font-size: 14px; line-height: 18px; height: 18px; color: var(--navy); white-space: nowrap; overflow: hidden; }
+  .tk-text { margin-top: 2px; font-size: 12.5px; line-height: 16.5px; height: 50px; color: var(--ink); overflow: hidden; }
+  .tk-yellow { --ta: #D08C00; --tbg: #FFF7E1; }
+  .tk-blue   { --ta: #2F6BEA; --tbg: #EEF4FF; }
+  .tk-green  { --ta: #1E9E5A; --tbg: #EAF7EF; }
+  .tk-purple { --ta: #7B4BDB; --tbg: #F4EFFF; }
+  .tk-red    { --ta: #E8361E; --tbg: #FFF1ED; }
+  .tk-teal   { --ta: #0F8F94; --tbg: #E7F6F6; }
+
+  /* ---------- footer ---------- */
+  .footer { flex: 0 0 auto; margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 34px; }
+  .by { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .by .dbx-mark { width: 28px; height: 30px; flex: 0 0 28px; }
+  .by .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #1B3139; color: #fff; flex: 0 0 32px;
+    display: flex; align-items: center; justify-content: center; font: 700 12.5px Inter, sans-serif;
+  }
+  .by .name { font-size: 15px; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .by .name span { font-weight: 500; color: var(--muted); }
+  .by .sep { width: 1px; height: 22px; background: #CDD5E1; }
+  .tagline { font-size: 13.5px; color: var(--muted); white-space: nowrap; overflow: hidden; max-width: 380px; height: 20px; line-height: 20px; }
+  .hashtags { font-size: 14px; font-weight: 600; color: #3A5A8C; white-space: nowrap; overflow: hidden; max-width: 520px; height: 20px; line-height: 20px; text-align: right; }
+  .hashtags span + span { margin-left: 14px; }
+</style>
+</head>
+<body>
+<div id="card">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="head-text">
+      <div class="title" data-fit="title">Databricks <span class="accent">Agent Bricks CLI</span></div>
+      <div class="kicker" data-fit="kicker">From agent idea to deployable AI agent</div>
+      <div class="subtitle" data-fit="subtitle">A code-first workflow to build, test and deploy custom AI agents on Databricks.</div>
+    </div>
+    <!-- OPTIONAL badge: badge-beta | badge-preview | badge-ga | badge-new -->
+    <div class="badge badge-new" data-fit="badge">
+      <div class="b-label"><i data-lucide="sparkles"></i>New</div>
+      <div class="b-note">Scaffold, run and deploy agents from your terminal.</div>
+    </div>
+  </div>
+
+  <!-- STEPS: 3 or 4 columns. For 3, delete the last .step and the .arrow before it. -->
+  <div class="steps">
+
+    <div class="step s-blue">
+      <div class="step-head">
+        <div class="num">1</div>
+        <div class="step-titles">
+          <div class="step-title" data-fit="step1-title">Initialize</div>
+          <div class="step-sub" data-fit="step1-sub">Create an agent project</div>
+        </div>
+      </div>
+      <div class="step-body" data-fit="step1-body">
+        <div class="code">
+          <div class="code-head"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">terminal</span></div>
+<pre><span class="c-cmd">pip install</span> \
+  databricks-agentbricks
+
+<span class="c-cmd">agentbricks init</span> \
+  <span class="c-flag">--framework</span> langgraph \
+  my-agent</pre>
+        </div>
+        <div class="caption">Scaffold a project from a <b>LangGraph</b> or <b>OpenAI Agents SDK</b> template.</div>
+      </div>
+    </div>
+
+    <div class="arrow"><i data-lucide="arrow-right"></i></div>
+
+    <div class="step s-green">
+      <div class="step-head">
+        <div class="num">2</div>
+        <div class="step-titles">
+          <div class="step-title" data-fit="step2-title">Develop</div>
+          <div class="step-sub" data-fit="step2-sub">Run and test locally</div>
+        </div>
+      </div>
+      <div class="step-body" data-fit="step2-body">
+        <div class="iconcap">
+          <div class="tile"><i data-lucide="laptop"></i></div>
+          <div class="cap">Local dev server with a chat UI for quick iteration.</div>
+        </div>
+        <div class="code">
+          <div class="code-head"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">terminal</span></div>
+<pre><span class="c-cmd">agentbricks dev</span></pre>
+        </div>
+        <div class="caption">Connect to <b>Databricks model serving</b> and test your agent before you ship it.</div>
+      </div>
+    </div>
+
+    <div class="arrow"><i data-lucide="arrow-right"></i></div>
+
+    <div class="step s-yellow">
+      <div class="step-head">
+        <div class="num">3</div>
+        <div class="step-titles">
+          <div class="step-title" data-fit="step3-title">Configure</div>
+          <div class="step-sub" data-fit="step3-sub">Add managed resources</div>
+        </div>
+      </div>
+      <div class="step-body" data-fit="step3-body">
+        <div class="chips">
+          <div class="chip"><i data-lucide="wrench"></i>Tools</div>
+          <div class="chip"><i data-lucide="database"></i>Memory</div>
+          <div class="chip"><i data-lucide="messages-square"></i>Sessions</div>
+          <div class="chip"><i data-lucide="activity"></i>Tracing</div>
+        </div>
+        <div class="caption">Declare what the agent needs in <b>agent.toml</b>. Databricks provisions and wires it up at deploy.</div>
+      </div>
+    </div>
+
+    <div class="arrow"><i data-lucide="arrow-right"></i></div>
+
+    <div class="step s-purple">
+      <div class="step-head">
+        <div class="num">4</div>
+        <div class="step-titles">
+          <div class="step-title" data-fit="step4-title">Deploy</div>
+          <div class="step-sub" data-fit="step4-sub">Ship to Databricks</div>
+        </div>
+      </div>
+      <div class="step-body" data-fit="step4-body">
+        <div class="code">
+          <div class="code-head"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">terminal</span></div>
+<pre><span class="c-cmd">agentbricks deploy</span> my-agent</pre>
+        </div>
+        <ul class="bullets checks">
+          <li>Managed</li>
+          <li>Scalable</li>
+          <li>Observable</li>
+        </ul>
+        <div class="caption">Runs on the <b>Databricks agent runtime</b>, ready for real-world use.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAKEAWAYS BAND (4–6 items) -->
+  <div class="band">
+    <div class="band-title" data-fit="band-title">Databricks-managed capabilities</div>
+    <div class="band-sub" data-fit="band-sub">Spend less time on infrastructure and more on what your agent should solve.</div>
+    <div class="tks">
+      <div class="tk tk-blue">
+        <div class="ico"><i data-lucide="brain"></i></div>
+        <div class="tx"><div class="tk-title" data-fit="tk1-title">Model access</div><div class="tk-text" data-fit="tk1-text">Databricks-served models</div></div>
+      </div>
+      <div class="tk tk-green">
+        <div class="ico"><i data-lucide="database"></i></div>
+        <div class="tx"><div class="tk-title" data-fit="tk2-title">Memory</div><div class="tk-text" data-fit="tk2-text">Managed long-term agent memory</div></div>
+      </div>
+      <div class="tk tk-purple">
+        <div class="ico"><i data-lucide="users"></i></div>
+        <div class="tx"><div class="tk-title" data-fit="tk3-title">Sessions</div><div class="tk-text" data-fit="tk3-text">Managed conversation sessions</div></div>
+      </div>
+      <div class="tk tk-yellow">
+        <div class="ico"><i data-lucide="wrench"></i></div>
+        <div class="tx"><div class="tk-title" data-fit="tk4-title">Tools</div><div class="tk-text" data-fit="tk4-text">Databricks-managed tools and integrations</div></div>
+      </div>
+      <div class="tk tk-red">
+        <div class="ico"><i data-lucide="bar-chart-3"></i></div>
+        <div class="tx"><div class="tk-title" data-fit="tk5-title">Tracing</div><div class="tk-text" data-fit="tk5-text">MLflow tracing for observability</div></div>
+      </div>
+      <div class="tk tk-teal">
+        <div class="ico"><i data-lucide="cloud-upload"></i></div>
+        <div class="tx"><div class="tk-title" data-fit="tk6-title">Deployment</div><div class="tk-text" data-fit="tk6-text">Deploy to the agent runtime</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="by">
+      <svg class="dbx-mark" viewBox="0 0 40 42" width="28" height="30" aria-label="Databricks">
+        <path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/>
+      </svg>
+      <div class="avatar">HM</div>
+      <div class="name">Harish Mettu <span>· Databricks Platform Engineer</span></div>
+      <div class="sep"></div>
+      <div class="tagline" data-fit="tagline">Build agents code-first.</div>
+    </div>
+    <div class="hashtags" data-fit="hashtags"><span>#Databricks</span><span>#AgentBricks</span><span>#GenAI</span><span>#AIAgents</span></div>
+  </div>
+
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

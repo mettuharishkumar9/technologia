@@ -1,63 +1,191 @@
 {
-  "_note": "Template selection guide for the lower-level visual rendering step. Pick based on signal type. Read the chosen template HTML, write a filled version directly to <run>/whiteboard.html. The lower-third byline MUST come from config/author.json.",
+  "_note": "ONE pool of 18 for the LinkedIn image: `cards` (c01–c08 → copy to <run>/card.html, render-card.mjs → post.png) and `templates` (01–10 original whiteboards → <run>/whiteboard.html, render-video.mjs → linkedin.png + Reel MP4s). Pick the single best fit across both. The Reel video always uses a `templates` entry. Byline always from config/author.json.",
   "_templates_dir": "<SKILL_ROOT>/templates/visuals/",
   "_templates_dir_note": "Templates are bundled inside the skill folder. Resolve <SKILL_ROOT> to wherever the skill lives (typically ~/.claude/skills/databricks-pulse).",
   "templates": [
     {
       "id": "01_tutorial_carousel",
       "vibe": "Step-by-step walkthrough, numbered cards",
-      "use_when": ["Tutorial / how-to", "Multi-step explainer", "Carousel post (multiple slides)"]
+      "use_when": [
+        "Tutorial / how-to",
+        "Multi-step explainer",
+        "Carousel post (multiple slides)"
+      ]
     },
     {
       "id": "02_stat_card",
       "vibe": "Big hero number, comparison row, gradient bg",
-      "use_when": ["Performance claim with measurable numbers", "Cost / latency / throughput stat", "Benchmark result"]
+      "use_when": [
+        "Performance claim with measurable numbers",
+        "Cost / latency / throughput stat",
+        "Benchmark result"
+      ]
     },
     {
       "id": "03_breaking_news",
       "vibe": "TV news broadcast, red BREAKING bar, ticker, lower-third byline",
-      "use_when": ["GA launch (release notes status=GA)", "Major product milestone", "'Just shipped' announcements"]
+      "use_when": [
+        "GA launch (release notes status=GA)",
+        "Major product milestone",
+        "'Just shipped' announcements"
+      ]
     },
     {
       "id": "04_before_after",
       "vibe": "Side-by-side comparison, two columns",
-      "use_when": ["Architecture shift", "Replacing one approach with another", "Old vs new pattern"]
+      "use_when": [
+        "Architecture shift",
+        "Replacing one approach with another",
+        "Old vs new pattern"
+      ]
     },
     {
       "id": "05_quote_card",
       "vibe": "Pull-quote treatment with attribution",
-      "use_when": ["Research / opinion blog", "Quotable insight from a leader", "Strong-stance commentary"]
+      "use_when": [
+        "Research / opinion blog",
+        "Quotable insight from a leader",
+        "Strong-stance commentary"
+      ]
     },
     {
       "id": "06_paper_quote",
       "vibe": "Academic paper aesthetic",
-      "use_when": ["Mosaic Research drop", "Benchmark / paper-style result", "Methodology blog"]
+      "use_when": [
+        "Mosaic Research drop",
+        "Benchmark / paper-style result",
+        "Methodology blog"
+      ]
     },
     {
       "id": "07_tweet_card",
       "vibe": "Tweet-style framing, conversational",
-      "use_when": ["Hot take / opinion", "Community thread highlight", "Reply / @-style commentary"]
+      "use_when": [
+        "Hot take / opinion",
+        "Community thread highlight",
+        "Reply / @-style commentary"
+      ]
     },
     {
       "id": "08_top_secret",
       "vibe": "Confidential / classified document reveal",
-      "use_when": ["Insider / under-the-radar feature", "'Did you know' style reveal", "Less-publicized capability"]
+      "use_when": [
+        "Insider / under-the-radar feature",
+        "'Did you know' style reveal",
+        "Less-publicized capability"
+      ]
     },
     {
       "id": "09_futuristic",
       "vibe": "Cyan/magenta neon, Orbitron font, scanlines, sci-fi",
-      "use_when": ["AI / agent / GenAI product launch", "Mosaic AI / Foundation Models / agentic stack", "Anything DatabricksIQ / Genie / Agent Bricks adjacent"]
+      "use_when": [
+        "AI / agent / GenAI product launch",
+        "Mosaic AI / Foundation Models / agentic stack",
+        "Anything DatabricksIQ / Genie / Agent Bricks adjacent"
+      ]
     },
     {
       "id": "10_newspaper",
       "vibe": "Old-print newspaper gravitas",
-      "use_when": ["Customer story", "Industry-shifting announcement", "Long-form piece referenced as a 'paper of record' item"]
+      "use_when": [
+        "Customer story",
+        "Industry-shifting announcement",
+        "Long-form piece referenced as a 'paper of record' item"
+      ]
     }
   ],
   "selection_rules": [
     "If multiple templates fit, pick the one used LEAST RECENTLY — track in state/template_history.json or check published.json. Variety beats theoretical fit.",
     "GA launches default to 03_breaking_news but use 09_futuristic if topic is AI-agent specific.",
-    "Customer stories with concrete metrics → 02_stat_card. Without metrics → 10_newspaper.",
     "When in doubt, the breaking_news template is the safe default — it's the only one with a battle-tested fill recipe in render-images.mjs."
+  ],
+  "_cards_dir": "<SKILL_ROOT>/templates/cards/",
+  "cards": [
+    {
+      "id": "c01_annotated_screenshot",
+      "size": "1200x800",
+      "vibe": "Huge red headline over a REAL docs screenshot with red boxes, block arrows and a callout",
+      "use_when": [
+        "UI feature where the docs page has a real screenshot (deployment history, new settings dialog, trigger type)",
+        "'Look where to click' features"
+      ],
+      "never_when": [
+        "No real screenshot available — never fake product UI"
+      ]
+    },
+    {
+      "id": "c02_flow_infographic",
+      "size": "1200x800",
+      "vibe": "3–4 numbered pastel step columns with arrows + key-takeaways icon row",
+      "use_when": [
+        "End-to-end workflow or how-to (init → develop → deploy)",
+        "Integration that moves metadata/data from A to B to C",
+        "CLI/tool launches with commands per step"
+      ]
+    },
+    {
+      "id": "c03_bold_square",
+      "size": "1080x1080",
+      "animated": true,
+      "vibe": "Bright gradient square, highlight pills, mini diagram that builds up, 3 stat tiles, release pill (GIF + PNG)",
+      "use_when": [
+        "Feature with 2–3 hard numbers/limits",
+        "'X now supports Y' announcements",
+        "Agent/Genie/AI-BI features with a clear input → engine → output story"
+      ]
+    },
+    {
+      "id": "c04_ga_announcement",
+      "size": "1200x800",
+      "vibe": "Hero 'Is Now Generally Available!' headline, API/code panel, floating illustration cards, 4 feature items, note banner",
+      "use_when": [
+        "GA milestone (or Public Preview) of an API, Terraform resource, governance or platform capability",
+        "Release with a caveat worth a note banner"
+      ]
+    },
+    {
+      "id": "c05_equation",
+      "size": "1200x900",
+      "vibe": "Red headline + 'A + B = C' concept equation with illustrated operand cards",
+      "use_when": [
+        "Feature that is a combination of two existing mechanisms (row tracking + time travel = automatic CDF)",
+        "Explaining a concept by composition"
+      ]
+    },
+    {
+      "id": "c06_use_skip",
+      "size": "1080x1080",
+      "vibe": "3-step 'describe → build → review' + Use it for / Skip it for panels + red stat pill",
+      "use_when": [
+        "New tool/app/agent where 'when NOT to use it' matters",
+        "Beta features with clear good and bad fits"
+      ]
+    },
+    {
+      "id": "c07_code_card",
+      "size": "1080x1350",
+      "vibe": "Dark header 'DAILY DATABRICKS · DAY N', legacy-vs-new compare, SQL/Python code window, example result table",
+      "use_when": [
+        "SQL/Python/API feature best shown in code",
+        "Behaviour change from a legacy approach",
+        "Delta, DBSQL, PySpark, system tables features"
+      ]
+    },
+    {
+      "id": "c08_sketch_before_after",
+      "size": "1080x1350",
+      "vibe": "Profile-header card, hand-drawn before/after architecture sketch, emoji bullet caveats, hashtag pills",
+      "use_when": [
+        "Architecture simplification (a component is no longer needed)",
+        "Ingestion/storage/networking changes",
+        "Features with several limitations to list"
+      ]
+    }
+  ],
+  "card_selection_rules": [
+    "Judge all 18 (cards + templates) by content shape, then rotate: never reuse the template used in either of the last 2 runs (runs/*/card.json).",
+    "Cards: GA of an API/governance capability → c04; code-first feature → c07; workflow/CLI → c02; numbers-heavy 'now supports' → c03; architecture simplification → c08; combination concept → c05; tool with fit/non-fit → c06; real screenshot available → c01.",
+    "Whiteboards: one dominant benchmark/cost number → 02_stat_card; leader quote or strong opinion → 05_quote_card / 07_tweet_card; research/paper → 06_paper_quote; under-the-radar capability → 08_top_secret; big 'just shipped' milestone → 03_breaking_news; agentic/AI launch with little detail → 09_futuristic; step-by-step → 01_tutorial_carousel; old vs new with few details → 04_before_after; industry-shifting announcement → 10_newspaper.",
+    "Prefer a card when the item has several concrete facts (limits, formats, commands, caveats) to show; prefer a whiteboard when one number, one quote or one headline carries the post."
   ]
 }

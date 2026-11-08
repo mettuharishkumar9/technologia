@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+  c01_annotated_screenshot — 1200x800 — big red headline + REAL product screenshot + red annotations.
+
+  USE ONLY when the Databricks source (docs page / release note / blog) has a real screenshot.
+  Download that image into the run folder as screenshot.png and point the <img> at it.
+  NEVER fake, redraw or edit product UI. If the source has no screenshot, pick another template.
+
+  FILL GUIDE
+  - headline        [data-fit="headline"]  1 line, max ~26 chars (Inter 800 76px, nowrap). e.g. "DABs deployment history"
+  - screenshot      <img id="shot" src="screenshot.png">  any aspect ratio. The image is scaled
+                    (up or down) to fit the frame 1120x600 (aspect 1.87:1), centered; the overlay
+                    layer #marks is resized to the *rendered image*, so every mark below is in %
+                    of the screenshot itself (0,0 = its top-left, 100,100 = its bottom-right).
+                    Work out % from pixel coords: left% = x / imageWidth * 100, etc.
+                    Crop away browser chrome / irrelevant panels first if the UI would get tiny.
+  - .box  (1–3)     red highlight rectangle: style="left:%;top:%;width:%;height:%".
+                    Pad ~1% around the UI element; don't cover the text you want to show.
+  - .arrow (0–2)    thick pink block arrow. style="--x:%;--y:%;--a:<deg>;--len:<px>"
+                    Leave the div empty: the script draws the SVG arrow from --len.
+                    (--x,--y) = where the TIP touches (just outside a box edge);
+                    --a = direction it points: 0 → right, 90 → down, 180 → left, -90 → up,
+                    any angle in between. --len = total length in px (default 130, 90–200).
+  - .callout (0–2)  [data-fit="callout-N"] bold red label, max ~28 chars, 1–2 lines.
+                    style="left:%;top:%;width:<px>" (box is fixed width, 2 lines max, overflow guarded).
+                    Place it over blank/white UI area next to the arrow tail, never over the
+                    thing you are highlighting.
+                    Optional: add class "on-white" to give it a white backing plate on busy UI.
+  - byline          fixed: Harish Mettu · Databricks Platform Engineer + Databricks mark. Do not edit.
+
+  Sample: Lakeflow Jobs matrix view, screenshot from docs.databricks.com/aws/en/jobs/monitor
+  (c01_sample_screenshot.png). In a run, replace src with "screenshot.png".
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1200x800">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #fff; }
+  #card {
+    width: 1200px; height: 800px; position: relative; overflow: hidden;
+    background: #fff; font-family: Inter, Arial, sans-serif; color: #1B1B1B;
+  }
+  .headline {
+    position: absolute; left: 40px; top: 26px; width: 1120px; height: 96px;
+    font-weight: 800; font-size: 76px; line-height: 96px; letter-spacing: -1.5px;
+    color: #E3000F; text-align: center; white-space: nowrap; overflow: hidden;
+  }
+  /* fixed frame; the image is fitted inside it (see script) */
+  .frame {
+    position: absolute; left: 40px; top: 140px; width: 1120px; height: 600px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shot-wrap {
+    position: relative; line-height: 0;
+    border: 1px solid #D9DDE1; border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, .12), 0 2px 6px rgba(16, 24, 40, .06);
+  }
+  #shot { display: block; max-width: 1118px; max-height: 598px; border-radius: 5px; }
+  #marks { position: absolute; inset: 0; pointer-events: none; line-height: normal; }
+
+  .box {
+    position: absolute; box-sizing: border-box;
+    border: 4px solid #E3000F; border-radius: 3px;
+  }
+  .arrow {
+    --len: 130px;
+    position: absolute; width: var(--len); height: 64px;
+    left: calc(var(--x) - var(--len)); top: calc(var(--y) - 32px);
+    transform-origin: 100% 50%; transform: rotate(calc(var(--a) * 1deg)); z-index: 2;
+  }
+  .arrow svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .callout {
+    position: absolute; box-sizing: border-box; max-height: 84px; overflow: hidden;
+    font-weight: 800; font-size: 34px; line-height: 42px; letter-spacing: -.3px; color: #E3000F;
+  }
+  .callout.on-white { background: rgba(255,255,255,.94); padding: 0 10px; border-radius: 6px; }
+
+  .byline {
+    position: absolute; right: 40px; bottom: 16px; height: 28px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; font-weight: 600; color: #5F6B73;
+  }
+  .byline b { color: #1B3139; font-weight: 700; }
+  .byline .dbx-mark { width: 22px; height: 23px; }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="headline" data-fit="headline">Jobs matrix view</div>
+
+  <div class="frame">
+    <div class="shot-wrap">
+      <img id="shot" src="c01_sample_screenshot.png" alt="Lakeflow Jobs matrix view">
+      <div id="marks">
+        <div class="box" style="left:44.2%;top:32.2%;width:3.9%;height:30.6%"></div>
+        <div class="box" style="left:0.6%;top:71.4%;width:19.2%;height:6.4%"></div>
+
+        <div class="arrow" style="--x:45.4%;--y:31.2%;--a:42;--len:140px"></div>
+        <div class="arrow" style="--x:20.3%;--y:74.6%;--a:180;--len:120px"></div>
+
+        <div class="callout" data-fit="callout-1" style="left:8.6%;top:14.4%;width:300px">One failed run, one failed task</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="byline">
+    <svg class="dbx-mark" viewBox="0 0 40 42" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+    <span><b>Harish Mettu</b> · Databricks Platform Engineer</span>
+  </div>
+</div>
+<script>
+  // Fit the screenshot to the 1120x600 frame (upscale small images too). Event-driven, no timers.
+  (function () {
+    var img = document.getElementById('shot'), FW = 1118, FH = 598;
+    function fit() {
+      if (!img.naturalWidth) return;
+      var s = Math.min(FW / img.naturalWidth, FH / img.naturalHeight);
+      img.style.width = Math.floor(img.naturalWidth * s) + 'px';
+      img.style.height = Math.floor(img.naturalHeight * s) + 'px';
+    }
+    if (img.complete) fit(); else img.addEventListener('load', fit);
+  })();
+  // Draw each block arrow at its own length (head stays the same size).
+  document.querySelectorAll('#marks .arrow').forEach(function (el) {
+    var L = parseFloat(getComputedStyle(el).getPropertyValue('--len')) || 130, h = L - 50;
+    el.innerHTML = '<svg viewBox="0 0 ' + L + ' 64"><path d="M4 20 H' + h + ' V5 L' + (L - 4) +
+      ' 32 L' + h + ' 59 V44 H4 Z" fill="#FBC4C4" stroke="#E3000F" stroke-width="4" stroke-linejoin="round"/></svg>';
+  });
+</script>
+</body>
+</html>

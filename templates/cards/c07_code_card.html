@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--
+FILL GUIDE — c07_code_card (portrait 1080x1350)
+"Daily Databricks" code card: header band, legacy-vs-new comparison, SQL code window, result table.
+
+SLOTS (all text boxes are fixed-size and data-fit guarded; renderer fails on overflow)
+  series        "DAILY DATABRICKS" (red caps) + <span class="day">· DAY N</span> (grey). Max ~40 chars total.
+  title         Feature name, monospace bold. Max ~18 chars on one line (e.g. "Automatic CDF", "Liquid Clustering" is 17).
+  subtitle      One line, max ~62 chars. What it does in plain words.
+  legacy-head   Left card heading, e.g. "LEGACY CDF". Max ~24 chars.
+  legacy-items  Exactly 3 <li> (✕ added by CSS). Max ~34 chars each. Muted grey.
+  new-head      Right card heading, e.g. "AUTOMATIC CDF" / "NEW …". Max ~24 chars.
+  new-items     Exactly 3 <li> (✓ added by CSS). Max ~32 chars each. Inline <code>…</code> allowed.
+  filename      Code tab label, e.g. "example.sql". Max ~28 chars.
+  code          Up to ~10 lines with a 3-row result (~8 with 5 rows, ~14 if .result is removed), max ~64 chars per line (white-space: pre — line breaks are literal,
+                keep the <pre> content flush-left). Blank lines count as lines.
+                Syntax colouring via spans:
+                  <span class="kw">SELECT</span>   keywords (coral/red)
+                  <span class="str">'text'</span>  string literals (light blue)
+                  <span class="num">42</span>      numbers / booleans (amber)
+                  <span class="fn">table_changes</span>  function names (soft green)
+                  <span class="cm">-- note</span>   comments (grey italic)
+                Everything else is plain (identifiers, punctuation). Escape < > & as &lt; &gt; &amp;.
+  result-label  Header strip left. DEFAULT "✓ Example output from the docs" (green).
+                HONESTY: only write "✓ Ran on <compute>" if the query was ACTUALLY executed by us.
+                Otherwise keep "Example output from the docs" or "Example output".
+  result-rows   Header strip right, "N rows" — must match the number of <tr> in <tbody>.
+  result-table  3–5 columns, 2–5 body rows, monospace. Cells max ~20 chars. Set column widths
+                via the <colgroup> if a column needs more room (percentages, sum ≤100%).
+  tagline       Footer right, max ~32 chars. Default "A Databricks feature a day".
+  byline        Footer left, fixed: "Harish Mettu · Databricks Platform Engineer".
+
+OPTIONAL: comparison row can be removed entirely (delete .compare) — the code window then grows
+via flex; result card can be removed (delete .result) for code-only posts.
+SAMPLE: Automatic CDF (table_changes() on row-tracking tables) from the Databricks docs.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1080x1350">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B3139; --navy2:#14242A; --red:#FF3621; --paper:#F7F5F1; --ink:#1B3139;
+    --muted:#6B7780; --green:#1E9E5A;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff}
+  #card{width:1080px;height:1350px;overflow:hidden;position:relative;background:var(--paper);
+    font-family:Inter,system-ui,sans-serif;color:var(--ink);display:flex;flex-direction:column}
+
+  /* header */
+  .head{background:var(--navy);padding:52px 60px 0;height:283px;flex:none;border-bottom:8px solid var(--red)}
+  .series{font:800 22px/1 Inter,sans-serif;letter-spacing:.14em;color:var(--red);text-transform:uppercase;
+    height:26px;white-space:nowrap;overflow:hidden}
+  .series .day{color:#B9C3C7;margin-left:6px}
+  .title{font:800 82px/108px 'JetBrains Mono',monospace;color:#fff;letter-spacing:-.02em;margin-top:14px;
+    height:108px;white-space:nowrap;overflow:hidden}
+  .subtitle{font:400 29px/1.3 Inter,sans-serif;color:#E9EEF0;margin-top:6px;height:40px;white-space:nowrap;overflow:hidden}
+
+  .body{flex:1;display:flex;flex-direction:column;padding:42px 56px 0;gap:28px;min-height:0}
+
+  /* comparison */
+  .compare{display:flex;align-items:center;gap:18px;flex:none;height:196px}
+  .cbox{flex:1;height:100%;border-radius:18px;padding:24px 26px;overflow:hidden}
+  .legacy{border:2.5px dashed #C9CDD0;background:#fff}
+  .new{border:2.5px solid var(--red);background:#FDE5E0}
+  .chead{font:800 19px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;
+    white-space:nowrap;overflow:hidden;height:22px}
+  .legacy .chead{color:#5E6A72}
+  .new .chead{color:var(--red)}
+  .cbox ul{list-style:none;margin:0;padding:0;height:120px;overflow:hidden}
+  .cbox li{font:500 21.5px/40px Inter,sans-serif;white-space:nowrap;padding-left:30px;position:relative}
+  .legacy li{color:#3E4A52}
+  .legacy li::before{content:"✕";position:absolute;left:0;color:#9AA3A9;font-weight:600}
+  .new li{color:var(--ink)}
+  .new li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+  .cbox code{font:500 18px 'JetBrains Mono',monospace;background:rgba(27,49,57,.08);border-radius:5px;padding:2px 6px}
+  .arrow{flex:none;width:40px;color:var(--red)}
+
+  /* code window */
+  .code{flex:1;min-height:0;background:#10191D;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 10px 30px rgba(16,25,29,.18)}
+  .bar{height:54px;flex:none;background:var(--navy);display:flex;align-items:center;padding:0 26px;gap:10px}
+  .dot{width:15px;height:15px;border-radius:50%}
+  .fname{font:500 18px 'JetBrains Mono',monospace;color:#90A1A8;margin-left:22px;white-space:nowrap;overflow:hidden;max-width:600px}
+  pre{margin:0;flex:1;min-height:0;padding:28px 30px;font:500 22.5px/1.55 'JetBrains Mono',monospace;color:#EEF2F3;
+    white-space:pre;overflow:hidden}
+  .kw{color:#FF7A66}
+  .str{color:#8FD0FF}
+  .num{color:#FFC46B}
+  .fn{color:#9BE3B0}
+  .cm{color:#6F8189;font-style:italic}
+
+  /* result */
+  .result{flex:none;background:#fff;border:1.5px solid #E4E2DD;border-radius:18px;overflow:hidden;
+    box-shadow:0 4px 14px rgba(27,49,57,.05)}
+  .rbar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-bottom:1.5px solid #ECEAE5}
+  .rlabel{font:700 19px Inter,sans-serif;color:var(--green);white-space:nowrap;overflow:hidden;max-width:720px}
+  .rrows{font:700 18px Inter,sans-serif;color:#5E6A72;white-space:nowrap}
+  .rtable{max-height:256px;overflow:hidden}
+  table{width:100%;border-collapse:collapse;font:500 20px 'JetBrains Mono',monospace;table-layout:fixed}
+  th{font-weight:700;color:#5E6A72;text-align:left;background:#F6F5F2;height:46px;padding:0 26px;white-space:nowrap;overflow:hidden}
+  td{height:42px;padding:0 26px;border-top:1.5px solid #EFEDE8;color:#26343A;white-space:nowrap;overflow:hidden;text-overflow:clip}
+
+  /* footer */
+  .foot{flex:none;height:96px;display:flex;align-items:center;justify-content:space-between;padding:0 60px}
+  .byline{font:600 20px Inter,sans-serif;color:#3E4A52;display:flex;align-items:center;gap:12px;white-space:nowrap}
+  .byline b{font-weight:800;color:var(--ink)}
+  .byline .sep{color:#B4BBC0}
+  .tag{display:flex;align-items:center;gap:14px;font:500 22px Inter,sans-serif;color:#3E4A52;white-space:nowrap;overflow:hidden;max-width:460px}
+  .tag::before{content:"";width:12px;height:12px;background:var(--red);flex:none}
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="head">
+    <div class="series" data-fit="series">Daily Databricks <span class="day">· Day 2</span></div>
+    <div class="title" data-fit="title">Automatic CDF</div>
+    <div class="subtitle" data-fit="subtitle">Row-level changes from table_changes(). No CDF flag needed.</div>
+  </div>
+
+  <div class="body">
+    <div class="compare">
+      <div class="cbox legacy">
+        <div class="chead" data-fit="legacy-head">Legacy CDF</div>
+        <ul data-fit="legacy-items">
+          <li>Enable per table, up front</li>
+          <li>Changes computed at write time</li>
+          <li>Extra write time and storage</li>
+        </ul>
+      </div>
+      <svg class="arrow" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h32M25 3l10 9-10 9"/></svg>
+      <div class="cbox new">
+        <div class="chead" data-fit="new-head">Automatic CDF</div>
+        <ul data-fit="new-items">
+          <li>Any UC table with row tracking</li>
+          <li>Changes computed at query time</li>
+          <li>Faster <code>MERGE</code> / <code>UPDATE</code> writes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code">
+      <div class="bar">
+        <span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span>
+        <span class="fname" data-fit="filename">example.sql</span>
+      </div>
+<pre data-fit="code"><span class="kw">CREATE TABLE</span> orders (order_id <span class="kw">INT</span>, status <span class="kw">STRING</span>)
+<span class="kw">TBLPROPERTIES</span> (<span class="str">'delta.enableRowTracking'</span> = <span class="str">'true'</span>);
+
+<span class="kw">INSERT INTO</span> orders <span class="kw">VALUES</span> (<span class="num">1</span>, <span class="str">'placed'</span>), (<span class="num">2</span>, <span class="str">'placed'</span>);
+<span class="kw">UPDATE</span> orders <span class="kw">SET</span> status = <span class="str">'shipped'</span> <span class="kw">WHERE</span> order_id = <span class="num">1</span>;
+<span class="kw">DELETE FROM</span> orders <span class="kw">WHERE</span> order_id = <span class="num">2</span>;
+
+<span class="kw">SELECT</span> _commit_version <span class="kw">AS</span> v, _change_type, order_id, status
+<span class="kw">FROM</span> <span class="fn">table_changes</span>(<span class="str">'orders'</span>, <span class="num">2</span>) <span class="kw">ORDER BY</span> v, _change_type <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="result">
+      <div class="rbar">
+        <span class="rlabel" data-fit="result-label">✓ Example output from the docs</span>
+        <span class="rrows" data-fit="result-rows">3 rows</span>
+      </div>
+      <div class="rtable" data-fit="result-table">
+        <table>
+          <colgroup><col style="width:16%"><col style="width:38%"><col style="width:23%"><col style="width:23%"></colgroup>
+          <thead><tr><th>v</th><th>_change_type</th><th>order_id</th><th>status</th></tr></thead>
+          <tbody>
+            <tr><td>2</td><td>update_preimage</td><td>1</td><td>placed</td></tr>
+            <tr><td>2</td><td>update_postimage</td><td>1</td><td>shipped</td></tr>
+            <tr><td>3</td><td>delete</td><td>2</td><td>placed</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="byline"><b>Harish Mettu</b><span class="sep">·</span>Databricks Platform Engineer</div>
+    <div class="tag" data-fit="tagline">A Databricks feature a day</div>
+  </div>
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

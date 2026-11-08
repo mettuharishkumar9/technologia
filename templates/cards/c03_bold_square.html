@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--
+  c03_bold_square — 1080x1080, ANIMATED (7 s loop incl. ~2 s hold). "Feature announcement" square:
+  bold two-line headline with highlight pills, a diagram panel, a result bar, 3 stat tiles, footer.
+  Sample = Genie Agents analyze files in UC Volumes (Public Preview, 2 Nov).
+
+  FILL GUIDE (max characters are for the default font sizes; renderer fails on overflow)
+  ─────────────────────────────────────────────────────────────────────────────────────
+  HEADER
+    [data-fit=title]      "Databricks" + .hl-yellow pill = product/feature name, max ~13 chars
+                          (e.g. "Genie Agents", "Metric Views", "Lakeflow").
+    .icon-tile            Lucide icon for the feature (data-lucide="...").
+    [data-fit=subtitle]   lead-in verb phrase max ~14 chars ("Now analyze", "Now supports")
+                          + .hl-pill (class hl-green | hl-red) max ~18 chars.
+  DIAGRAM PANEL  (#diagram, fixed height 330 px)
+    Children are a row: .dg-box  .dg-arrow  .dg-hub  .dg-arrow  .dg-box  (2–3 nodes).
+      .dg-box.files       box with header (icon + label max 12) and a 2x2 .ftgrid grid of .ft tiles.
+                          Each .ft holds one .doc with class doc-pdf | doc-docx | doc-pptx | doc-png |
+                          doc-xlsx | doc-csv | doc-json | doc-txt and its label text (max 4 chars).
+                          Replace any .ft content with a Lucide icon instead:
+                          <div class="ft"><i data-lucide="database" style="color:#2B7CD3"></i></div>
+      .dg-hub             round gradient-ringed icon + label max 14 ("Genie Agent").
+      .dg-box.plain       centred icon + label max 14 ("Tables"). The .grids icon (3 coloured sheets)
+                          can be swapped for any <i data-lucide> sized 64 px.
+      .dg-arrow.r / .l    right-pointing / left-pointing connector (draws in).
+    2 NODES: delete the last .dg-arrow + .dg-box (keep box -> arrow -> hub).
+    3 PEER BOXES (no hub, like "Metric Views now supports Relationships"): use three .dg-box.plain
+      with .mono labels and no arrows; the panel uses justify-content:space-between.
+      Then replace #result with the HUB/CONSUMER block (Unity Catalog pill + 2 consumer pills),
+      ready-made snippet: see "VARIANT B" comment at the bottom of #card.
+  RESULT  (#result)
+    [data-fit=answer-label]  max 8 chars ("Answer", "Result").
+    [data-fit=answer]        one sentence max ~52 chars (types in).
+    [data-fit=cite]          citation chip "file · page N", max ~26 chars. Optional (delete .cite).
+  STATS  (3 .stat tiles; 2 also works — delete one, the row stretches)
+    [data-fit=stat-N]     .num max ~16 chars ("10,000", "100 MB · 500 pages"), .lbl max ~26 chars.
+                          Numbers must come from the docs / release note verbatim.
+  FOOTER
+    byline fixed (Harish Mettu / Databricks Platform Engineer, avatar HM).
+    [data-fit=status]     .status pill, class st-green (Preview/GA) or st-red (Beta/deprecation);
+                          "<b>Public Preview</b> on 2 Nov" max ~30 chars. Lucide calendar icon.
+
+  ANIMATION (all CSS, fill-mode both; final frame = complete still)
+    0.3–1.5 s file tiles pop in (.ft nth-child delays) · 1.7–2.5 s arrows draw · 2.5 s hub pulse ·
+    2.7 s down arrow · 3.0–4.2 s answer types in · 4.3 s citation chip pops · 5–7 s hold.
+    If you add/remove tiles or arrows, the nth-child delays below still work (extra tiles reuse
+    the last delay rule).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1080x1080">
+<meta name="card-duration" content="7000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  #card {
+    width: 1080px; height: 1080px; overflow: hidden; position: relative;
+    padding: 34px 38px 32px;
+    display: flex; flex-direction: column;
+    font-family: Inter, sans-serif; color: #0F2A3A;
+    background:
+      radial-gradient(900px 520px at 12% 0%, rgba(255,255,255,.85), rgba(255,255,255,0) 60%),
+      radial-gradient(700px 600px at 100% 20%, rgba(186,206,255,.75), rgba(186,206,255,0) 65%),
+      radial-gradient(800px 600px at 50% 100%, rgba(120,214,236,.75), rgba(120,214,236,0) 70%),
+      linear-gradient(160deg, #EAF6FF 0%, #CDEFF8 45%, #A9E2F2 100%);
+  }
+
+  /* ---------- header ---------- */
+  .row1 { display: flex; align-items: center; gap: 16px; height: 84px; }
+  .tile {
+    width: 78px; height: 78px; flex: 0 0 78px; border-radius: 18px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(15,42,58,.12);
+  }
+  .tile .dbx-mark { width: 44px; height: 46px; }
+  .icon-tile { background: #F3EEFF; color: #E0457B; }
+  .icon-tile svg { width: 42px; height: 42px; stroke-width: 2; }
+  .title {
+    flex: 1; min-width: 0; height: 84px; overflow: hidden; white-space: nowrap;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    font: 800 56px/1 Poppins, sans-serif; letter-spacing: -1px; color: #0F2A3A;
+  }
+  .hl-yellow {
+    background: #FFD43B; color: #0E4D5C; padding: 6px 18px 8px; border-radius: 14px;
+    box-shadow: 0 4px 0 rgba(14,77,92,.12);
+  }
+  .row2 {
+    margin-top: 12px; height: 72px; overflow: hidden; white-space: nowrap;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    font: 700 36px/1 Poppins, sans-serif; color: #0F2A3A;
+  }
+  .hl-pill { font-size: 46px; color: #fff; padding: 6px 20px 8px; border-radius: 14px; letter-spacing: -.5px; }
+  .hl-green { background: #1E9E5A; }
+  .hl-red   { background: #F2412D; }
+
+  /* ---------- diagram panel ---------- */
+  #diagram {
+    margin-top: 30px; height: 330px; flex: 0 0 330px;
+    border: 3px solid #17495A; border-radius: 26px;
+    background: rgba(255,255,255,.28);
+    padding: 18px; display: flex; align-items: stretch; justify-content: space-between; gap: 10px;
+  }
+  .dg-box {
+    width: 270px; flex: 0 0 270px; background: #fff; border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(15,42,58,.10);
+    display: flex; flex-direction: column; padding: 16px;
+  }
+  .dg-head { display: flex; align-items: center; gap: 10px; font: 700 22px/1 Poppins, sans-serif; height: 28px; overflow: hidden; white-space: nowrap; }
+  .dg-head svg { width: 26px; height: 26px; stroke-width: 2; color: #33505E; }
+  .ftgrid { margin-top: 14px; flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; }
+  .ft {
+    background: #F6F8FB; border: 2px solid #E3E9F0; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ft > svg { width: 42px; height: 42px; stroke-width: 2; }
+  /* CSS document icon */
+  .doc {
+    --c: #E5322D; position: relative; width: 60px; height: 74px; border-radius: 6px 14px 6px 6px;
+    background: #fff; border: 2px solid #D5DCE4; overflow: hidden;
+  }
+  .doc::before { /* folded corner */
+    content: ""; position: absolute; top: -2px; right: -2px; width: 16px; height: 16px;
+    background: linear-gradient(225deg, #F6F8FB 50%, #D5DCE4 50%);
+  }
+  .doc .ln { position: absolute; left: 9px; height: 3px; border-radius: 2px; background: #C9D2DC; }
+  .doc .ln:nth-of-type(1) { top: 16px; width: 22px; }
+  .doc .ln:nth-of-type(2) { top: 24px; width: 32px; }
+  .doc span {
+    position: absolute; left: -2px; right: -2px; bottom: 9px; height: 23px; background: var(--c);
+    color: #fff; font: 800 13px/23px Inter, sans-serif; text-align: center; letter-spacing: .5px;
+  }
+  .doc-pdf { --c: #E5322D; } .doc-docx { --c: #2B7CD3; } .doc-pptx { --c: #D9532B; } .doc-png { --c: #8A5CD6; }
+  .doc-xlsx { --c: #1D8F55; } .doc-csv { --c: #0E9F6E; } .doc-json { --c: #D99A0B; } .doc-txt { --c: #5B6B7B; }
+
+  .dg-arrow { flex: 1; min-width: 40px; display: flex; align-items: center; justify-content: center; }
+  .dg-arrow svg { width: 64px; height: 28px; overflow: visible; }
+  .dg-arrow line { stroke: #0F2A3A; stroke-width: 4; stroke-linecap: round; }
+  .dg-arrow path { fill: #0F2A3A; }
+
+  .dg-hub { width: 190px; flex: 0 0 190px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .ring {
+    width: 136px; height: 136px; border-radius: 50%; padding: 7px;
+    background: conic-gradient(from 200deg, #FFC83D, #FF8A5B, #F7559A, #B66DFF, #FFC83D);
+    box-shadow: 0 10px 26px rgba(183,92,200,.28);
+  }
+  .ring > div {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #FFFFFF, #F4EEFF 70%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring svg { width: 62px; height: 62px; stroke-width: 2; stroke: url(#hubGrad); }
+  .hub-lbl { font: 700 23px/1.1 Poppins, sans-serif; text-align: center; height: 28px; overflow: hidden; white-space: nowrap; max-width: 190px; }
+
+  .dg-box.plain { align-items: center; justify-content: center; gap: 18px; }
+  .plain-lbl { font: 700 23px/1.1 Poppins, sans-serif; height: 28px; overflow: hidden; white-space: nowrap; max-width: 100%; text-align: center; }
+  .plain-lbl.mono { font: 500 22px/1.2 'JetBrains Mono', monospace; }
+  .plain > svg { width: 84px; height: 84px; stroke-width: 1.6; color: #E5322D; }
+  /* three coloured sheet icons */
+  .grids { position: relative; width: 150px; height: 70px; }
+  .sheet {
+    position: absolute; top: 0; width: 62px; height: 56px; border-radius: 6px; border: 3px solid var(--c);
+    background:
+      linear-gradient(var(--c), var(--c)) 0 0 / 100% 12px no-repeat,
+      repeating-linear-gradient(90deg, transparent 0 17px, var(--c) 17px 19.5px),
+      repeating-linear-gradient(180deg, transparent 0 12px, var(--c) 12px 14.5px) #fff;
+  }
+  .sheet:nth-child(1) { --c: #1D9F5A; left: 0;    top: 8px; transform: rotate(-4deg); }
+  .sheet:nth-child(2) { --c: #2B7CD3; left: 44px; top: 4px; z-index: 1; }
+  .sheet:nth-child(3) { --c: #7C5CE0; left: 88px; top: 8px; transform: rotate(4deg); }
+
+  /* ---------- result ---------- */
+  .down { height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .down i.dot { width: 6px; height: 6px; border-radius: 50%; background: #17495A; display: block; margin-bottom: 4px; }
+  .down i.tri { width: 0; height: 0; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 18px solid #17495A; display: block; }
+  #result {
+    margin: 0 40px; height: 128px; flex: 0 0 128px; background: #fff; border-radius: 22px;
+    box-shadow: 0 10px 26px rgba(15,42,58,.10);
+    display: flex; align-items: center; padding: 0 30px;
+  }
+  .ans-lbl { font: 700 26px/1 Poppins, sans-serif; width: 120px; flex: 0 0 120px; height: 32px; overflow: hidden; white-space: nowrap; }
+  .ans-sep { width: 2px; align-self: stretch; margin: 26px 26px 26px 0; background: #E3E9F0; }
+  .ans-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .ans-text { font: 600 25px/1.2 Inter, sans-serif; color: #1D3340; height: 31px; overflow: hidden; white-space: nowrap; }
+  .cite {
+    align-self: flex-start; max-width: 100%; height: 34px; overflow: hidden; white-space: nowrap;
+    background: #12232D; color: #fff; border-radius: 10px; padding: 0 14px 0 8px;
+    display: flex; align-items: center; gap: 10px; font: 700 17px/1 'JetBrains Mono', monospace;
+  }
+  .cite .mini { width: 18px; height: 22px; border-radius: 3px 6px 3px 3px; background: #E5322D; flex: 0 0 18px; }
+  .cite em { font-style: normal; color: #9FB3C0; }
+
+  /* hub / consumer variant (VARIANT B) */
+  .hub-pill {
+    align-self: center; height: 92px; padding: 0 40px; border-radius: 46px; background: #fff;
+    box-shadow: 0 10px 26px rgba(15,42,58,.12); display: flex; align-items: center; gap: 16px;
+    font: 700 30px/1 Poppins, sans-serif; white-space: nowrap; overflow: hidden; max-width: 700px;
+  }
+  .hub-pill svg { width: 42px; height: 42px; color: #E5322D; }
+  .consumers { display: flex; gap: 26px; margin-top: 40px; }
+  .consumer {
+    flex: 1; height: 100px; background: #fff; border-radius: 18px; box-shadow: 0 8px 22px rgba(15,42,58,.10);
+    display: flex; align-items: center; justify-content: center; gap: 16px; overflow: hidden; white-space: nowrap;
+    font: 700 28px/1 Poppins, sans-serif;
+  }
+  .consumer svg { width: 46px; height: 46px; color: #E5322D; }
+
+  /* ---------- stats ---------- */
+  .stats { margin-top: 30px; display: flex; gap: 18px; height: 136px; flex: 0 0 136px; }
+  .stat {
+    flex: 1 1 0; min-width: 0; background: #fff; border-radius: 18px; box-shadow: 0 8px 22px rgba(15,42,58,.08);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 0 14px;
+    overflow: hidden;
+  }
+  .stat.wide { flex-grow: 1.45; }
+  .stat .num { font: 800 38px/1.05 Poppins, sans-serif; color: #158A4C; white-space: nowrap; letter-spacing: -.5px; }
+  .stat .lbl { font: 600 19px/1.2 Inter, sans-serif; color: #1D3340; white-space: nowrap; }
+
+  /* ---------- footer ---------- */
+  .footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .byline { display: flex; align-items: center; gap: 14px; }
+  .avatar {
+    width: 60px; height: 60px; border-radius: 50%; background: #1B3139; color: #fff;
+    display: flex; align-items: center; justify-content: center; font: 700 21px Inter, sans-serif;
+    box-shadow: 0 0 0 3px #fff, 0 4px 12px rgba(15,42,58,.2);
+  }
+  .by-name { font: 700 22px/1.15 Poppins, sans-serif; }
+  .by-role { font: 500 16px/1.2 Inter, sans-serif; color: #33505E; }
+  .status {
+    height: 64px; max-width: 540px; overflow: hidden; white-space: nowrap; border-radius: 32px; padding: 0 28px 0 22px;
+    display: flex; align-items: center; gap: 12px; color: #fff; font: 700 24px/1 Poppins, sans-serif;
+    box-shadow: 0 8px 20px rgba(15,42,58,.18);
+  }
+  .status svg { width: 28px; height: 28px; stroke-width: 2.2; flex: 0 0 28px; }
+  .status b { font-weight: 800; color: #FFE45C; }
+  .st-green { background: #157F49; }
+  .st-red   { background: #E5322D; }
+
+  /* ---------- animation ---------- */
+  @keyframes pop { 0% { opacity: 0; transform: scale(.3); } 70% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes drawR { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes drawL { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  @keyframes drop  { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+  @keyframes type  { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes rise  { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  .anim .ft { animation: pop 420ms cubic-bezier(.3,.7,.4,1) both; }
+  .anim .ft:nth-child(1) { animation-delay: 300ms; }
+  .anim .ft:nth-child(2) { animation-delay: 600ms; }
+  .anim .ft:nth-child(3) { animation-delay: 900ms; }
+  .anim .ft:nth-child(n+4) { animation-delay: 1200ms; }
+  .anim .dg-arrow.r svg { animation: drawR 400ms ease-out 1700ms both; }
+  .anim .dg-arrow.l svg { animation: drawL 400ms ease-out 2100ms both; }
+  .anim .ring { animation: pulse 500ms ease-in-out 2450ms both; }
+  .anim .down { animation: drop 300ms ease-out 2700ms both; }
+  .anim .ans-text { animation: type 1200ms steps(40, end) 3000ms both; }
+  .anim .cite { animation: pop 380ms cubic-bezier(.3,.7,.4,1) 4300ms both; transform-origin: left center; }
+  .anim .hub-pill { animation: pop 420ms cubic-bezier(.3,.7,.4,1) 2700ms both; }
+  .anim .consumer { animation: rise 400ms ease-out 3200ms both; }
+  .anim .consumer + .consumer { animation-delay: 3500ms; }
+  .anim .plain-mv { animation: rise 400ms ease-out both; }
+  .anim .plain-mv:nth-child(2) { animation-delay: 600ms; }
+  .anim .plain-mv:nth-child(3) { animation-delay: 900ms; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs><linearGradient id="hubGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#B66DFF"/><stop offset="1" stop-color="#F7559A"/>
+  </linearGradient></defs>
+</svg>
+
+<div id="card" class="anim">
+
+  <!-- HEADER -->
+  <div class="row1">
+    <div class="tile">
+      <svg class="dbx-mark" viewBox="0 0 40 42" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+    </div>
+    <div class="title" data-fit="title">Databricks <span class="hl-yellow">Genie Agents</span></div>
+    <div class="tile icon-tile"><i data-lucide="message-square-text"></i></div>
+  </div>
+  <div class="row2" data-fit="subtitle">Now analyze <span class="hl-pill hl-green">Files in Volumes</span></div>
+
+  <!-- DIAGRAM -->
+  <div id="diagram">
+    <div class="dg-box files">
+      <div class="dg-head" data-fit="box1"><i data-lucide="folder-open"></i>UC Volume</div>
+      <div class="ftgrid">
+        <div class="ft"><div class="doc doc-pdf"><i class="ln"></i><i class="ln"></i><span>PDF</span></div></div>
+        <div class="ft"><div class="doc doc-docx"><i class="ln"></i><i class="ln"></i><span>DOCX</span></div></div>
+        <div class="ft"><div class="doc doc-pptx"><i class="ln"></i><i class="ln"></i><span>PPTX</span></div></div>
+        <div class="ft"><div class="doc doc-png"><i class="ln"></i><i class="ln"></i><span>PNG</span></div></div>
+      </div>
+    </div>
+
+    <div class="dg-arrow r"><svg viewBox="0 0 64 28"><line x1="2" y1="14" x2="48" y2="14"/><path d="M62 14 44 4v20z"/></svg></div>
+
+    <div class="dg-hub">
+      <div class="ring"><div><i data-lucide="sparkles"></i></div></div>
+      <div class="hub-lbl" data-fit="hub">Genie Agent</div>
+    </div>
+
+    <div class="dg-arrow l"><svg viewBox="0 0 64 28"><line x1="16" y1="14" x2="62" y2="14"/><path d="M2 14 20 4v20z"/></svg></div>
+
+    <div class="dg-box plain">
+      <div class="grids"><i class="sheet"></i><i class="sheet"></i><i class="sheet"></i></div>
+      <div class="plain-lbl" data-fit="box3">Tables</div>
+    </div>
+  </div>
+
+  <div class="down"><i class="dot"></i><i class="tri"></i></div>
+
+  <!-- RESULT -->
+  <div id="result">
+    <div class="ans-lbl" data-fit="answer-label">Answer</div>
+    <div class="ans-sep"></div>
+    <div class="ans-body">
+      <div class="ans-text" data-fit="answer">Refunds above $500 need manager approval</div>
+      <div class="cite" data-fit="cite"><i class="mini"></i>policy.pdf <em>·</em> page 12</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat" data-fit="stat-1"><div class="num">10</div><div class="lbl">volumes per agent</div></div>
+    <div class="stat" data-fit="stat-2"><div class="num">10,000</div><div class="lbl">files per volume</div></div>
+    <div class="stat wide" data-fit="stat-3"><div class="num">100 MB · 500 pages</div><div class="lbl">Larger files are skipped</div></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="byline">
+      <div class="avatar">HM</div>
+      <div><div class="by-name">Harish Mettu</div><div class="by-role">Databricks Platform Engineer</div></div>
+    </div>
+    <div class="status st-green" data-fit="status"><i data-lucide="calendar-days"></i><span><b>Public Preview</b> on 2 Nov</span></div>
+  </div>
+
+  <!-- VARIANT B (3 peer boxes + hub + consumers, like "Metric Views now supports Relationships").
+       1) Replace the children of #diagram with:
+          <div class="dg-box plain plain-mv"><i data-lucide="table-properties"></i><div class="plain-lbl mono" data-fit="box1">customers_mv</div></div>
+          <div class="dg-box plain plain-mv"><i data-lucide="table-properties"></i><div class="plain-lbl mono" data-fit="box2">orders_mv</div></div>
+          <div class="dg-box plain plain-mv"><i data-lucide="table-properties"></i><div class="plain-lbl mono" data-fit="box3">products_mv</div></div>
+          (optionally put <div class="dg-arrow r">…</div> between them to show joins)
+       2) Delete .down, #result and .stats, and insert:
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+            <div class="hub-pill" data-fit="hub"><i data-lucide="shield-check"></i>Unity Catalog</div>
+            <div class="consumers">
+              <div class="consumer" data-fit="consumer-1"><i data-lucide="layout-dashboard"></i>AI/BI Dashboards</div>
+              <div class="consumer" data-fit="consumer-2"><i data-lucide="sparkles"></i>Genie</div>
+            </div>
+          </div>
+       3) Footer: <div class="status st-red" data-fit="status">…<span><b>Beta</b> since 30 Oct</span></div>
+  -->
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

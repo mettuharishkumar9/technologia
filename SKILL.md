@@ -1,6 +1,6 @@
 ---
 name: databricks-pulse
-description: Scan Databricks-owned content (blog, release notes, community) for what's new in the last 24 hours, rank top 3 by engagement/recency/topic-match, and turn the #1 pick into the daily Insurance Lens — a real, sourced insurance situation mapped onto the feature — as a LinkedIn caption + 13-slide carousel (multi-image post) plus an Instagram Reel script. Use when the user invokes /databricks-pulse, asks "what's new in Databricks today," requests fresh content drafts based on Databricks news, or when a scheduled cron job fires this skill.
+description: Scan Databricks-owned content (blog, release notes, community) for what's new in the last 24 hours, rank top 3 by engagement/recency/topic-match, and draft a LinkedIn release-card post + card image + Instagram Reel script for the #1 pick in the user's voice. Use when the user invokes /databricks-pulse, asks "what's new in Databricks today," requests fresh content drafts based on Databricks news, or when a scheduled cron job fires this skill.
 ---
 
 # Databricks Pulse
@@ -20,13 +20,12 @@ User says any of:
 Always read these in parallel before doing anything else:
 
 1. `~/.claude/skills/databricks-pulse/config/taxonomy.json` — the keyword list for topic matching
-2. `~/.claude/skills/databricks-pulse/config/voice_linkedin.md` — LinkedIn voice template: insurance-storytelling format (REQUIRES 10–14 hashtags at end)
-3. `~/.claude/skills/databricks-pulse/config/industry_lens.md` — verified real-situation bank (with links), research rules, feature→workflow mapping, and the `carousel.json` schema. Used for LinkedIn ONLY.
-4. `~/.claude/skills/databricks-pulse/config/voice_instagram.md` — Reel voice template (feature-first, unchanged by the industry lens)
-5. `~/.claude/skills/databricks-pulse/config/author.json` — author byline. NEVER invent a value — always pull it from `lower_name_full` in this file.
-6. `~/.claude/skills/databricks-pulse/config/templates_catalog.json` — visual template guide for Step 6
-7. `~/.claude/skills/databricks-pulse/state/seen.json` — items already processed
-8. `~/.claude/skills/databricks-pulse/state/published.json` — what was last posted (for template variety check)
+2. `~/.claude/skills/databricks-pulse/config/voice_linkedin.md` — LinkedIn voice template (REQUIRES 10–14 hashtags at end)
+3. `~/.claude/skills/databricks-pulse/config/voice_instagram.md` — Reel voice template
+4. `~/.claude/skills/databricks-pulse/config/author.json` — author byline. NEVER invent a value — always pull it from `lower_name_full` in this file.
+5. `~/.claude/skills/databricks-pulse/config/templates_catalog.json` — visual template guide for Step 6
+6. `~/.claude/skills/databricks-pulse/state/seen.json` — items already processed
+7. `~/.claude/skills/databricks-pulse/state/published.json` — what was last posted (for template variety check)
 
 ## The five steps
 
@@ -60,11 +59,11 @@ For each item from all three sources:
 
 Apply recency cutoff: drop anything older than 24 hours from now.
 
-**Empty fallback (one post per run is the goal — a slow day is the last resort):** If fewer than 3 in-scope items remain after dedupe + 24h cutoff, expand to 48h → 72h → **7 days → 14 days**. A feature that shipped 10 days ago and was never published is still fresh to the audience; prefer it over an empty day. Within a widened window, prefer items never drafted, then GA/Public Preview release notes about compute, networking, governance, pipelines, storage, SQL, DevOps, cost or observability. Only if **no in-scope, never-published item exists within 14 days** write `slow-day.md` and stop. A single in-scope survivor is enough to draft — a "narrow" release note (e.g., a system-tables fix) is a legitimate issue: lead with the real situation it serves (audit, chargeback, metering) and keep the feature section short.
+**Empty fallback (one post per run is the goal — a slow day is the last resort):** If fewer than 3 in-scope items remain after dedupe + 24h cutoff, expand to 48h → 72h → **7 days → 14 days**. A feature that shipped 10 days ago and was never published is still fresh to the audience; prefer it over an empty day. Within a widened window, prefer items never drafted, then GA/Public Preview release notes about compute, networking, governance, pipelines, storage, SQL, DevOps, cost or observability. Only if **no in-scope, never-published item exists within 14 days** write `slow-day.md` and stop. A single in-scope survivor is enough to draft — a "narrow" release note (e.g., a system-tables fix) is a legitimate issue: explain the practical job it does (audit, chargeback, metering) and keep the post tight.
 
 ### Step 2b — Scope filter (hard rule, applied before scoring)
 
-The column is about **platform engineering, data engineering, solution engineering and infrastructure on Databricks**. Drop any item — regardless of score — that is:
+The posts are about **platform engineering, data engineering, solution engineering and infrastructure on Databricks**. Drop any item — regardless of score — that is:
 
 - a **customer case study / customer story** ("How <Company> is building…", "<Company> achieves…", "powered by Databricks", customer spotlights, partner success stories, quotes-from-customers posts);
 - a partner/marketplace announcement, event recap, webinar, awards, hiring, earnings, or leadership thought-piece without a concrete technical change;
@@ -109,7 +108,7 @@ Second question, also mandatory: **Is this an engineering/infra topic (Step 2b),
 
 Draft LinkedIn and Instagram **independently from the source**, not derived from each other.
 
-**LinkedIn — Insurance Lens** — follow `voice_linkedin.md` + `industry_lens.md`. The post opens on a **real, documented insurance situation** (a named catastrophe, regulatory deadline, fraud study, market event or public case study — with the regulator's or industry body's numbers, each linked in `sources.md`) and maps the feature onto it in seven beats: situation → what it means for a data team → the catch/before → the feature (facts only from the Databricks source) → after → beyond + caveats → question. Run the per-run procedure in `industry_lens.md` (classify feature → pick a situation type different from yesterday's → pick/research a situation, rotating regions → write the beats). Plain conversational English, short sentences, 0–2 emojis. Caption body 300–450 words, **≤ 2,800 characters total**. Write the same beats into `carousel.json` (13 slides, schema in `industry_lens.md`). Never name the author's employer; never attribute a workflow or constraint to a named company; no number without a link.
+**LinkedIn release card** — follow `voice_linkedin.md` exactly (it has an approved reference post). Plain statement of what you can now do → official name + status + date → the gap it closes → 𝗪𝗵𝗮𝘁'𝘀 𝗶𝗻 𝘁𝗵𝗲 𝗯𝗼𝘅 → 𝗪𝗵𝗲𝗻 𝗜'𝗱 𝘂𝘀𝗲 𝗶𝘁 → 𝗔 𝗳𝗲𝘄 𝘁𝗵𝗶𝗻𝗴𝘀 𝘁𝗼 𝗻𝗼𝘁𝗲 → 𝗠𝘆 𝘁𝗮𝗸𝗲 → 7–10 hashtags. 140–230 words, English, no emojis, no link, no CTA question. To get the limits, formats and billing lines right, open the feature's **docs page** (linked from the release note) — the release-note line alone is rarely enough.
 
 **Instagram Reel script** — follow `voice_instagram.md`. Brisk Hinglish, no emojis, hook + 3 beats + comment-trigger CTA. Hook ≤2 lines, speakable in <4 seconds, never starts with "Aaj main" or "Is video mein".
 
@@ -133,29 +132,21 @@ The MSYS/Git Bash on Windows has broken tzdata for `TZ='Asia/Kolkata'` — it re
 
 1. `sources.json` — raw items pulled from all three surfaces (full data, not just top 3)
 2. `ranked.json` — top 3 with full score breakdown
-3. `linkedin.md` — Insurance Lens caption for #1 (≤ 2,800 chars; ends with `Slides 👇 Sources on the last one.`, `Source: <url>`, then 10–14 hashtags incl. 2–3 insurance tags) **and** `carousel.json` — the 13-slide Insurance Lens carousel (schema in `industry_lens.md`) **and** `sources.md` — Primary / Supporting / Honesty notes / Re-verify before publishing, with a URL for every number used
+3. `linkedin.md` — release-card post for #1 (structure and hashtag rules in voice_linkedin.md; no Source URL in the body)
 4. `instagram.md` — Reel script for #1 (Hinglish, no emojis)
 5. `instagram_caption.md` — STATIC IG caption for #1 (English+light Hinglish, emojis OK, 25–30 hashtags, this is what the auto-poster publishes — see Social_Media_Project/weeks/week01_may06/day02_lakebase/instagram.md as a reference format)
 6. `alternatives.md` — one-line summary of #2 and #3 with their scores and URLs
 
-**Visual rendering — pick template by signal type:**
+**LinkedIn image — one pool of 18 templates, pick the best fit:**
 
-7. Read `config/templates_catalog.json` → pick the template that best fits the source item's signal type (see `use_when` per template).
-   - **Variety rule:** check the last few runs' template choices in `state/published.json` (or scan recent `runs/*/whiteboard.html` for the template they're based on). If your top pick was used in the last 2 runs, pick the second-best fit instead. Audience monotony kills engagement.
-   - Common mappings: GA launch → `03_breaking_news`; AI/agents → `09_futuristic`; perf stats → `02_stat_card`; research/quote → `05_quote_card` or `06_paper_quote`; before/after → `04_before_after`; customer story → `10_newspaper`.
-8. Read the chosen template HTML from `<SKILL_ROOT>/templates/visuals/<template_id>.html`. The skill bundles all 10 templates locally — no external dependency. (The legacy `Social_Media_Project/templates/visuals/` location was the original source; the bundled copy here is the canonical one going forward.)
-9. Produce a fully filled `whiteboard.html` for the run folder by editing the template's text content in place. Replace placeholder strings (titles, stats, quotes, dates, source line) with values appropriate to the source item. **The byline area (lower-third in breaking_news, cyber-footer in futuristic, etc.) MUST contain the value from `config/author.json` (currently "Harish Mettu - Databricks Platform Engineer").** Don't break CSS or layout — only replace text content.
-10. Write `media.spec.json` for the video render with: `duration_seconds: 16` (animations need a full cycle), `render_viewport: [1080, 1080]`, `inject_css` to hide template dev chrome (`.toolbar, .hint` plus any decorative elements that don't read as static — e.g., breaking_news's `.ticker-label` was hiding the scrolling text). Set `pad_color` for vertical to match the template's card background color.
+7. Read `config/templates_catalog.json`. The LinkedIn image can come from **either** pool — `cards` (c01–c08, static/animated infographics) or `templates` (01–10, the original whiteboard visuals: breaking news, stat card, before/after, quote, paper, tweet, top secret, futuristic, newspaper, tutorial). Judge all 18 against the item's content shape and pick the single best fit (e.g. a big benchmark number → `02_stat_card`; a strong opinion/quote → `05_quote_card`; a code feature → `c07_code_card`; a GA API → `c04_ga_announcement`). **Variety rule:** don't reuse the template used by either of the last 2 runs (check `runs/*/card.json`). Write `<run>/card.json` = `{"template": "<id>", "pool": "cards" | "templates"}`.
+8. **If the pick is a card (`c0N_…`):** copy `templates/cards/<id>.html` to `<run>/card.html` and replace the sample content with today's facts, following the fill guide comment at the top of the template (slot limits, repeatable blocks, optional parts). Same numbers, status and date as `linkedin.md`. Byline from `config/author.json`. For `c01_annotated_screenshot`, download a real screenshot from the docs page into `<run>/screenshot.png` and Read it to place the highlight boxes; if there is no real screenshot, pick another template. Then run `node ~/.claude/skills/databricks-pulse/scripts/render-card.mjs <run-folder>` (Bash timeout 600000 — animated cards take ~2 min) → `post.png` (+ `post.gif`/`post.mp4`). If it prints `OVERFLOW`, shorten the text and re-run — never ship clipped text. Read `post.png` once and fix anything that looks broken.
+9. **If the pick is an original whiteboard template (`0N_…`):** it becomes both the LinkedIn image and the Reel video — fill it in step 10 and do **not** create `card.html`/`post.png` (the poster then uses `linkedin.png`).
 
-**Render videos:**
+**Whiteboard + Reel video (every run):**
 
-11. Run `node ~/.claude/skills/databricks-pulse/scripts/render-video.mjs <run-folder>` — produces `square.mp4`, `vertical.mp4`, `linkedin.png` (frame at 3s), `cover.jpg` (frame at 1.5s).
-
-**Build + render the Insurance Lens carousel (LinkedIn multi-image post):**
-
-12. Make sure `carousel.json` (Step 6, item 3) follows the schema in `industry_lens.md`: 13 slides in the fixed type order, `date_label` from `now-ist.mjs` (e.g. `15 OCT 2026`), `topic_tag` = the feature in caps, exact figures with their source labels on slide 2, sources + honesty note on slide 13. No emojis on slides.
-13. Run `node ~/.claude/skills/databricks-pulse/scripts/build-carousel.mjs <run-folder>` — fills the Style 25 "Front Page" template (`templates/carousel/front-page.html`) → `<run>/carousel.html`. It fails loudly if a slide's text is too long for its slot; shorten the text in `carousel.json` and re-run rather than accepting overflow.
-14. Run `node ~/.claude/skills/databricks-pulse/scripts/render-carousel.mjs <run-folder>` — Playwright renders `carousel.html?slide=N` at 1080×1350 → `<run>/carousel/slide-01.png … slide-13.png` + `carousel/manifest.json`. `pulse-post.mjs` publishes these as the multi-image post (it falls back to `linkedin.png` only if the manifest is missing).
+10. Fill a template from `templates` into `<run>/whiteboard.html` — the one picked in step 7 if it came from that pool, otherwise the best-fitting whiteboard template for the Reel (variety rule as above). Byline from `config/author.json`; replace text only, don't break CSS. Write `media.spec.json` with `duration_seconds: 16`, `render_viewport: [1080, 1080]`, `inject_css` hiding `.toolbar, .hint` and any non-static decoration, and `pad_color` matching the card background.
+11. Run `node ~/.claude/skills/databricks-pulse/scripts/render-video.mjs <run-folder>` — produces `square.mp4`, `vertical.mp4`, `linkedin.png` (frame at 3s), `cover.jpg`. When a whiteboard template was the LinkedIn pick, Read `linkedin.png` once to check the frame looks complete. `pulse-post.mjs` publishes `post.png` if it exists, else `linkedin.png`.
 
 ### Step 7 — Update state
 
@@ -181,8 +172,7 @@ Schema:
 Output a concise summary:
 - How many items pulled per source
 - Top 3 with scores and URLs (markdown links)
-- The real situation used (event, date, place, source body) and the situation type, so rotation can be checked at a glance
-- Path to the run folder so the user can review drafts, and how many carousel slides rendered (expect 13)
+- Path to the run folder so the user can review drafts
 - If `slow-day.md` was written, say so and stop
 
 ## Critical rules
@@ -191,5 +181,4 @@ Output a concise summary:
 - **Independent dual-format gen.** Don't write LinkedIn first then condense to Reel. Write each fresh from the source.
 - **Empty days are fine.** If 72h yields nothing of substance, say so. Don't manufacture content.
 - **State is authoritative.** Always update `seen.json` after a run. An item drafted once never gets drafted again.
-- **Voice consistency.** LinkedIn = Insurance Lens (real situation → workload → catch → feature → after → caveats → question), plain conversational English, 0–2 emojis, ≤ 2,800 chars. Reel = feature-first brisk Hinglish, zero emojis — the Reel does NOT get the insurance situation. Never blend.
-- **Real, not fictional.** The situation is a documented event with linked figures from a regulator or industry body; no invented scenes, no number without a link, estimates labelled as estimates. Feature facts come only from the Databricks source. Never name the author's employer; never attribute a workflow or constraint to a named company.
+- **Voice consistency.** LinkedIn = release-card format from voice_linkedin.md (facts, arrows, bold headings, My take, no emojis). Reel = brisk Hinglish + zero emojis. Never blend.

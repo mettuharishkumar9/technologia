@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--
+FILL GUIDE — c08_sketch_before_after (portrait 1080x1350)
+LinkedIn-style infographic: author header, feature tag + cloud chips, 2-line headline, hand-drawn
+before/after flow diagram, emoji bullet card, hashtag pills.
+
+HEADER (fixed)
+  byline-name   Always "Harish Mettu - Databricks Platform Engineer" (config/author.json lower_name_full).
+  handle        <div class="handle" hidden> — "linkedin.com/in/<handle>". Hidden by default. Remove the
+                `hidden` attribute ONLY when a real handle is configured; never invent one. Max ~40 chars.
+  avatar        Initials "HM" badge. If config/author_photo.png exists, replace the inner text with
+                <img src="author_photo.png"> (copy the photo into the run folder).
+  follow        "Follow for more" button — fixed text.
+
+SLOTS
+  status-tag    One of: NEW FEATURE / GA / PUBLIC PREVIEW / BETA / PRIVATE PREVIEW. Max ~18 chars.
+  clouds        Up to 3 chips <span class="chip aws|azure|gcp">. Delete chips for clouds where the
+                feature is NOT available (per the release note). Delete the whole .clouds if unknown.
+  headline      2 lines max, ~80 chars total (≈ 40 per line). Use the source's own wording for status.
+  DIAGRAM — fixed geometry, 3 boxes per side:
+    before-1..3 LEFT column "before" flow (rendered greyed out). Box 3 is the step that goes away
+                (crossed out with a red X). Title max ~16 chars per line, 2 lines; optional
+                <small>(sub note)</small> max ~22 chars.
+    before-arrow-2  Label on the arrow between before-1 and before-2, max ~16 chars ("" to hide).
+    after-1..3  RIGHT column "after" flow in solid black. after-2 is highlighted blue (the thing that
+                changed). after-3 has the Databricks mark on its right. Title max ~18 chars per line,
+                2 lines; <small> max ~28 chars.
+    after-arrow-1   Label on the arrow between after-1 and after-2, max ~16 chars.
+    Icons: <i data-lucide="database|table|sheet|hard-drive|server|cloud|..."> — any Lucide name.
+           The bucket in before-3 is an inline SVG (class="ico"); swap for a Lucide <i> if needed.
+  bullets       4–6 <li>, each starting with ONE emoji (🚀 🗄️ ⚠️ 🔒 📏 ✅ 🧭 …). Max ~80 chars each
+                (one line). Facts only from the source: what's new, then limitations.
+  hashtags      3–5 <span class="pill">, each max ~22 chars, CamelCase, #Databricks included.
+
+SAMPLE: Zerobus Ingest targets default storage (Public Preview) — Databricks release notes.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1080x1350">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Architects+Daughter&family=Inter:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#EDEFF2}
+  #card{width:1080px;height:1350px;overflow:hidden;position:relative;background:#EDEFF2;padding:24px;
+    font-family:Poppins,system-ui,sans-serif;color:#111}
+  .sheet{width:100%;height:100%;background:#fff;border-radius:26px;box-shadow:0 6px 24px rgba(20,30,40,.10);
+    padding:34px 44px 0;display:flex;flex-direction:column}
+
+  /* header */
+  .hdr{display:flex;align-items:center;gap:18px;height:84px;flex:none}
+  .avatar{width:76px;height:76px;border-radius:50%;background:#1B3139;color:#fff;flex:none;display:flex;
+    align-items:center;justify-content:center;font:700 27px Inter,sans-serif;letter-spacing:.02em;
+    box-shadow:0 0 0 3px #fff,0 0 0 5px #D6DCE0;overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .who{flex:1;min-width:0}
+  .name{font:600 23.5px/1.3 Poppins,sans-serif;color:#151515;white-space:nowrap;overflow:hidden}
+  .handle{display:flex;align-items:center;gap:8px;font:400 19px Poppins,sans-serif;color:#0A66C2;margin-top:4px;white-space:nowrap;overflow:hidden}
+  .handle[hidden]{display:none}
+  .handle svg{width:20px;height:20px}
+  .follow{flex:none;display:flex;align-items:center;gap:12px;height:58px;padding:0 24px;border-radius:15px;
+    background:linear-gradient(180deg,#6CC23A,#4FA51F);color:#fff;font:600 19px Poppins,sans-serif;
+    box-shadow:0 6px 16px rgba(79,165,31,.35)}
+  .follow svg{width:22px;height:22px;stroke-width:2.4}
+  .rule{height:3px;border-radius:2px;background:linear-gradient(90deg,#1F5FAF,#2E8BC0 45%,#5DB33A);margin:22px 0 18px;flex:none}
+
+  /* tag row + headline */
+  .tagrow{display:flex;justify-content:space-between;align-items:center;height:40px;flex:none}
+  .status{background:#1E58B5;color:#fff;font:700 15px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+    padding:0 16px;height:34px;line-height:34px;border-radius:9px;white-space:nowrap;overflow:hidden;max-width:300px}
+  .clouds{display:flex;gap:16px;align-items:center;border:1.5px solid #E2E6EA;border-radius:11px;padding:0 14px;height:40px;
+    box-shadow:0 2px 6px rgba(0,0,0,.04)}
+  .chip{display:flex;align-items:center;gap:8px;font:500 15px Poppins,sans-serif;color:#222}
+  .chip::before{content:"";width:20px;height:20px;border-radius:5px}
+  .chip.aws::before{background:#FF9900}
+  .chip.azure::before{background:#0078D4}
+  .chip.gcp::before{background:#4285F4}
+  .headline{font:600 43px/54px Poppins,sans-serif;letter-spacing:-.015em;color:#111;margin-top:14px;height:110px;overflow:hidden;flex:none}
+
+  /* diagram */
+  .diagram{position:relative;flex:none;height:560px;margin-top:18px;background:#FAFAF8;border:1.5px solid #E6E8EB;border-radius:16px;overflow:hidden}
+  .box{position:absolute;display:flex;align-items:center;gap:18px;padding:0 22px;font-family:'Architects Daughter',cursive}
+  .box::before{content:"";position:absolute;inset:0;border:3.2px solid currentColor;border-radius:16px 13px 15px 12px;filter:url(#rough)}
+  .box .ico{width:48px;height:48px;flex:none;stroke-width:1.9;filter:url(#rough-sm);position:relative}
+  .bt{position:relative;flex:1;min-width:0;font-size:28px;line-height:1.16;overflow:hidden;height:100%;display:flex;flex-direction:column;justify-content:safe center}
+  .bt small{display:block;font-size:19.5px;line-height:1.25;margin-top:4px}
+  .before{color:#ACB0B4}
+  .after{color:#111}
+  .hl{background:transparent}
+  .hl::after{content:"";position:absolute;inset:-12px;background:#BFDDF7;border-radius:18px;filter:blur(6px);z-index:-1}
+  .hlwrap{position:absolute;isolation:isolate}
+  .arrow{position:absolute;overflow:visible;filter:url(#rough-sm)}
+  .alabel{position:absolute;font:26px 'Architects Daughter',cursive;white-space:nowrap;overflow:hidden}
+  .xmark{position:absolute;overflow:visible;filter:url(#rough-sm)}
+  .dbx{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;color:#FF3621;font:700 19px Inter,sans-serif;letter-spacing:-.01em}
+
+  /* bullets */
+  .bullets{flex:none;margin-top:18px;background:#F6F8FA;border:1.5px solid #E4E8EC;border-radius:16px;padding:16px 24px;height:250px}
+  .bullets ul{margin:0;padding:0;list-style:none;height:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:space-around}
+  .bullets li{font:400 19px/1.35 Poppins,sans-serif;color:#1d1d1d;white-space:nowrap;padding-left:24px;position:relative}
+  .bullets li::before{content:"";position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:50%;background:#4FA51F}
+
+  /* footer */
+  .foot{flex:1;min-height:0;border-top:1.5px solid #E8EBEE;margin-top:18px;display:flex;align-items:center;gap:14px;overflow:hidden}
+  .pill{background:#1E58B5;color:#fff;font:600 19px Poppins,sans-serif;height:48px;line-height:48px;padding:0 22px;border-radius:14px;white-space:nowrap}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="rough" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="3"/>
+      <feDisplacementMap in="SourceGraphic" scale="5"/>
+    </filter>
+    <filter id="rough-sm" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.5"/>
+    </filter>
+    <marker id="ah" viewBox="0 0 20 20" refX="14" refY="10" markerWidth="15" markerHeight="15" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M2 2 L16 10 L2 18" fill="none" stroke="context-stroke" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+</svg>
+
+<div id="card">
+ <div class="sheet">
+  <div class="hdr">
+    <div class="avatar">HM</div>
+    <div class="who">
+      <div class="name">Harish Mettu - Databricks Platform Engineer</div>
+      <div class="handle" data-fit="handle" hidden><i data-lucide="link"></i>linkedin.com/in/your-handle</div>
+    </div>
+    <div class="follow">Follow for more <i data-lucide="arrow-up-right"></i></div>
+  </div>
+  <div class="rule"></div>
+
+  <div class="tagrow">
+    <span class="status" data-fit="status-tag">New feature</span>
+    <div class="clouds">
+      <span class="chip aws">AWS</span>
+      <span class="chip azure">Azure</span>
+      <span class="chip gcp">GCP</span>
+    </div>
+  </div>
+  <div class="headline" data-fit="headline">Zerobus Ingest Targets Default Storage — Now in Public Preview</div>
+
+  <div class="diagram">
+    <!-- ===== BEFORE (left, grey) ===== -->
+    <div class="box before" style="left:40px;top:28px;width:320px;height:112px;transform:rotate(-.6deg)">
+      <i data-lucide="database" class="ico"></i>
+      <div class="bt" data-fit="before-1">Lakeflow<br>Connect</div>
+    </div>
+    <svg class="arrow before" style="left:190px;top:146px" width="20" height="90"><path d="M10 2 C 9 28, 11 56, 10 82" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" marker-end="url(#ah)"/></svg>
+    <div class="alabel before" data-fit="before-arrow-2" style="left:220px;top:172px;width:200px">Zerobus Ingest</div>
+
+    <div class="box before" style="left:36px;top:242px;width:330px;height:122px;transform:rotate(.5deg)">
+      <i data-lucide="table" class="ico"></i>
+      <div class="bt" data-fit="before-2">Unity Catalog<br>Table<small>(external storage)</small></div>
+    </div>
+    <svg class="arrow before" style="left:190px;top:370px" width="20" height="68"><path d="M10 2 L10 60" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="9 8" marker-end="url(#ah)"/></svg>
+
+    <div class="box before" style="left:42px;top:442px;width:320px;height:96px;transform:rotate(-.4deg)">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path d="M4 5l1.8 14.2c.2 1.6 2.9 2.8 6.2 2.8s6-1.2 6.2-2.8L20 5"/><path d="M14.5 12.5c3 1 5.5 1.2 5.5.4"/><circle cx="14" cy="12.3" r=".9"/></svg>
+      <div class="bt" data-fit="before-3">External Cloud<br>Storage</div>
+    </div>
+    <svg class="xmark" style="left:56px;top:418px" width="290" height="140"><g transform="scale(1,.93)"><path d="M8 6 C 90 52, 190 100, 282 144" stroke="#E5332A" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M280 8 C 200 50, 100 100, 10 142" stroke="#E5332A" stroke-width="4.5" fill="none" stroke-linecap="round"/></g></svg>
+
+    <!-- middle arrow -->
+    <svg class="arrow after" style="left:392px;top:283px" width="96" height="40"><path d="M4 21 C 30 19, 60 21, 86 20" stroke="currentColor" stroke-width="3.4" fill="none" stroke-linecap="round" marker-end="url(#ah)"/></svg>
+
+    <!-- ===== AFTER (right, black) ===== -->
+    <div class="box after" style="left:500px;top:28px;width:360px;height:112px;transform:rotate(.4deg)">
+      <i data-lucide="database" class="ico"></i>
+      <div class="bt" data-fit="after-1">Lakeflow<br>Connect</div>
+    </div>
+    <svg class="arrow after" style="left:670px;top:146px" width="20" height="90"><path d="M10 2 C 11 28, 9 56, 10 82" stroke="currentColor" stroke-width="3.2" fill="none" stroke-linecap="round" marker-end="url(#ah)"/></svg>
+    <div class="alabel after" data-fit="after-arrow-1" style="left:700px;top:172px;width:220px">Zerobus Ingest</div>
+
+    <div class="hlwrap" style="left:490px;top:240px;width:420px;height:128px;transform:rotate(-.5deg)">
+      <div class="box after hl" style="left:0;top:0;width:100%;height:100%">
+        <i data-lucide="table" class="ico"></i>
+        <div class="bt" data-fit="after-2">Unity Catalog<br>Table<small>(backed by default storage)</small></div>
+      </div>
+    </div>
+    <svg class="arrow after" style="left:670px;top:374px" width="20" height="64"><path d="M10 2 C 9 20, 11 38, 10 56" stroke="currentColor" stroke-width="3.2" fill="none" stroke-linecap="round" marker-end="url(#ah)"/></svg>
+
+    <div class="box after" style="left:486px;top:442px;width:430px;height:96px;transform:rotate(.6deg)">
+      <i data-lucide="database" class="ico"></i>
+      <div class="bt" data-fit="after-3">Default Storage<small>(Databricks-managed)</small></div>
+      <div class="dbx">
+        <svg viewBox="0 0 40 42" width="44" height="46" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="bullets">
+    <ul data-fit="bullets">
+      <li>🚀 Zerobus Ingest can land data into fully managed default storage tables.</li>
+      <li>🗄️ No need to provision external cloud storage for target ingestion catalogs.</li>
+      <li>⚠️ Classic compute (non-serverless) cannot interact with default storage assets.</li>
+      <li>🔒 OpenSharing to non-Databricks recipients or external Iceberg clients is not supported.</li>
+      <li>📏 ODBC Cloud Fetch with front-end Private Link fails for queries returning &gt;5 MiB.</li>
+    </ul>
+  </div>
+
+  <div class="foot" data-fit="hashtags">
+    <span class="pill">#ZerobusIngest</span>
+    <span class="pill">#LakeflowConnect</span>
+    <span class="pill">#Databricks</span>
+  </div>
+ </div>
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
