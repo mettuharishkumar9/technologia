@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<!--
+  c10_layered_architecture — 1080x1350 portrait, static. Layered architecture explainer:
+  two-line title, stacked "layer rows" (coloured label tab + panel of option tiles), purple
+  down-arrows between rows, one highlighted platform section (default: Databricks Lakehouse with
+  Bronze / Silver / Gold medallion rows), a consumers row and a byline. Works for any
+  source → processing → serving explainer (CDC, ingestion, streaming, ML serving, governance…).
+
+  FILL GUIDE (max characters are for the default type sizes; the renderer fails on overflow)
+  TITLE      data-fit="title-1"  ≤ 32 chars, one line (navy).
+             data-fit="title-2"  ≤ 26 chars total, one line: plain text + the last 1–2 words in
+                                 <span class="pill">…</span> (purple gradient pill). Pill optional.
+  STACK      data-fit="stack" wraps every row; rows have fixed heights, so the total must fit.
+             Budget ≈ 1060 px: layer row 104 (+38 with a caption) · arrow 30 · platform section
+             header 62 + 104 per medallion row + 22 per inner arrow + 36 padding · consumers 132.
+             Default = 3 layer rows + platform (3 medallion rows) + consumers. To ADD a layer row,
+             copy one <div class="layer">…</div> plus an <div class="down"> arrow; to make room drop a
+             caption, a medallion row, or the whole platform section. To REMOVE a row, delete the
+             .layer and one adjacent .down arrow.
+  LAYER ROW  .layer.<colour>   tab colours: blue | indigo | teal | violet | slate | green
+               tab icon   Lucide name on the <i> in .tab (database, cog, network, cloud, shield…)
+               data-fit="lN-label"  1–2 words, ≤ 22 chars, max 2 lines (<br> allowed).
+               .sub                 OPTIONAL small subtitle ≤ 18 chars, e.g. "(Choose a path)".
+             .tiles  1–4 .tile, each: Lucide icon (.ti; tint ti-red|ti-blue|ti-green|ti-amber|
+                     ti-purple|ti-teal|ti-slate) + data-fit="lN-tK" name ≤ 18 chars (2 lines) and
+                     optional .note ≤ 22 chars. Row layout (icon left) suits 1–3 tiles; for 3–4 tiles
+                     use <div class="tiles col"> (icon above name, name ≤ 14 chars, 1 line + note
+                     dropped when a caption is present).
+                     Between alternative tiles insert <div class="or">OR</div>; for "and" lists
+                     just place tiles side by side.
+             .caption  OPTIONAL data-fit="lN-cap" ≤ 70 chars, one line under the tiles (add
+                     class "has-cap" to the .layer). Delete both to drop.
+             NO third-party logos: neutral Lucide icon + product name as text.
+  PLATFORM   .platform — highlighted pink/lavender section. Header = Databricks mark +
+             "databricks" + data-fit="platform" ≤ 16 chars (default "Lakehouse"). Rename freely
+             (e.g. "Unity Catalog", "Lakeflow", "Mosaic AI") or delete the whole .platform block
+             (plus one .down) if the architecture has no single Databricks stage.
+             2–4 .med rows, class bronze | silver | gold | plat (neutral red):
+               data-fit="mN-tab"    ≤ 10 chars (tab label)
+               data-fit="mN-body"   title ≤ 32 chars + .d detail ≤ 120 chars (2 lines). Use " • " or
+                                    " | " separators for lists. Lucide icon on the left of the body.
+  CONSUMERS  last .layer.consumers: tab label ≤ 22 chars; 2–4 .ctile (Lucide icon + data-fit
+             name ≤ 26 chars, 2 lines). Vertical dividers are automatic.
+  FOOTER     byline fixed (Harish Mettu · Databricks Platform Engineer, initials avatar + mark).
+             data-fit="source" OPTIONAL ≤ 60 chars, e.g. "Based on Databricks docs: Lakeflow Connect".
+
+  HONESTY: products, paths and capabilities must come from the Databricks source for the run.
+  Sample: generic CDC architecture (source DBs → Debezium/Kafka Connect or Lakeflow Connect →
+  Kafka/Event Hubs or staging storage → Bronze/Silver/Gold → consumers).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1080x1350">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#141B3D; --ink:#1E2547; --muted:#5D6485; --purple:#6D3DF2; --purple2:#9B5CF6; --line:#D9DDF0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff}
+  #card{width:1080px;height:1350px;overflow:hidden;position:relative;font-family:Inter,system-ui,sans-serif;color:var(--ink);
+    background:
+      radial-gradient(420px 260px at 0% 0%, rgba(155,92,246,.10), transparent 70%),
+      radial-gradient(420px 260px at 100% 0%, rgba(77,120,255,.08), transparent 70%),
+      linear-gradient(180deg,#FBFAFF 0%,#F5F4FD 100%);
+    display:flex;flex-direction:column;padding:34px 40px 0}
+
+  /* title */
+  .t1{height:76px;flex:none;text-align:center;font:800 54px/76px Poppins,sans-serif;color:var(--navy);letter-spacing:-.015em;
+    white-space:nowrap;overflow:hidden}
+  .t2{height:84px;flex:none;text-align:center;font:800 46px/84px Poppins,sans-serif;color:var(--navy);letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden}
+  .t2 .pill{display:inline-block;margin-left:8px;padding:0 26px;height:70px;line-height:70px;border-radius:18px;color:#fff;
+    background:linear-gradient(90deg,#5B3DF5 0%,#8B4DF6 60%,#A55BF5 100%);box-shadow:0 8px 20px rgba(109,61,242,.28);
+    vertical-align:middle;position:relative;top:-3px}
+
+  .stack{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:safe center;overflow:hidden;padding:8px 0 4px}
+
+  /* arrows */
+  .down{height:30px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--purple)}
+  .down svg{width:26px;height:26px;stroke-width:3}
+  .down.sm{height:22px}
+  .down.sm svg{width:22px;height:22px}
+
+  /* layer rows */
+  .layer{height:104px;flex:none;display:flex;gap:0;position:relative}
+  .layer.has-cap{height:142px}
+  .tab{width:304px;flex:none;border-radius:18px;display:flex;align-items:center;gap:14px;padding:0 30px 0 20px;color:#fff;
+    clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%);
+    box-shadow:0 6px 16px rgba(30,37,71,.18);position:relative;z-index:1}
+  .tab > svg{width:42px;height:42px;stroke-width:1.8;flex:none}
+  .tab .lab{font:700 23px/1.25 Poppins,sans-serif;max-height:92px;overflow:hidden;min-width:0;flex:1}
+  .tab .sub{display:block;font:500 17px/1.3 Inter,sans-serif;opacity:.9;margin-top:2px}
+  .tab .labwrap{display:flex;flex-direction:column;justify-content:safe center;min-width:0;flex:1}
+  .blue .tab{background:linear-gradient(135deg,#1E5BD8,#2F7BEA)}
+  .indigo .tab{background:linear-gradient(135deg,#4A2FCF,#6E4CEB)}
+  .teal .tab{background:linear-gradient(135deg,#0E7C86,#16A3A6)}
+  .violet .tab{background:linear-gradient(135deg,#7A2FCF,#A24DEB)}
+  .slate .tab{background:linear-gradient(135deg,#2F3D5C,#4A5C82)}
+  .green .tab{background:linear-gradient(135deg,#167A4A,#22A464)}
+  .consumers .tab{background:linear-gradient(135deg,#1B3FA8,#2C5BD6)}
+
+  .panel{flex:1;min-width:0;margin-left:-14px;padding:12px 14px 12px 28px;border-radius:0 18px 18px 0;
+    background:linear-gradient(90deg,#E9EDFB,#F1F2FC);border:1.5px solid var(--line);border-left:none;display:flex;flex-direction:column;gap:8px}
+  .tiles{flex:1;min-height:0;display:flex;align-items:stretch;gap:10px}
+  .tile{flex:1;min-width:0;background:#fff;border:1.5px solid #E1E4F2;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 14px;
+    box-shadow:0 2px 6px rgba(30,37,71,.05)}
+  .ti{flex:none;width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+  .ti svg{width:26px;height:26px;stroke-width:2}
+  .ti-red{background:#FFE9E5;color:#E03A22}
+  .ti-blue{background:#E4EEFF;color:#2563EB}
+  .ti-green{background:#E2F6EA;color:#18904F}
+  .ti-amber{background:#FFF1D6;color:#C77A00}
+  .ti-purple{background:#EFE7FF;color:#6D3DF2}
+  .ti-teal{background:#DDF4F3;color:#0E8A8C}
+  .ti-slate{background:#E8EBF2;color:#3E4A66}
+  .tname{min-width:0;flex:1;max-height:74px;overflow:hidden;font:700 19px/1.2 Inter,sans-serif;color:var(--navy);
+    display:flex;flex-direction:column;justify-content:safe center}
+  .tname .note{display:block;font:500 14.5px/1.3 Inter,sans-serif;color:var(--muted);margin-top:2px}
+  /* .tiles.col = icon above name (use for 3–4 short-named tiles) */
+  .tiles.col .tile{flex-direction:column;justify-content:center;gap:5px;padding:6px 8px}
+  .tiles.col .ti{width:36px;height:36px;border-radius:10px}
+  .tiles.col .ti svg{width:22px;height:22px}
+  .tiles.col .tname{flex:none;width:100%;text-align:center;font-size:18px;max-height:44px}
+  .or{flex:none;align-self:center;width:38px;height:38px;border-radius:50%;background:#E4DDFC;color:#5B3DD6;
+    display:flex;align-items:center;justify-content:center;font:800 13px Inter,sans-serif;border:2px solid #fff;box-shadow:0 2px 6px rgba(91,61,214,.18)}
+  .caption{flex:none;height:30px;align-self:center;max-width:100%;padding:0 18px;border-radius:9px;background:#fff;border:1.5px solid #E1E4F2;
+    font:500 16px/27px Inter,sans-serif;color:#3C4466;white-space:nowrap;overflow:hidden;text-align:center}
+
+  /* platform (highlighted) */
+  .platform{flex:none;border-radius:24px;padding:14px 18px 18px;
+    background:linear-gradient(160deg,#FCE7F3 0%,#F3E8FF 55%,#EDE9FE 100%);border:2px solid #E9C8F0;
+    box-shadow:0 10px 28px rgba(155,92,246,.14)}
+  .phead{height:54px;display:flex;align-items:center;justify-content:center;gap:12px;white-space:nowrap;overflow:hidden;margin-bottom:10px}
+  .phead .dbx-mark{width:38px;height:40px;flex:none}
+  .phead .word{font:600 40px/54px Inter,sans-serif;color:#1B1F2E;letter-spacing:-.03em}
+  .phead .pname{font:800 40px/54px Poppins,sans-serif;color:#5B2FD9;letter-spacing:-.01em;overflow:hidden;white-space:nowrap}
+  .med{height:104px;display:flex}
+  .med .tab{width:250px;padding-left:22px}
+  .med .tab .lab{font-size:28px;line-height:1.35}
+  .bronze .tab{background:linear-gradient(135deg,#B9480C,#E8782A)}
+  .silver .tab{background:linear-gradient(135deg,#2C5E8A,#4F86B5)}
+  .gold .tab{background:linear-gradient(135deg,#D18A00,#F2B527)}
+  .plat .tab{background:linear-gradient(135deg,#C9261A,#FF5A3C)}
+  .mbody{flex:1;min-width:0;margin-left:-14px;padding:0 20px 0 30px;border-radius:0 16px 16px 0;background:#fff;
+    border:1.5px solid #EAD9F2;border-left:none;display:flex;align-items:center;gap:16px}
+  .mbody > svg{width:40px;height:40px;flex:none;stroke-width:1.8}
+  .bronze .mbody > svg{color:#D0621A}
+  .silver .mbody > svg{color:#3A6F9F}
+  .gold .mbody > svg{color:#D99700}
+  .plat .mbody > svg{color:#E0341F}
+  .mtext{flex:1;min-width:0;max-height:96px;overflow:hidden;display:flex;flex-direction:column;justify-content:safe center}
+  .mtext .h{font:700 22px/1.2 Poppins,sans-serif;color:var(--navy)}
+  .mtext .d{font:500 16.5px/1.35 Inter,sans-serif;color:#3C4466;margin-top:3px}
+
+  /* consumers */
+  .layer.consumers{height:132px}
+  .consumers .panel{flex-direction:row;padding:12px 10px 12px 26px;background:#fff;gap:0}
+  .ctile{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 8px;position:relative}
+  .ctile + .ctile::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:1.5px;background:#E3E5F2}
+  .ctile > svg{width:40px;height:40px;stroke-width:1.8}
+  .ctile .cname{font:700 17px/1.2 Inter,sans-serif;color:var(--navy);text-align:center;height:42px;overflow:hidden;width:100%;
+    display:flex;align-items:center;justify-content:center}
+
+  /* footer */
+  .foot{flex:none;height:62px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1.5px solid #E3E2F3;margin-top:6px}
+  .by{display:flex;align-items:center;gap:10px;white-space:nowrap}
+  .by .avatar{width:32px;height:32px;border-radius:50%;background:#1B3139;color:#fff;display:flex;align-items:center;justify-content:center;font:700 12px Inter,sans-serif}
+  .by .name{font:700 16px Inter,sans-serif;color:var(--navy)}
+  .by .name span{font-weight:500;color:var(--muted)}
+  .by .dbx-mark{width:20px;height:21px}
+  .source{font:500 14.5px/20px Inter,sans-serif;color:var(--muted);white-space:nowrap;overflow:hidden;height:20px;max-width:480px}
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="t1" data-fit="title-1">End-to-End CDC Architecture:</div>
+  <div class="t2" data-fit="title-2">Database to <span class="pill">Lakehouse</span></div>
+
+  <div class="stack" data-fit="stack">
+
+    <!-- LAYER 1 (with caption) -->
+    <div class="layer blue has-cap">
+      <div class="tab"><i data-lucide="database"></i><div class="labwrap"><div class="lab" data-fit="l1-label">Source<br>Databases</div></div></div>
+      <div class="panel">
+        <div class="tiles col">
+          <div class="tile"><div class="ti ti-red"><i data-lucide="server"></i></div><div class="tname" data-fit="l1-t1">SQL Server</div></div>
+          <div class="tile"><div class="ti ti-blue"><i data-lucide="server"></i></div><div class="tname" data-fit="l1-t2">PostgreSQL</div></div>
+          <div class="tile"><div class="ti ti-amber"><i data-lucide="server"></i></div><div class="tname" data-fit="l1-t3">Oracle</div></div>
+          <div class="tile"><div class="ti ti-teal"><i data-lucide="server"></i></div><div class="tname" data-fit="l1-t4">MySQL</div></div>
+        </div>
+        <div class="caption" data-fit="l1-cap">Transaction logs (CDC) + initial snapshot (full load)</div>
+      </div>
+    </div>
+    <div class="down"><i data-lucide="arrow-down"></i></div>
+
+    <!-- LAYER 2 (alternatives with OR) -->
+    <div class="layer indigo">
+      <div class="tab"><i data-lucide="cog"></i><div class="labwrap"><div class="lab" data-fit="l2-label">CDC Capture<span class="sub">(Choose a path)</span></div></div></div>
+      <div class="panel">
+        <div class="tiles">
+          <div class="tile"><div class="ti ti-green"><i data-lucide="radio-tower"></i></div><div class="tname" data-fit="l2-t1">Debezium<span class="note">+ Kafka Connect</span></div></div>
+          <div class="or">OR</div>
+          <div class="tile"><div class="ti ti-red"><i data-lucide="plug-zap"></i></div><div class="tname" data-fit="l2-t2">Lakeflow Connect<span class="note">Databricks</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="down"><i data-lucide="arrow-down"></i></div>
+
+    <!-- LAYER 3 -->
+    <div class="layer teal">
+      <div class="tab"><i data-lucide="network"></i><div class="labwrap"><div class="lab" data-fit="l3-label">Event Transport / Staging</div></div></div>
+      <div class="panel">
+        <div class="tiles">
+          <div class="tile"><div class="ti ti-slate"><i data-lucide="waypoints"></i></div><div class="tname" data-fit="l3-t1">Kafka / Event Hubs<span class="note">Change event stream</span></div></div>
+          <div class="or">OR</div>
+          <div class="tile"><div class="ti ti-blue"><i data-lucide="hard-drive"></i></div><div class="tname" data-fit="l3-t2">Staging Storage<span class="note">Cloud object storage</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="down"><i data-lucide="arrow-down"></i></div>
+
+    <!-- PLATFORM (highlighted, optional) -->
+    <div class="platform">
+      <div class="phead">
+        <svg class="dbx-mark" viewBox="0 0 40 42" width="38" height="40" aria-label="Databricks">
+          <path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/>
+        </svg>
+        <span class="word">databricks</span>
+        <span class="pname" data-fit="platform">Lakehouse</span>
+      </div>
+
+      <div class="med bronze">
+        <div class="tab"><i data-lucide="database"></i><div class="lab" data-fit="m1-tab">Bronze</div></div>
+        <div class="mbody"><i data-lucide="table-2"></i>
+          <div class="mtext" data-fit="m1-body"><div class="h">Raw CDC Events</div><div class="d">Insert | Update | Delete with source metadata (e.g. offset, sequence, timestamp)</div></div>
+        </div>
+      </div>
+      <div class="down sm"><i data-lucide="arrow-down"></i></div>
+      <div class="med silver">
+        <div class="tab"><i data-lucide="settings"></i><div class="lab" data-fit="m2-tab">Silver</div></div>
+        <div class="mbody"><i data-lucide="git-merge"></i>
+          <div class="mtext" data-fit="m2-body"><div class="h">Apply Changes</div><div class="d">Validate • Deduplicate • Order by sequence • MERGE • Handle deletes • Schema evolution</div></div>
+        </div>
+      </div>
+      <div class="down sm"><i data-lucide="arrow-down"></i></div>
+      <div class="med gold">
+        <div class="tab"><i data-lucide="bar-chart-3"></i><div class="lab" data-fit="m3-tab">Gold</div></div>
+        <div class="mbody"><i data-lucide="badge-check"></i>
+          <div class="mtext" data-fit="m3-body"><div class="h">Business-Ready Data</div><div class="d">Current-state tables or historical views (SCD Type 1 / 2) for analytics and reporting</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="down"><i data-lucide="arrow-down"></i></div>
+
+    <!-- CONSUMERS -->
+    <div class="layer consumers">
+      <div class="tab"><i data-lucide="users"></i><div class="labwrap"><div class="lab" data-fit="c-label">Data<br>Consumers</div></div></div>
+      <div class="panel">
+        <div class="ctile"><i data-lucide="bar-chart-big" style="color:#D99700"></i><div class="cname" data-fit="c1">BI / Reporting</div></div>
+        <div class="ctile"><i data-lucide="search-code" style="color:#6D3DF2"></i><div class="cname" data-fit="c2">Analytics &amp; Ad&#8209;hoc Queries</div></div>
+        <div class="ctile"><i data-lucide="brain-circuit" style="color:#A33FD6"></i><div class="cname" data-fit="c3">ML &amp; AI Workloads</div></div>
+        <div class="ctile"><i data-lucide="layout-grid" style="color:#2563EB"></i><div class="cname" data-fit="c4">Applications &amp; Data Products</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="by">
+      <div class="avatar">HM</div>
+      <div class="name">Harish Mettu <span>· Databricks Platform Engineer</span></div>
+      <svg class="dbx-mark" viewBox="0 0 40 42" width="20" height="21" aria-label="Databricks">
+        <path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/>
+      </svg>
+    </div>
+    <div class="source" data-fit="source">Pattern: CDC into the Databricks medallion architecture</div>
+  </div>
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<!--
+  c11_flow_merge_animated — 1200x675, ANIMATED (6 s incl. ~2 s hold). "Flow merge" infographic:
+  2 (or 3) upstream source cards on the left feed curved glowing ribbons into one downstream
+  target card on the right. Sources flip PROCESSING -> SUCCEEDED one after another, particles
+  travel along each ribbon, then the target flips WAITING -> RUNNING.
+  Use for: triggers / dependencies / fan-in (job triggers, table-update triggers, pipelines
+  feeding a consumer, multi-workspace -> one catalog, etc.).
+  Sample = "Trigger Lakeflow Jobs when upstream jobs complete" (Beta).
+
+  FILL GUIDE (max characters are for the default font sizes; renderer fails on overflow)
+  ─────────────────────────────────────────────────────────────────────────────────────
+  HEADER
+    [data-fit=title]       one line, max ~56 chars. Feature name as the docs word it.
+    [data-fit=tag]         release status chip, max ~16 chars ("Beta", "Public Preview", "GA").
+                           Colour: class tag-beta (orange) | tag-preview (blue) | tag-ga (green).
+  SOURCES  (.src.s1, .src.s2, optional .src.s3 — each one card)
+    [data-fit=srcN-label]  dark header strip, max ~24 chars ("Workspace A", "Bronze pipeline").
+    [data-fit=srcN-title]  bold uppercase title, max ~18 chars (2 sources) / ~16 chars (3 sources).
+    [data-fit=srcN-run]    in-progress status word, max ~14 chars ("PROCESSING…", "RUNNING…").
+    [data-fit=srcN-done]   completed status word, max ~13 chars ("SUCCEEDED", "UPDATED").
+    .dag                   line-art DAG icon (inline SVG, tinted by the source colour). Keep, or
+                           replace with <i data-lucide="table-2"></i> etc. inside .dag-wrap.
+    Colour per source is set by class on .src: c-blue | c-orange | c-purple | c-teal. The ribbon,
+    particles and processing pill pick it up automatically from the same slot (.rb1/.rb2/.rb3 use
+    the matching gradient: change stroke="url(#gBlue)" etc. on the ribbon paths if you recolour).
+  2 vs 3 SOURCES
+    Default is 2. For 3: add class "three" to #card (<div id="card" class="anim three">) — the
+    third source card, its ribbon (.rb3) and particles are already in the markup and only show in
+    that mode; cards shrink and use a side-by-side icon layout; all ribbon paths re-route. Nothing
+    else to edit. The target flips later (after the 3rd source) automatically.
+  TARGET  (right card)
+    [data-fit=tgt-label]   dark header, max ~26 chars ("DOWNSTREAM LAKEFLOW JOB").
+    .tgt-icons             Lucide cluster: big app-window + 2 gears (swap data-lucide names freely).
+    [data-fit=tgt-title]   bold label, max ~20 chars ("AUTOMATIC TRIGGER").
+    [data-fit=tgt-wait]    inactive-then-greyed pill, max ~10 chars ("WAITING", "QUEUED").
+    [data-fit=tgt-run]     pill that becomes active (blue), max ~10 chars ("RUNNING", "TRIGGERED").
+  FOOTER
+    byline fixed (Harish Mettu / Databricks Platform Engineer, avatar HM) + Databricks mark.
+    [data-fit=caption]     optional one-line caption, max ~70 chars. Delete .caption to drop it.
+  Keep text generic unless the docs give specifics; no invented numbers.
+
+  ANIMATION (pure CSS, fill-mode both; seekable; final frame = complete still)
+    0–0.6 s cards rise in · progress bars fill · s1 SUCCEEDED at 1.4 s, s2 at 2.1 s (s3 at 2.8 s)
+    · each ribbon lights up + particles flow right after its source completes · target flips to
+    RUNNING at 3.0 s (3.7 s with three sources), gears turn once, card glows · hold to 6 s.
+    Particles fade out at the target, so the still shows lit ribbons with no stray dots.
+    Timing knobs: --done on .s1/.s2/.s3 and --fire on #card (CSS below).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1200x675">
+<meta name="card-duration" content="6000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  #card {
+    width: 1200px; height: 675px; overflow: hidden; position: relative;
+    font-family: Inter, sans-serif; color: #0F2A3A;
+    background:
+      radial-gradient(520px 360px at 50% 52%, rgba(214,232,255,.55), rgba(214,232,255,0) 70%),
+      radial-gradient(#E4EBF2 1.2px, transparent 1.3px) 0 0 / 22px 22px,
+      linear-gradient(180deg, #FFFFFF 0%, #F6F9FC 100%);
+    --fire: 3000ms;
+  }
+  #card.three { --fire: 3700ms; }
+
+  /* ---------- header ---------- */
+  .head {
+    position: absolute; left: 44px; right: 44px; top: 26px; height: 56px;
+    display: flex; align-items: center; gap: 18px;
+  }
+  .head .bar { width: 6px; height: 40px; border-radius: 3px; background: linear-gradient(#1E88E5, #FF6A3D); flex: 0 0 6px; }
+  .title {
+    flex: 1; min-width: 0; height: 56px; overflow: hidden; white-space: nowrap;
+    display: flex; align-items: center;
+    font: 700 29px/1 Poppins, sans-serif; letter-spacing: -.4px; color: #0F2A3A;
+  }
+  .tag {
+    height: 38px; max-width: 220px; overflow: hidden; white-space: nowrap; flex: 0 0 auto;
+    border-radius: 19px; padding: 0 18px; display: flex; align-items: center; gap: 8px;
+    font: 700 16px/1 Inter, sans-serif; letter-spacing: .3px;
+  }
+  .tag svg { width: 18px; height: 18px; stroke-width: 2.4; flex: 0 0 18px; }
+  .tag-beta    { background: #FFF0E8; color: #D9480F; box-shadow: inset 0 0 0 1.5px #FFC9AE; }
+  .tag-preview { background: #E7F2FF; color: #1565C0; box-shadow: inset 0 0 0 1.5px #B5D6FA; }
+  .tag-ga      { background: #E6F6EC; color: #137A43; box-shadow: inset 0 0 0 1.5px #B4E2C6; }
+
+  /* ---------- colour slots ---------- */
+  .c-blue   { --c: #1E88E5; --c2: #0EA5E9; --tint: #E5F2FD; --ink: #1565C0; }
+  .c-orange { --c: #FF6A3D; --c2: #FF8F4D; --tint: #FFEDE5; --ink: #D9480F; }
+  .c-purple { --c: #7C5CE0; --c2: #A07CF5; --tint: #F0EBFF; --ink: #5B3CC4; }
+  .c-teal   { --c: #0FA3A3; --c2: #2DC6B8; --tint: #E2F6F5; --ink: #0B7A7A; }
+
+  /* ---------- sources ---------- */
+  .src {
+    position: absolute; left: 44px; width: 304px; height: 204px;
+    background: #fff; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 0 0 1.5px #D3DDE7, 0 10px 26px rgba(15,42,58,.08);
+    display: flex; flex-direction: column;
+  }
+  .s1 { top: 112px; --done: 1400ms; }
+  .s2 { top: 356px; --done: 2100ms; }
+  .s3 { top: 424px; --done: 2800ms; display: none; }
+  .three .s1 { top: 112px; height: 136px; }
+  .three .s2 { top: 268px; height: 136px; }
+  .three .s3 { display: flex; height: 136px; }
+
+  .src-head {
+    height: 34px; flex: 0 0 34px; background: #14283A; color: #E6EEF5;
+    display: flex; align-items: center; justify-content: center; padding: 0 12px;
+    font: 600 15px/1 Inter, sans-serif; letter-spacing: .2px; white-space: nowrap; overflow: hidden;
+  }
+  .src-body {
+    flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: safe center; gap: 10px; padding: 8px 16px 12px;
+  }
+  .three .src-body { flex-direction: row; gap: 14px; padding: 8px 14px 12px; }
+  .dag-wrap { color: var(--c); height: 46px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .dag-wrap svg { height: 46px; width: auto; }
+  .dag-wrap svg[data-lucide], .dag-wrap .lucide { width: 40px; height: 40px; stroke-width: 1.8; }
+  .three .dag-wrap { height: 40px; }
+  .three .dag-wrap svg { height: 38px; }
+  .src-txt { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+  .three .src-txt { align-items: flex-start; flex: 1; gap: 8px; }
+  .src-title {
+    height: 30px; max-width: 272px; overflow: hidden; white-space: nowrap;
+    font: 800 23px/30px Poppins, sans-serif; letter-spacing: .3px; text-transform: uppercase; color: #12232D;
+  }
+  .three .src-title { font-size: 19px; height: 26px; line-height: 26px; max-width: 170px; }
+
+  /* status pill: two stacked states in one grid cell */
+  .pill-stack { display: grid; }
+  .pill-stack > * { grid-area: 1 / 1; }
+  .pill {
+    height: 34px; min-width: 176px; max-width: 240px; overflow: hidden; white-space: nowrap;
+    border-radius: 9px; padding: 0 16px; display: flex; align-items: center; justify-content: center; gap: 7px;
+    font: 700 16px/1 Inter, sans-serif; letter-spacing: .8px;
+  }
+  .three .pill { height: 30px; min-width: 150px; max-width: 170px; font-size: 14px; padding: 0 12px; justify-content: flex-start; }
+  .pill svg { width: 17px; height: 17px; stroke-width: 2.8; flex: 0 0 17px; }
+  .pill.run  { background: var(--tint); color: var(--ink); }
+  .pill.done { background: #E3F5EA; color: #127A42; box-shadow: inset 0 0 0 1.5px #A8DDBE; }
+
+  .progress { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: #EEF2F6; }
+  .progress i { display: block; height: 100%; width: 100%; transform-origin: left; background: linear-gradient(90deg, var(--c2), var(--c)); }
+
+  /* ---------- ribbons ---------- */
+  #flow { position: absolute; left: 0; top: 0; width: 1200px; height: 675px; pointer-events: none; overflow: visible; }
+  .rb1 { --p: path('M 352 214 C 585 214 585 302 790 302'); --ey: 302px; }
+  .rb2 { --p: path('M 352 458 C 585 458 585 370 790 370'); --ey: 370px; }
+  .rb3 { --p: path('M 352 492 C 585 492 585 386 790 386'); --ey: 386px; display: none; }
+  .three .rb1 { --p: path('M 352 180 C 585 180 585 286 790 286'); --ey: 286px; }
+  .three .rb2 { --p: path('M 352 336 C 560 336 600 336 790 336'); --ey: 336px; }
+  .three .rb3 { display: inline; }
+  #flow path.track, #flow path.lit, #flow path.glow { d: var(--p); fill: none; stroke-linecap: round; }
+  #flow path.track { stroke: #E3EAF1; stroke-width: 18; }
+  #flow path.lit   { stroke-width: 16; }
+  #flow path.glow  { stroke-width: 26; opacity: .35; filter: url(#soft); }
+  #flow path.head  { transform: translate(790px, var(--ey)); }
+  .head-track { fill: #E3EAF1; }
+
+  /* particles: HTML dots riding the same path via offset-path */
+  .pt {
+    position: absolute; left: 0; top: 0; width: 12px; height: 12px; border-radius: 50%;
+    offset-path: var(--p); offset-rotate: 0deg; offset-anchor: center; offset-distance: 0%;
+    background: #fff; box-shadow: 0 0 0 3px var(--c), 0 0 14px 4px var(--c2);
+    opacity: 0;
+  }
+  .pt.sm { width: 8px; height: 8px; box-shadow: 0 0 0 2.5px var(--c2), 0 0 10px 3px var(--c2); }
+  .pts3 { display: none; }
+  .three .pts3 { display: block; }
+
+  /* ---------- target ---------- */
+  .tgt {
+    position: absolute; left: 818px; top: 196px; width: 338px; height: 280px;
+    background: #fff; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 0 0 1.5px #D3DDE7, 0 14px 34px rgba(15,42,58,.10);
+    display: flex; flex-direction: column;
+  }
+  .tgt-head {
+    height: 46px; flex: 0 0 46px; background: #14283A; color: #fff;
+    display: flex; align-items: center; justify-content: center; padding: 0 14px;
+    font: 700 17px/1 Poppins, sans-serif; letter-spacing: 1px; white-space: nowrap; overflow: hidden;
+  }
+  .tgt-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 14px; padding: 10px 18px 16px; }
+  .tgt-icons { position: relative; width: 250px; height: 92px; flex: 0 0 92px; }
+  .tgt-icons .ar { position: absolute; top: 34px; width: 46px; height: 24px; }
+  .tgt-icons .ar.l { left: 0; color: #1E88E5; }
+  .tgt-icons .ar.r { right: 0; color: #FF6A3D; }
+  .tgt-icons .ar svg { width: 46px; height: 24px; }
+  .ic { position: absolute; display: flex; }
+  .ic svg { width: 100%; height: 100%; }
+  .ic.win  { left: 89px; top: 14px; width: 72px; height: 66px; color: #1B4F8A; }
+  .ic.win svg { stroke-width: 1.6; }
+  .ic.g1   { left: 62px; top: 2px; width: 40px; height: 40px; color: #FF6A3D; }
+  .ic.g2   { left: 146px; top: 50px; width: 36px; height: 36px; color: #1E88E5; }
+  .ic.g1 svg, .ic.g2 svg { stroke-width: 2.2; background: #fff; border-radius: 50%; }
+  .tgt-title {
+    height: 32px; max-width: 300px; overflow: hidden; white-space: nowrap;
+    font: 800 24px/32px Poppins, sans-serif; letter-spacing: .4px; text-transform: uppercase; color: #12232D;
+  }
+  .tgt-pills { display: flex; gap: 12px; }
+  .tp {
+    width: 140px; height: 40px; overflow: hidden; white-space: nowrap; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 700 16px/1 Inter, sans-serif; letter-spacing: .9px;
+  }
+  .tp i.dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 8px; }
+  /* start state: WAITING active (grey), RUNNING idle (outline) — animation swaps them */
+  .tp.wait { background: #E6EAEF; color: #4D5D6C; box-shadow: inset 0 0 0 1.5px #D3DAE2; }
+  .tp.go   { background: #fff;    color: #9AA8B5; box-shadow: inset 0 0 0 1.5px #D9E2EA; }
+
+  /* ---------- footer ---------- */
+  .foot {
+    position: absolute; left: 44px; right: 44px; bottom: 24px; height: 52px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%; background: #1B3139; color: #fff; flex: 0 0 44px;
+    display: flex; align-items: center; justify-content: center; font: 700 16px Inter, sans-serif;
+  }
+  .by-name { font: 700 16px/1.2 Poppins, sans-serif; white-space: nowrap; }
+  .by-role { font: 500 13px/1.2 Inter, sans-serif; color: #4A6170; white-space: nowrap; }
+  .caption {
+    flex: 1; min-width: 0; height: 24px; overflow: hidden; white-space: nowrap; text-align: right;
+    font: 500 16px/24px Inter, sans-serif; color: #4A6170; padding-left: 24px;
+  }
+  .dbx { display: flex; align-items: center; gap: 8px; padding-left: 18px; margin-left: auto; border-left: 1.5px solid #DCE4EB; height: 34px; flex: 0 0 auto; }
+  .caption + .dbx { margin-left: 0; }
+  .dbx .dbx-mark { width: 28px; height: 30px; }
+
+  /* ---------- animation ---------- */
+  @keyframes rise   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes fill   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes toGreen{ to { background: linear-gradient(90deg, #2FBF71, #17994F); } }
+  @keyframes out    { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(.85); } }
+  @keyframes pop    { 0% { opacity: 0; transform: scale(.6); } 70% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes draw   { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes show   { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes travel {
+    0%   { offset-distance: 0%;   opacity: 0; }
+    12%  { opacity: 1; }
+    82%  { opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+  @keyframes doneRing { to { box-shadow: 0 0 0 2px #8FD3AC, 0 10px 26px rgba(15,42,58,.08); } }
+  @keyframes tgtFire {
+    0%   { box-shadow: 0 0 0 1.5px #D3DDE7, 0 14px 34px rgba(15,42,58,.10); }
+    40%  { box-shadow: 0 0 0 3px #1E88E5, 0 0 0 12px rgba(30,136,229,.18), 0 18px 40px rgba(30,136,229,.25); }
+    100% { box-shadow: 0 0 0 2.5px #1E88E5, 0 0 0 7px rgba(30,136,229,.10), 0 16px 36px rgba(30,136,229,.18); }
+  }
+  @keyframes waitOff { to { background: #fff; color: #A3AFBA; box-shadow: inset 0 0 0 1.5px #E1E7ED; } }
+  @keyframes goOn {
+    0%   { background: #fff; color: #9AA8B5; box-shadow: inset 0 0 0 1.5px #D9E2EA; transform: scale(1); }
+    50%  { transform: scale(1.08); }
+    100% { background: linear-gradient(90deg, #0EA5E9, #1E88E5); color: #fff; box-shadow: 0 6px 16px rgba(30,136,229,.35); transform: scale(1); }
+  }
+  @keyframes spin   { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes spinR  { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  @keyframes nudge  { 0% { transform: translateX(0); } 50% { transform: translateX(6px); } 100% { transform: translateX(0); } }
+
+  .anim .head  { animation: rise 500ms ease-out 0ms both; }
+  .anim .src   { animation: rise 500ms ease-out both, doneRing 300ms ease-out var(--done) both; }
+  .anim .s1    { animation-delay: 100ms, var(--done); }
+  .anim .s2    { animation-delay: 220ms, var(--done); }
+  .anim .s3    { animation-delay: 340ms, var(--done); }
+  .anim .tgt   { animation: rise 500ms ease-out 360ms both, tgtFire 700ms ease-out var(--fire) both; }
+  .anim .foot  { animation: rise 500ms ease-out 450ms both; }
+
+  .anim .progress i { animation: fill calc(var(--done) - 500ms) cubic-bezier(.4,.1,.6,1) 500ms both, toGreen 250ms linear var(--done) both; }
+  .anim .pill.run  { animation: out 220ms ease-in var(--done) both; }
+  .anim .pill.done { animation: pop 380ms cubic-bezier(.3,.7,.4,1) calc(var(--done) + 120ms) both; }
+
+  .anim .rb1 { --start: 1400ms; }
+  .anim .rb2 { --start: 2100ms; }
+  .anim .rb3 { --start: 2800ms; }
+  .anim #flow path.lit, .anim #flow path.glow {
+    stroke-dasharray: 1 1; animation: draw 650ms cubic-bezier(.5,0,.3,1) calc(var(--start) + 50ms) both;
+  }
+  .anim #flow path.head.on { animation: show 200ms ease-out calc(var(--start) + 600ms) both; }
+
+  .anim .pts1 { --start: 1400ms; }
+  .anim .pts2 { --start: 2100ms; }
+  .anim .pts3 { --start: 2800ms; }
+  .anim .pt { animation: travel 800ms cubic-bezier(.45,0,.55,1) both; }
+  .anim .pt:nth-child(1) { animation-delay: calc(var(--start) + 120ms); }
+  .anim .pt:nth-child(2) { animation-delay: calc(var(--start) + 260ms); }
+  .anim .pt:nth-child(3) { animation-delay: calc(var(--start) + 400ms); }
+  .anim .pt:nth-child(4) { animation-delay: calc(var(--start) + 540ms); }
+
+  .anim .tp.wait { animation: waitOff 300ms ease-out var(--fire) both; }
+  .anim .tp.go   { animation: goOn 450ms ease-out calc(var(--fire) + 80ms) both; }
+  .anim .ic.g1   { animation: spin 1400ms cubic-bezier(.3,.6,.3,1) var(--fire) both; }
+  .anim .ic.g2   { animation: spinR 1400ms cubic-bezier(.3,.6,.3,1) var(--fire) both; }
+  .anim .ar.l    { animation: nudge 500ms ease-in-out calc(var(--fire) - 300ms) both; }
+  .anim .ar.r    { animation: nudge 500ms ease-in-out calc(var(--fire) + 200ms) both; }
+</style>
+</head>
+<body>
+<div id="card" class="anim">
+
+  <!-- HEADER -->
+  <div class="head">
+    <i class="bar"></i>
+    <div class="title" data-fit="title">Trigger Lakeflow Jobs when upstream jobs complete</div>
+    <div class="tag tag-beta" data-fit="tag"><i data-lucide="flask-conical"></i>Beta</div>
+  </div>
+
+  <!-- RIBBONS (geometry lives in CSS: .rb1/.rb2/.rb3 --p; no need to edit) -->
+  <svg id="flow" viewBox="0 0 1200 675" width="1200" height="675">
+    <defs>
+      <linearGradient id="gBlue" gradientUnits="userSpaceOnUse" x1="352" y1="0" x2="815" y2="0">
+        <stop offset="0" stop-color="#7CC8F8" stop-opacity=".55"/><stop offset=".55" stop-color="#2D9CEB"/><stop offset="1" stop-color="#1572D3"/>
+      </linearGradient>
+      <linearGradient id="gOrange" gradientUnits="userSpaceOnUse" x1="352" y1="0" x2="815" y2="0">
+        <stop offset="0" stop-color="#FFB38F" stop-opacity=".55"/><stop offset=".55" stop-color="#FF7A45"/><stop offset="1" stop-color="#F0501F"/>
+      </linearGradient>
+      <linearGradient id="gPurple" gradientUnits="userSpaceOnUse" x1="352" y1="0" x2="815" y2="0">
+        <stop offset="0" stop-color="#C6B4FA" stop-opacity=".55"/><stop offset=".55" stop-color="#9273EE"/><stop offset="1" stop-color="#6A47D8"/>
+      </linearGradient>
+      <linearGradient id="gTeal" gradientUnits="userSpaceOnUse" x1="352" y1="0" x2="815" y2="0">
+        <stop offset="0" stop-color="#8FE3DA" stop-opacity=".55"/><stop offset=".55" stop-color="#22B8AE"/><stop offset="1" stop-color="#0B8F8F"/>
+      </linearGradient>
+      <filter id="soft" x="-10%" y="-60%" width="120%" height="220%"><feGaussianBlur stdDeviation="7"/></filter>
+    </defs>
+    <!-- arrowhead shape is drawn at origin, moved to the ribbon end by CSS -->
+    <g class="rb1">
+      <path class="track" pathLength="1"/>
+      <path class="head head-track" d="M0 -17 L28 0 L0 17 Z"/>
+      <path class="glow" pathLength="1" stroke="url(#gBlue)"/>
+      <path class="lit"  pathLength="1" stroke="url(#gBlue)"/>
+      <path class="head on" d="M0 -17 L28 0 L0 17 Z" fill="#1572D3"/>
+    </g>
+    <g class="rb2">
+      <path class="track" pathLength="1"/>
+      <path class="head head-track" d="M0 -17 L28 0 L0 17 Z"/>
+      <path class="glow" pathLength="1" stroke="url(#gOrange)"/>
+      <path class="lit"  pathLength="1" stroke="url(#gOrange)"/>
+      <path class="head on" d="M0 -17 L28 0 L0 17 Z" fill="#F0501F"/>
+    </g>
+    <g class="rb3">
+      <path class="track" pathLength="1"/>
+      <path class="head head-track" d="M0 -17 L28 0 L0 17 Z"/>
+      <path class="glow" pathLength="1" stroke="url(#gPurple)"/>
+      <path class="lit"  pathLength="1" stroke="url(#gPurple)"/>
+      <path class="head on" d="M0 -17 L28 0 L0 17 Z" fill="#6A47D8"/>
+    </g>
+  </svg>
+
+  <!-- PARTICLES (each group shares its ribbon's path + colour) -->
+  <div class="pts1 rb1 c-blue"><i class="pt"></i><i class="pt sm"></i><i class="pt"></i><i class="pt sm"></i></div>
+  <div class="pts2 rb2 c-orange"><i class="pt"></i><i class="pt sm"></i><i class="pt"></i><i class="pt sm"></i></div>
+  <div class="pts3 rb3 c-purple"><i class="pt"></i><i class="pt sm"></i><i class="pt"></i><i class="pt sm"></i></div>
+
+  <!-- SOURCES -->
+  <div class="src s1 c-blue">
+    <div class="src-head" data-fit="src1-label">Workspace A</div>
+    <div class="src-body">
+      <div class="dag-wrap"><svg class="dag" viewBox="0 0 132 52" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 26 H34 M58 26 C66 26 66 12 76 12 M58 26 C66 26 66 40 76 40 M92 12 C102 12 102 26 112 26 M92 40 C102 40 102 26 108 26" stroke="#9AAAB8"/>
+        <rect x="4" y="19" width="14" height="14" rx="3" stroke="currentColor"/>
+        <rect x="34" y="16" width="24" height="20" rx="5" stroke="currentColor" fill="currentColor" fill-opacity=".14"/>
+        <circle cx="84" cy="12" r="7" stroke="currentColor"/>
+        <circle cx="84" cy="40" r="7" stroke="currentColor"/>
+        <circle cx="119" cy="26" r="7" stroke="currentColor" fill="currentColor"/>
+      </svg></div>
+      <div class="src-txt">
+        <div class="src-title" data-fit="src1-title">Upstream Job 1</div>
+        <div class="pill-stack">
+          <div class="pill run" data-fit="src1-run">PROCESSING…</div>
+          <div class="pill done" data-fit="src1-done"><i data-lucide="circle-check"></i>SUCCEEDED</div>
+        </div>
+      </div>
+    </div>
+    <div class="progress"><i></i></div>
+  </div>
+
+  <div class="src s2 c-orange">
+    <div class="src-head" data-fit="src2-label">Workspace B</div>
+    <div class="src-body">
+      <div class="dag-wrap"><svg class="dag" viewBox="0 0 132 52" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 26 H34 M58 26 C66 26 66 12 76 12 M58 26 C66 26 66 40 76 40 M92 12 C102 12 102 26 112 26 M92 40 C102 40 102 26 108 26" stroke="#9AAAB8"/>
+        <rect x="4" y="19" width="14" height="14" rx="3" stroke="currentColor"/>
+        <rect x="34" y="16" width="24" height="20" rx="5" stroke="currentColor" fill="currentColor" fill-opacity=".14"/>
+        <circle cx="84" cy="12" r="7" stroke="currentColor"/>
+        <circle cx="84" cy="40" r="7" stroke="currentColor"/>
+        <circle cx="119" cy="26" r="7" stroke="currentColor" fill="currentColor"/>
+      </svg></div>
+      <div class="src-txt">
+        <div class="src-title" data-fit="src2-title">Upstream Job 2</div>
+        <div class="pill-stack">
+          <div class="pill run" data-fit="src2-run">PROCESSING…</div>
+          <div class="pill done" data-fit="src2-done"><i data-lucide="circle-check"></i>SUCCEEDED</div>
+        </div>
+      </div>
+    </div>
+    <div class="progress"><i></i></div>
+  </div>
+
+  <!-- 3rd source: only visible when #card has class "three" -->
+  <div class="src s3 c-purple">
+    <div class="src-head" data-fit="src3-label">Workspace C</div>
+    <div class="src-body">
+      <div class="dag-wrap"><svg class="dag" viewBox="0 0 132 52" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 26 H34 M58 26 C66 26 66 12 76 12 M58 26 C66 26 66 40 76 40 M92 12 C102 12 102 26 112 26 M92 40 C102 40 102 26 108 26" stroke="#9AAAB8"/>
+        <rect x="4" y="19" width="14" height="14" rx="3" stroke="currentColor"/>
+        <rect x="34" y="16" width="24" height="20" rx="5" stroke="currentColor" fill="currentColor" fill-opacity=".14"/>
+        <circle cx="84" cy="12" r="7" stroke="currentColor"/>
+        <circle cx="84" cy="40" r="7" stroke="currentColor"/>
+        <circle cx="119" cy="26" r="7" stroke="currentColor" fill="currentColor"/>
+      </svg></div>
+      <div class="src-txt">
+        <div class="src-title" data-fit="src3-title">Upstream Job 3</div>
+        <div class="pill-stack">
+          <div class="pill run" data-fit="src3-run">PROCESSING…</div>
+          <div class="pill done" data-fit="src3-done"><i data-lucide="circle-check"></i>SUCCEEDED</div>
+        </div>
+      </div>
+    </div>
+    <div class="progress"><i></i></div>
+  </div>
+
+  <!-- TARGET -->
+  <div class="tgt">
+    <div class="tgt-head" data-fit="tgt-label">DOWNSTREAM LAKEFLOW JOB</div>
+    <div class="tgt-body">
+      <div class="tgt-icons">
+        <span class="ar l"><svg viewBox="0 0 46 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 H40 M31 4 L41 12 L31 20"/></svg></span>
+        <span class="ic win"><i data-lucide="app-window"></i></span>
+        <span class="ic g1"><i data-lucide="settings"></i></span>
+        <span class="ic g2"><i data-lucide="cog"></i></span>
+        <span class="ar r"><svg viewBox="0 0 46 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 H40 M31 4 L41 12 L31 20"/></svg></span>
+      </div>
+      <div class="tgt-title" data-fit="tgt-title">Automatic Trigger</div>
+      <div class="tgt-pills">
+        <div class="tp wait" data-fit="tgt-wait">WAITING</div>
+        <div class="tp go" data-fit="tgt-run"><i class="dot"></i>RUNNING</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <div class="avatar">HM</div>
+    <div><div class="by-name">Harish Mettu</div><div class="by-role">Databricks Platform Engineer</div></div>
+    <div class="caption" data-fit="caption">A job starts on its own once the jobs it depends on finish</div>
+    <div class="dbx">
+      <svg class="dbx-mark" viewBox="0 0 40 42" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+    </div>
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

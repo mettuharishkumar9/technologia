@@ -40,6 +40,19 @@ const FPS = 15;
 
 const log = (m) => console.log(`[render-card] ${m}`);
 
+// Fonts/icons come from Google Fonts + unpkg; a slow CDN shouldn't kill the run.
+async function open(page, url) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
+      return;
+    } catch (e) {
+      if (attempt >= 3) throw e;
+      log(`load attempt ${attempt} failed (${e.message.split(/\r?\n/)[0]}), retrying`);
+    }
+  }
+}
+
 function ffmpeg(argv, label) {
   const r = spawnSync(FFMPEG, ["-v", "error", "-y", ...argv], { encoding: "utf8", timeout: 180000 });
   if (r.status !== 0) {
@@ -57,7 +70,7 @@ const browser = await chromium.launch({ headless: true });
 try {
   // First pass at scale 1 just to read the declared size.
   const probe = await browser.newPage();
-  await probe.goto(pathToFileURL(htmlFile).href, { waitUntil: "networkidle" });
+  await open(probe, pathToFileURL(htmlFile).href);
   const meta = await probe.evaluate(() => ({
     size: document.querySelector('meta[name="card-size"]')?.content || "1080x1080",
     duration: parseInt(document.querySelector('meta[name="card-duration"]')?.content || "0", 10),
@@ -66,7 +79,7 @@ try {
   const [W, H] = meta.size.split("x").map(Number);
 
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: scale });
-  await page.goto(pathToFileURL(htmlFile).href, { waitUntil: "networkidle" });
+  await open(page, pathToFileURL(htmlFile).href);
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => (i.onload = i.onerror = r)))));
@@ -112,7 +125,7 @@ try {
     mkdirSync(tmp, { recursive: true });
     // Frames at 1x: the GIF/MP4 are 1080 px wide anyway, and 2x frames take ~4x as long.
     const fpage = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1080 / W });
-    await fpage.goto(pathToFileURL(htmlFile).href, { waitUntil: "networkidle" });
+    await open(fpage, pathToFileURL(htmlFile).href);
     await fpage.evaluate(async () => {
       await document.fonts.ready;
       if (window.lucide) window.lucide.createIcons();

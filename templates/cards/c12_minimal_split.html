@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!--
+  c12_minimal_split — 1080x1080, static. Minimal editorial split: top 60% warm beige with a
+  single-colour royal-blue line-art diagram (hub -> dashed fan-out to 2-4 items -> outlined
+  "control plane" box with 3-4 icon cells); bottom 40% deep navy with a 2-line headline
+  (line 2 mint), a short paragraph, byline bottom-left, Databricks logo bottom-right.
+  Sample = Unity Catalog governing data and AI assets across workspaces and clouds.
+
+  FILL GUIDE (max characters are for the default font sizes; renderer fails on overflow)
+  ─────────────────────────────────────────────────────────────────────────────────────
+  DIAGRAM (top). All icons are Lucide names; keep everything blue line-art, no fills.
+    .hub          default = big Lucide "cloud" (line art). Swap the <i data-lucide> for any
+                  Lucide icon (database, server, network, shield-check...).
+                  VARIANT "Unity Catalog hub": replace the .hub contents with
+                    <svg class="dbx-mark" viewBox="0 0 40 42">…path from _shared.html…</svg>
+                    <div class="hub-label" data-fit="hub-label">Unity Catalog</div>
+                  (mark stays red; hub-label max ~22 chars, blue). Add class "hub labeled" on
+                  .hub so the icon shrinks to leave room for the label.
+    .fan          2-4 .fan-item (3 is the sweet spot). The dashed connector redraws itself
+                  from the item count (pure CSS), no SVG coordinates to edit.
+      per item    <i data-lucide> icon + ONE of:
+                    [data-fit=fan-N]  small label, max ~18 chars (e.g. "Workspace · prod")
+                    <i data-lucide="user-round" class="person"></i>  person glyph, no text
+                  VARIANT fan-outs: workspaces (monitor / laptop / server + "Workspace A"),
+                  clouds (cloud x3 + "Cloud region 1..3" — never name or draw a vendor logo),
+                  tools (code-xml "Notebooks", layout-dashboard "Dashboards", bot "Agents").
+    .plane        rounded outlined box.
+      [data-fit=plane-tab]   filled header tab, max ~40 chars ("Single control plane" style).
+      .cell x 3-4            Lucide icon + [data-fit=cell-N] caption max ~16 chars (4 cells)
+                             or ~22 chars (3 cells). Thin vertical rules are automatic.
+  TEXT (bottom, navy)
+    [data-fit=headline]  two block lines, each nowrap, max ~25 chars per line.
+                         Line 1 white, line 2 <span class="mint"> mint green. A single line is
+                         fine (delete the second span).
+    [data-fit=para]      2-3 lines, max ~165 chars, light grey. Plain facts from the source.
+    byline fixed (Harish Mettu · Databricks Platform Engineer). Logo bottom-right fixed.
+  No numbers on this card unless they come straight from the Databricks source.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1080x1080">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  :root { --blue: #1F4FD8; --beige: #F1ECE4; --navy: #0B2266; --mint: #7CE3A1; }
+  #card {
+    width: 1080px; height: 1080px; overflow: hidden; position: relative;
+    display: flex; flex-direction: column; font-family: Inter, sans-serif;
+  }
+
+  /* ---------- top: diagram ---------- */
+  .top {
+    height: 648px; flex: 0 0 648px; background: var(--beige); color: var(--blue);
+    display: flex; flex-direction: column; align-items: center; padding-top: 30px;
+  }
+  .hub { height: 150px; flex: 0 0 150px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+  .hub > svg.lucide { width: 168px; height: 168px; stroke-width: .62; margin-bottom: -28px;
+    filter: drop-shadow(2.5px 2.5px 0 var(--blue)); }
+  .hub .dbx-mark { width: 96px; height: 101px; }
+  .hub.labeled > svg.lucide { width: 120px; height: 120px; margin-bottom: -10px; stroke-width: .8; }
+  .hub.labeled .dbx-mark { width: 74px; height: 78px; }
+  .hub-label { margin-top: 10px; height: 30px; white-space: nowrap; overflow: hidden; max-width: 520px;
+    font: 600 23px/30px Inter, sans-serif; color: var(--blue); }
+
+  /* dashed stem from hub down to the bus line */
+  .stem { position: relative; width: 2px; height: 40px; flex: 0 0 40px;
+    background: repeating-linear-gradient(to bottom, var(--blue) 0 5px, transparent 5px 10px); }
+  .stem::after, .dot { content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--blue); left: -4px; }
+  .stem::after { top: 6px; }
+
+  .fan { position: relative; display: flex; width: fit-content; }
+  /* horizontal bus: from centre of first item to centre of last */
+  .fan::before { content: ""; position: absolute; top: 0; left: 105px; right: 105px; height: 2px;
+    background: repeating-linear-gradient(to right, var(--blue) 0 5px, transparent 5px 10px); }
+  .fan-item { width: 210px; flex: 0 0 210px; position: relative; padding-top: 40px;
+    display: flex; flex-direction: column; align-items: center; }
+  .fan-item::before { content: ""; position: absolute; top: 0; left: 104px; width: 2px; height: 26px;
+    background: repeating-linear-gradient(to bottom, var(--blue) 0 5px, transparent 5px 10px); }
+  .fan-item::after { content: ""; position: absolute; top: 22px; left: 100px; width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+  .fan-item > svg.lucide { width: 84px; height: 84px; stroke-width: 1.15; }
+  .fan-item > svg.person { width: 40px; height: 40px; margin-top: 10px; stroke-width: 2; fill: var(--blue); }
+  .fan-lbl { margin-top: 10px; width: 200px; height: 28px; text-align: center; white-space: nowrap; overflow: hidden;
+    font: 500 20px/28px Inter, sans-serif; color: var(--blue); }
+
+  .plane { margin-top: 30px; width: 940px; border: 2.5px solid var(--blue); border-radius: 18px; overflow: hidden;
+    box-shadow: 3px 3px 0 var(--blue); background: rgba(255,255,255,.12); }
+  .plane-tab { height: 52px; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center;
+    white-space: nowrap; overflow: hidden; padding: 0 24px; font: 500 22px/1 Inter, sans-serif; letter-spacing: .1px; }
+  .cells { height: 142px; display: flex; align-items: stretch; padding: 20px 0; }
+  .cell { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 14px; }
+  .cell + .cell { border-left: 1.5px solid rgba(31,79,216,.55); }
+  .cell > svg.lucide { width: 52px; height: 52px; stroke-width: 1.2; flex: 0 0 52px; }
+  .cell-cap { height: 28px; width: 100%; padding: 0 10px; text-align: center; white-space: nowrap; overflow: hidden;
+    font: 500 20px/28px Inter, sans-serif; color: var(--blue); }
+
+  /* ---------- bottom: text ---------- */
+  .bottom { flex: 1; min-height: 0; background: var(--navy); color: #fff; position: relative; padding: 44px 64px 0; }
+  .headline { height: 148px; overflow: hidden; font: 700 62px/74px Inter, sans-serif; letter-spacing: -1.2px; }
+  .headline > span { display: block; white-space: nowrap; }
+  .headline .mint { color: var(--mint); }
+  .para { margin-top: 14px; width: 690px; height: 114px; overflow: hidden; font: 400 25px/38px Inter, sans-serif; color: #D3DAEC; }
+  .byline { position: absolute; left: 64px; bottom: 30px; font: 500 17px/1 Inter, sans-serif; color: #8E9CC4; letter-spacing: .2px; white-space: nowrap; }
+  .byline b { color: #C9D2EA; font-weight: 600; }
+  .logo { position: absolute; right: 60px; bottom: 54px; display: flex; align-items: center; gap: 12px; }
+  .logo .dbx-mark { width: 44px; height: 46px; }
+  .logo span { font: 700 40px/1 Inter, sans-serif; letter-spacing: -1px; color: #fff; }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="top">
+    <!-- HUB (default cloud; see fill guide for the Databricks-mark / Unity Catalog variant) -->
+    <div class="hub"><i data-lucide="cloud"></i></div>
+    <div class="stem"></div>
+
+    <!-- FAN-OUT: 2-4 items -->
+    <div class="fan">
+      <div class="fan-item"><i data-lucide="database"></i><div class="fan-lbl" data-fit="fan-1">Tables &amp; volumes</div></div>
+      <div class="fan-item"><i data-lucide="brain-circuit"></i><div class="fan-lbl" data-fit="fan-2">Models &amp; functions</div></div>
+      <div class="fan-item"><i data-lucide="layout-dashboard"></i><div class="fan-lbl" data-fit="fan-3">Notebooks &amp; apps</div></div>
+    </div>
+
+    <!-- CONTROL PLANE BOX: tab + 3-4 cells -->
+    <div class="plane">
+      <div class="plane-tab" data-fit="plane-tab">Unity Catalog: one governance layer</div>
+      <div class="cells">
+        <div class="cell"><i data-lucide="shield-check"></i><div class="cell-cap" data-fit="cell-1">Access control</div></div>
+        <div class="cell"><i data-lucide="scroll-text"></i><div class="cell-cap" data-fit="cell-2">Auditing</div></div>
+        <div class="cell"><i data-lucide="git-fork"></i><div class="cell-cap" data-fit="cell-3">Lineage</div></div>
+        <div class="cell"><i data-lucide="search"></i><div class="cell-cap" data-fit="cell-4">Discovery</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="headline" data-fit="headline"><span>One catalog, every cloud.</span><span class="mint">Govern data and AI.</span></div>
+    <div class="para" data-fit="para">Unity Catalog gives you one place to manage access, auditing, lineage and discovery for data and AI assets across your workspaces and clouds.</div>
+    <div class="byline"><b>Harish Mettu</b> · Databricks Platform Engineer</div>
+    <div class="logo">
+      <svg class="dbx-mark" viewBox="0 0 40 42" aria-label="Databricks"><path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/></svg>
+      <span>databricks</span>
+    </div>
+  </div>
+</div>
+<script>lucide.createIcons();</script>
+</body>
+</html>

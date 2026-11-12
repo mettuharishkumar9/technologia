@@ -8,7 +8,7 @@ One static (or lightly animated) image per post. Each run copies one template to
 
 - Self-contained HTML. One root `<div id="card">` with fixed `width`/`height` in px equal to
   `<meta name="card-size" content="WxH">`. `body { margin:0 }`, nothing outside `#card`.
-- Sizes: landscape `1200x800`, square `1080x1080`, portrait `1080x1350`, 4:3 `1200x900`.
+- Sizes: landscape `1200x800`, 16:9 `1200x675`, square `1080x1080`, portrait `1080x1350`, 4:3 `1200x900`.
 - Fonts: Google Fonts `<link>` only (Inter, Poppins, JetBrains Mono, Caveat, Anton…).
 - Icons: Lucide UMD pinned `https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js`,
   `<i data-lucide="name">`, call `lucide.createIcons()` at the end of body.

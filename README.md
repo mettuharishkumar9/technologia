@@ -31,7 +31,7 @@ Designed to run on either:
 │   ├── pulse-delete.mjs              # Delete a previously published LinkedIn post by URN
 │   ├── scheduled-scan.sh             # Linux wrapper for `claude -p /databricks-pulse`
 │   └── scheduled-scan.ps1            # Windows equivalent
-├── templates/cards/                  # 8 LinkedIn card templates (c01–c08) + _previews/ — see templates/cards/README.md
+├── templates/cards/                  # 12 LinkedIn card templates (c01–c12) + _previews/ — see templates/cards/README.md
 ├── templates/visuals/                # 10 bundled HTML visual templates (Reel video)
 ├── state/                            # Persistent state (gitignored)
 │   ├── seen.json                     # Items already scanned/drafted

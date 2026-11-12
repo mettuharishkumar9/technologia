@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--
+  c09_dark_code_recovery — 1200x675 (16:9) static. Dark "oops → fix" card for recovery /
+  safety / rescue features: big uppercase hook headline, 3-step icon row, SQL code window,
+  red checklist panel, red banner with the key number, requirement chips + byline.
+
+  FILL GUIDE (max characters are for the default type sizes; the renderer fails on overflow)
+  HEADLINE   data-fit="headline"  ≤ 30 chars, ONE line, uppercase via CSS. Wrap exactly ONE word in
+                                  <span class="hl">…</span> (red text + hand-drawn red outline).
+                                  e.g. "Accidentally <span class="hl">dropped</span> a volume?"
+  SUBLINE    data-fit="subline"   ≤ 44 chars, one line. Optional yellow tail in <span class="y">…</span>.
+  STEPS      exactly 3 .step, separated by the two .arrow elements (keep them).
+               icon      Lucide name on the <i> inside .ico (database, table, folder, file, server…)
+               badge     .badge.bad (red ✕) | .badge.good (green ✓) | delete the badge div for none.
+                         Icon tint: .ico.grey | .ico.blue | .ico.green | .ico.red
+               pill      data-fit="stepN"  ≤ 12 chars, uppercase. Colour: .pill.red | .pill.blue |
+                         .pill.green | .pill.amber
+  CODE       data-fit="filename"  OPTIONAL tab label ≤ 30 chars ("example.sql"); delete span to drop.
+             data-fit="code"      ≤ 5 lines, ≤ 52 chars per line (white-space: pre, keep flush-left;
+                                  blank lines count). Spans like c07:
+                                  .kw keyword (blue) · .str string (orange) · .cm comment (green)
+                                  · .fn function (yellow) · .num number (amber). Escape < > &.
+                                  Copy statements from the docs; never invent syntax.
+  CHECKLIST  data-fit="checks"    3–4 <li>, ≤ 70 chars each (≤ 3 lines at panel width; keep total
+                                  ≲ 230 chars for 4 items). Highlights: <b class="y">yellow bold</b>,
+                                  <b>white bold</b>.
+  BANNER     Lucide icon (default "history"); data-fit="banner" ≤ 26 chars, uppercase. Put the key
+             number in <span class="y">…</span> (e.g. "<span class="y">7-day</span> recovery window").
+  FOOTER     data-fit="reqs"      2–4 requirement chips as <span>…</span> (dots added by CSS),
+                                  ≤ 60 chars total. e.g. "Databricks SQL · Runtime 19.11+ · Unity Catalog".
+             byline               fixed: Harish Mettu · Databricks Platform Engineer + Databricks mark.
+
+  HONESTY: every limit, window, version and requirement (the "7 days", "19.11+", managed vs
+  external, etc.) must come from the Databricks source for the run. The sample below is UNDROP
+  VOLUME and is a layout example only — re-check every fact against the docs before reusing it.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="card-size" content="1200x675">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080E1A; --ink:#F4F6FA; --muted:#97A3B6; --red:#FF3B30; --red2:#E0241B; --yellow:#FFD43B;
+    --blue:#4DA3FF; --green:#2FD07A; --panel:#0E1626; --line:#2A3446;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#000}
+  #card{width:1200px;height:675px;overflow:hidden;position:relative;color:var(--ink);
+    font-family:Inter,system-ui,sans-serif;
+    background:
+      radial-gradient(520px 300px at 0% 0%, rgba(255,59,48,.20), transparent 70%),
+      radial-gradient(560px 320px at 100% 0%, rgba(77,163,255,.16), transparent 70%),
+      radial-gradient(620px 340px at 100% 100%, rgba(255,59,48,.24), transparent 70%),
+      radial-gradient(500px 280px at 0% 100%, rgba(77,163,255,.10), transparent 70%),
+      linear-gradient(180deg,#0B1322 0%,#070B14 100%);}
+  /* faint corner sweeps */
+  .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .sweep{position:absolute;pointer-events:none;border-radius:50%;border:1.5px solid rgba(255,80,60,.22)}
+  .sweep.s1{width:620px;height:620px;right:-380px;bottom:-420px}
+  .sweep.s2{width:700px;height:700px;right:-420px;bottom:-470px;border-color:rgba(255,80,60,.14)}
+  .sweep.s3{width:520px;height:520px;left:-360px;top:-380px;border-color:rgba(255,80,60,.16)}
+  .sweep.s4{width:560px;height:560px;right:-380px;top:-400px;border-color:rgba(77,163,255,.14)}
+
+  /* headline */
+  .headline{position:absolute;left:40px;right:40px;top:20px;height:78px;text-align:center;white-space:nowrap;overflow:hidden;
+    font:900 56px/78px Poppins,sans-serif;text-transform:uppercase;letter-spacing:-.005em;color:#fff;
+    text-shadow:0 3px 18px rgba(0,0,0,.5)}
+  .hl{position:relative;display:inline-block;color:var(--red);padding:0 10px;margin:0 2px}
+  .hl::before{content:"";position:absolute;left:-2px;right:-4px;top:9px;bottom:7px;border:3.5px solid var(--red);
+    border-radius:22px 14px 26px 12px;transform:rotate(-1.6deg)}
+  .hl::after{content:"";position:absolute;left:4px;right:-10px;top:13px;bottom:3px;border:2px solid rgba(255,59,48,.55);
+    border-radius:14px 26px 12px 24px;transform:rotate(1.2deg)}
+  .subline{position:absolute;left:40px;right:40px;top:96px;height:50px;text-align:center;white-space:nowrap;overflow:hidden;
+    font:700 36px/50px Poppins,sans-serif;color:#fff}
+  .y{color:var(--yellow)}
+
+  /* steps */
+  .steps{position:absolute;left:0;right:0;top:158px;height:128px;display:flex;align-items:flex-start;justify-content:center;gap:34px}
+  .step{width:220px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .ico{position:relative;width:78px;height:72px;display:flex;align-items:center;justify-content:center}
+  .ico > svg{width:66px;height:66px;stroke-width:1.7}
+  .ico.grey > svg{color:#C9D1DD}
+  .ico.blue > svg{color:var(--blue)}
+  .ico.green > svg{color:var(--green)}
+  .ico.red > svg{color:var(--red)}
+  .badge{position:absolute;right:-8px;bottom:-2px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;border:3px solid #0A101C}
+  .badge svg{width:18px;height:18px;stroke-width:3.5;color:#fff}
+  .badge.bad{background:var(--red)}
+  .badge.good{background:#1FB866}
+  .pill{width:190px;height:42px;border-radius:21px;border:2.5px solid;display:flex;align-items:center;justify-content:center;
+    font:700 20px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(8,14,26,.75);
+    white-space:nowrap;overflow:hidden}
+  .pill.red{border-color:var(--red);box-shadow:0 0 14px rgba(255,59,48,.25)}
+  .pill.blue{border-color:var(--blue);box-shadow:0 0 14px rgba(77,163,255,.25)}
+  .pill.green{border-color:var(--green);box-shadow:0 0 14px rgba(47,208,122,.25)}
+  .pill.amber{border-color:var(--yellow);box-shadow:0 0 14px rgba(255,212,59,.22)}
+  .arrow{margin-top:24px;color:#8C97A8}
+  .arrow svg{width:40px;height:40px;stroke-width:2}
+
+  /* lower area */
+  .lower{position:absolute;left:40px;right:40px;top:300px;height:306px;display:flex;gap:18px}
+  .left{width:744px;display:flex;flex-direction:column;gap:14px}
+  .code{height:216px;flex:none;background:rgba(10,16,28,.92);border:1.5px solid #2E3A50;border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .bar{height:36px;flex:none;display:flex;align-items:center;padding:0 18px;gap:9px;border-bottom:1px solid #1C2638;background:rgba(255,255,255,.02)}
+  .dot{width:13px;height:13px;border-radius:50%}
+  .fname{font:500 14px 'JetBrains Mono',monospace;color:#6E7C92;margin-left:14px;white-space:nowrap;overflow:hidden;max-width:520px}
+  pre{margin:0;flex:1;min-height:0;padding:11px 24px;font:500 21px/1.42 'JetBrains Mono',monospace;color:#E8EDF5;
+    white-space:pre;overflow:hidden}
+  .kw{color:#5FB0FF}
+  .str{color:#FF9F5A}
+  .cm{color:#4CD27E}
+  .fn{color:#FFD86B}
+  .num{color:#FFC46B}
+
+  .banner{height:76px;flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:18px;
+    background:linear-gradient(90deg,#9E0F0A 0%,#E2231A 30%,#E2231A 70%,#9E0F0A 100%);
+    border:2px solid #FF6A5C;box-shadow:0 8px 26px rgba(226,35,26,.35), inset 0 1px 0 rgba(255,255,255,.18);padding:0 24px}
+  .banner > svg{width:44px;height:44px;stroke-width:2.4;color:#fff;flex:none}
+  .btext{font:800 36px/72px Poppins,sans-serif;text-transform:uppercase;color:#fff;white-space:nowrap;overflow:hidden;
+    letter-spacing:.01em;height:72px;max-width:620px}
+  .btext .y{font-size:42px;line-height:0}
+
+  .checks{flex:1;border:2px solid var(--red);border-radius:16px;background:rgba(40,8,10,.35);
+    box-shadow:0 0 0 1px rgba(255,59,48,.12), 0 0 28px rgba(255,59,48,.16) inset;padding:14px 18px}
+  .checks ul{list-style:none;margin:0;padding:0;height:100%;overflow:hidden;display:flex;flex-direction:column;
+    justify-content:safe center;gap:14px}
+  .checks li{display:flex;gap:12px;align-items:flex-start;font:500 17.5px/1.3 Inter,sans-serif;color:#E3E8F0}
+  .checks li b{font-weight:800;color:#fff}
+  .checks li b.y{color:var(--yellow)}
+  .ck{flex:none;width:26px;height:26px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-top:-1px}
+  .ck svg{width:16px;height:16px;stroke-width:3.5;color:#fff}
+
+  /* footer */
+  .foot{position:absolute;left:40px;right:40px;top:620px;height:36px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .reqs{font:500 16px/36px Inter,sans-serif;color:#B4BECC;white-space:nowrap;overflow:hidden;height:36px;max-width:640px;
+    display:flex;align-items:center;gap:0}
+  .reqs::before{content:"";width:34px;height:1.5px;background:#475266;margin-right:14px;flex:none}
+  .reqs span + span::before{content:"·";color:#6E7A8E;margin:0 12px;font-weight:700}
+  .by{display:flex;align-items:center;gap:10px;white-space:nowrap;font:500 15px Inter,sans-serif;color:#97A3B6}
+  .by b{font-weight:700;color:#E8EDF5}
+  .by .dbx-mark{width:20px;height:21px}
+  .by .avatar{width:28px;height:28px;border-radius:50%;background:#1B3139;border:1.5px solid #3A4B55;color:#fff;
+    display:flex;align-items:center;justify-content:center;font:700 11px Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="deco"><div class="sweep s1"></div><div class="sweep s2"></div><div class="sweep s3"></div><div class="sweep s4"></div></div>
+
+  <div class="headline" data-fit="headline">Accidentally <span class="hl">dropped</span> a volume?</div>
+  <div class="subline" data-fit="subline">Discover it. Recover it. <span class="y">Unity Catalog.</span></div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="ico grey"><i data-lucide="database"></i><div class="badge bad"><i data-lucide="x"></i></div></div>
+      <div class="pill red" data-fit="step1">Drop</div>
+    </div>
+    <div class="arrow"><i data-lucide="arrow-right"></i></div>
+    <div class="step">
+      <div class="ico blue"><i data-lucide="search"></i></div>
+      <div class="pill blue" data-fit="step2">Discover</div>
+    </div>
+    <div class="arrow"><i data-lucide="arrow-right"></i></div>
+    <div class="step">
+      <div class="ico blue"><i data-lucide="database"></i><div class="badge good"><i data-lucide="check"></i></div></div>
+      <div class="pill green" data-fit="step3">Undrop</div>
+    </div>
+  </div>
+
+  <div class="lower">
+    <div class="left">
+      <div class="code">
+        <div class="bar">
+          <span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span>
+          <span class="fname" data-fit="filename">example.sql</span>
+        </div>
+<pre data-fit="code"><span class="cm">-- Find recoverable dropped volumes</span>
+<span class="kw">SHOW VOLUMES DROPPED IN</span> my_catalog.my_schema;
+
+<span class="cm">-- Restore using the returned volume ID</span>
+<span class="kw">UNDROP VOLUME WITH ID</span> <span class="str">'your-volume-id'</span>;</pre>
+      </div>
+      <div class="banner">
+        <i data-lucide="history"></i>
+        <div class="btext" data-fit="banner"><span class="y">7-day</span> recovery window</div>
+      </div>
+    </div>
+
+    <div class="checks">
+      <ul data-fit="checks">
+        <li><span class="ck"><i data-lucide="check"></i></span><span>Lists dropped volumes that are still recoverable</span></li>
+        <li><span class="ck"><i data-lucide="check"></i></span><span>Restore with <b class="y">UNDROP VOLUME</b> (with ID) within <b class="y">7 days</b></span></li>
+        <li><span class="ck"><i data-lucide="check"></i></span><span>Works for both <b class="y">managed</b> &amp; <b class="y">external</b> volumes</span></li>
+        <li><span class="ck"><i data-lucide="check"></i></span><span>Managed volume <b class="y">files</b> are also recovered</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="reqs" data-fit="reqs"><span>Databricks SQL</span><span>Runtime 19.11+</span><span>Unity Catalog</span></div>
+    <div class="by">
+      <svg class="dbx-mark" viewBox="0 0 40 42" width="20" height="21" aria-label="Databricks">
+        <path fill="#FF3621" d="M20 0 0 11.3v4.9l20 11.3 17-9.6v4l-17 9.7L2.2 21.5 0 22.7v4.9l20 11.3 20-11.3v-4.9l-2.2-1.2L20 31.6 3 22l17-9.6 17 9.6v-4.9L20 7.4 3 17l-1-.6L20 6.2l17.8 10 2.2-1.2v-3.7z"/>
+      </svg>
+      <div class="avatar">HM</div>
+      <span><b>Harish Mettu</b> · Databricks Platform Engineer</span>
+    </div>
+  </div>
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
