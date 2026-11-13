@@ -28,6 +28,7 @@ Designed to run on either:
 │   ├── render-video.mjs              # Playwright + ffmpeg → square.mp4, vertical.mp4, frames
 │   ├── render-card.mjs               # card.html → post.png (+ post.gif/mp4 for animated cards) — the LinkedIn image
 │   ├── pulse-post.mjs                # Auto-pick (freshness window) + publish to LinkedIn via Composio CLI
+│   ├── post-notify.mjs               # Cron entry point: auto-pick post + status email (Gmail via Composio)
 │   ├── pulse-delete.mjs              # Delete a previously published LinkedIn post by URN
 │   ├── scheduled-scan.sh             # Linux wrapper for `claude -p /databricks-pulse`
 │   └── scheduled-scan.ps1            # Windows equivalent
@@ -70,20 +71,22 @@ Add these cron entries (one post per day, box TZ = Asia/Kolkata; each scan runs 
 ```
 # Mon 09:00 · Tue 10:00 · Wed 11:00 · Thu 09:30 · Fri 10:30 · Sat 11:30 · Sun 10:00 IST
 27 8  * * 1 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-0  9  * * 1 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+0  9  * * 1 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 27 9  * * 2 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-0  10 * * 2 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+0  10 * * 2 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 27 10 * * 3 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-0  11 * * 3 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+0  11 * * 3 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 57 8  * * 4 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-30 9  * * 4 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+30 9  * * 4 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 57 9  * * 5 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-30 10 * * 5 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+30 10 * * 5 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 57 10 * * 6 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-30 11 * * 6 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+30 11 * * 6 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 27 9  * * 0 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
-0  10 * * 0 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/pulse-post.mjs --auto-pick >> logs/cron-post.log 2>&1
+0  10 * * 0 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 ```
+
+`post-notify.mjs` runs `pulse-post.mjs --auto-pick` and emails the result (✅ posted with link / ❌ failed with log tail / ⏸ paused) via Composio `GMAIL_SEND_EMAIL` to `email_to` in `state/notify.json`. Needs `composio link gmail` once. Test with `node scripts/post-notify.mjs --test-email`.
 
 `--auto-pick` only considers runs younger than 36 hours (`--max-age-hours` to change). Older unposted runs are recorded as skipped in `state/published.json`, so an outage never turns into a backlog being drained one stale post at a time.
 
