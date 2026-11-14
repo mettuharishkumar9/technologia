@@ -67,9 +67,9 @@ npm install -g @anthropic-ai/claude-code
 crontab -e
 ```
 
-Add these cron entries (one post per day, box TZ = Asia/Kolkata; each scan runs 33 min before its post):
+Cron entries (two posts per day, box TZ = Asia/Kolkata; each scan runs 33 min before its post). Morning slots below; evening slots use the same two lines per day at: Mon 16:57/17:30 · Tue 17:27/18:00 · Wed 17:57/18:30 · Thu 18:27/19:00 · Fri 16:57/17:30 · Sat 17:27/18:00 · Sun 17:57/18:30.
 ```
-# Mon 09:00 · Tue 10:00 · Wed 11:00 · Thu 09:30 · Fri 10:30 · Sat 11:30 · Sun 10:00 IST
+# Morning: Mon 09:00 · Tue 10:00 · Wed 11:00 · Thu 09:30 · Fri 10:30 · Sat 11:30 · Sun 10:00 IST
 27 8  * * 1 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
 0  9  * * 1 cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/post-notify.mjs >> logs/cron-post.log 2>&1
 27 9  * * 2 /home/ubuntu/.claude/skills/databricks-pulse/scripts/scheduled-scan.sh
