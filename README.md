@@ -93,7 +93,7 @@ Cron entries (two posts per day, box TZ = Asia/Kolkata; each scan runs 33 min be
 0 8-20/2 * * * cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/fresh-check.mjs >> logs/fresh-check.log 2>&1
 ```
 
-`fresh-check.mjs` (no Claude cost) parses the release notes every 2 h, 08:00–20:00 IST. A new GA / Public Preview / Beta / "now available" entry triggers `scheduled-scan.sh` → `post-notify.mjs`. Max 2 posts per IST day; if nothing has posted by the 10:00 check, it scans anyway (7/14-day window), so there's always a morning post even on days without news. `--dry-run` shows what it would do; `--seed` marks the current page as seen.
+`fresh-check.mjs` (no Claude cost) runs the **same ranking as the scan** every 2 h, 08:00–20:00 IST: blog + release notes + community, dedupe against `seen.json`, scope filter, 14-day window, score = 0.4 engagement + 0.35 recency + 0.25 topic. It posts the #1 when the score ≥ 0.5, fewer than 2 posts today and ≥ 4 h since the last post — writing `state/next_pick.json` so the scan drafts that exact item, then `post-notify.mjs`. `--dry-run` prints the top 3 and the decision.
 
 `post-notify.mjs` runs `pulse-post.mjs --auto-pick` and emails the result (✅ posted with link / ❌ failed with log tail / ⏸ paused) via Composio `GMAIL_SEND_EMAIL` to `email_to` in `state/notify.json`. Needs `composio link gmail` once. Test with `node scripts/post-notify.mjs --test-email`.
 

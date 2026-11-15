@@ -94,6 +94,8 @@ For each surviving item, compute three sub-scores in [0, 1]:
 
 Sort descending. Take top 3.
 
+**Pre-ranked pick (2-hourly cron):** if `state/next_pick.json` exists, `scripts/fresh-check.mjs` already ran this same formula over the same sources a few minutes ago and chose that item. Use it as **#1** (keep your own ranking for #2/#3 and `ranked.json`), as long as it still passes Step 2b and Step 4; if it fails either, say why in `ranked.json` and fall back to your own #1. Never delete the file yourself — the cron wrapper does.
+
 ### Step 4 — Fluff filter on the #1
 
 Before drafting, sanity-check the #1 pick with this question (think it through, no separate tool call needed):
