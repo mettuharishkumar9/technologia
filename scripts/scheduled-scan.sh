@@ -69,7 +69,7 @@ set +e
     --print \
     --dangerously-skip-permissions \
     --add-dir "$SKILL_ROOT" \
-    --max-budget-usd "4.00" \
+    --max-budget-usd "6.00" \
     "/databricks-pulse" \
     < /dev/null \
     >> "$LOG_FILE" 2>&1

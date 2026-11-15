@@ -11,7 +11,7 @@
 // Recipient: state/notify.json {"email_to": "..."} (state/ is gitignored).
 // --test-email sends a sample report without posting anything.
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -82,8 +82,23 @@ const runName = (out.match(/Run folder: .*\/runs\/([^\s/]+)/) || [])[1];
 const info = runInfo(runName);
 const errLine = (out.match(/ERROR: (.*)/) || [])[1];
 
+// Mark the posted item drafted even if the scan died before its own state update (Step 7),
+// so the 2-hourly ranking never picks it again.
+function markDrafted(run) {
+  const seenPath = path.join(SKILL_ROOT, "state", "seen.json");
+  const top = (readJson(path.join(SKILL_ROOT, "runs", run, "ranked.json"), {}).top3 || [])[0];
+  const seen = readJson(seenPath, { items: {} });
+  if (!top?.url) return;
+  const cur = seen.items[top.url] || { url: top.url, title: top.title, first_seen: new Date().toISOString() };
+  if (cur.drafted_at) return;
+  seen.items[top.url] = { ...cur, drafted_at: new Date().toISOString(), rank_when_drafted: 1 };
+  writeFileSync(seenPath, JSON.stringify(seen, null, 2));
+  console.log(`[post-notify] marked drafted in seen.json: ${top.title}`);
+}
+
 let subject, body;
 if (urn) {
+  if (runName && !DRY_RUN) markDrafted(runName);
   subject = `✅ LinkedIn post published — ${day}`;
   body = [
     `Today's Databricks Pulse post went live at ${time} IST.`,

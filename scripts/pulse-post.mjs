@@ -87,6 +87,7 @@ function runFolderTime(name) {
 function hasPostableMedia(folder) {
   return (
     existsSync(path.join(folder, "carousel", "manifest.json")) ||
+    existsSync(path.join(folder, "post.png")) ||
     existsSync(path.join(folder, "linkedin.png")) ||
     existsSync(path.join(folder, "whiteboard.png"))
   );
