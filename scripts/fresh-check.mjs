@@ -11,7 +11,7 @@
 //   4. On a trigger, and only if fewer than MAX_POSTS_PER_DAY posts went out today (IST):
 //      runs scripts/scheduled-scan.sh (full /databricks-pulse draft) and then
 //      scripts/post-notify.mjs (auto-pick post + status email) when the scan produced a new run.
-//   5. Fallback: at the 20:00 check, if nothing was posted today, it scans anyway (the scan's
+//   5. Fallback: from the 10:00 check on, if nothing was posted today, it scans anyway (the scan's
 //      7/14-day window picks the freshest unposted item) and always emails the outcome.
 // --seed marks everything currently listed as seen without scanning (used once at install).
 // --dry-run reports what it would do; no scan, no post, no state writes.
@@ -26,7 +26,7 @@ const STATE = path.join(SKILL_ROOT, "state");
 const CHECK_STATE = path.join(STATE, "fresh-check.json");
 const LOCK = path.join(STATE, "fresh-check.lock");
 const MAX_POSTS_PER_DAY = 2;
-const FALLBACK_HOUR = 20; // IST
+const FALLBACK_HOUR = 10; // IST — first check at/after this hour with 0 posts today posts anyway
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
 const SEED = args.includes("--seed");
