@@ -129,7 +129,7 @@ const posted = postsToday();
 const hour = ist().getHours();
 const fallback = hour >= FALLBACK_HOUR && posted === 0;
 
-log(`release-note entries: ${entries.length}, new: ${fresh.length}, triggers: ${triggers.length}, posted today: ${posted}/${MAX_POSTS_PER_DAY}${fallback ? ", end-of-day fallback" : ""}`);
+log(`release-note entries: ${entries.length}, new: ${fresh.length}, triggers: ${triggers.length}, posted today: ${posted}/${MAX_POSTS_PER_DAY}${fallback ? ", no-news fallback" : ""}`);
 for (const t of triggers) log(`  trigger: [${t.status}] ${t.title} (${t.date})`);
 
 const markSeen = (list) => {
