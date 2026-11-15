@@ -48,7 +48,7 @@ function runInfo(runName) {
   const dir = path.join(SKILL_ROOT, "runs", runName);
   const card = readJson(path.join(dir, "card.json"), {});
   const ranked = readJson(path.join(dir, "ranked.json"), {});
-  const top = (ranked.top3 || [])[0] || {};
+  const top = (ranked.top3 || ranked.top || [])[0] || {};
   return { topic: top.title, source: top.url, template: card.template };
 }
 
@@ -86,7 +86,8 @@ const errLine = (out.match(/ERROR: (.*)/) || [])[1];
 // so the 2-hourly ranking never picks it again.
 function markDrafted(run) {
   const seenPath = path.join(SKILL_ROOT, "state", "seen.json");
-  const top = (readJson(path.join(SKILL_ROOT, "runs", run, "ranked.json"), {}).top3 || [])[0];
+  const r = readJson(path.join(SKILL_ROOT, "runs", run, "ranked.json"), {});
+  const top = (r.top3 || r.top || [])[0];
   const seen = readJson(seenPath, { items: {} });
   if (!top?.url) return;
   const cur = seen.items[top.url] || { url: top.url, title: top.title, first_seen: new Date().toISOString() };

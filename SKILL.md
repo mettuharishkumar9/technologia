@@ -133,7 +133,7 @@ The MSYS/Git Bash on Windows has broken tzdata for `TZ='Asia/Kolkata'` — it re
 **Text artifacts:**
 
 1. `sources.json` — raw items pulled from all three surfaces (full data, not just top 3)
-2. `ranked.json` — top 3 with full score breakdown
+2. `ranked.json` — top 3 with full score breakdown. Fixed shape: `{"top3": [{"rank", "title", "url", "source", "status", "date", "engagement", "recency", "topic_match", "score"}, …], "out_of_scope": [...]}` — scripts read `top3[0].url`, so always use the key `top3`.
 3. `linkedin.md` — release-card post for #1 (structure and hashtag rules in voice_linkedin.md; no Source URL in the body)
 4. `instagram.md` — Reel script for #1 (Hinglish, no emojis)
 5. `instagram_caption.md` — STATIC IG caption for #1 (English+light Hinglish, emojis OK, 25–30 hashtags, this is what the auto-poster publishes — see Social_Media_Project/weeks/week01_may06/day02_lakebase/instagram.md as a reference format)
