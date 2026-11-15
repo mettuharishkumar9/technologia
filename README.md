@@ -90,10 +90,10 @@ Cron entries (two posts per day, box TZ = Asia/Kolkata; each scan runs 33 min be
 **Schedule: post when news breaks (since 2026-11-14).** One cron line replaces the fixed slots:
 
 ```
-0 8-20/2 * * * cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/fresh-check.mjs >> logs/fresh-check.log 2>&1
+0 8-23/3 * * * cd /home/ubuntu/.claude/skills/databricks-pulse && /usr/bin/node scripts/fresh-check.mjs >> logs/fresh-check.log 2>&1
 ```
 
-`fresh-check.mjs` (no Claude cost) runs the **same ranking as the scan** every 2 h, 08:00–20:00 IST: blog + release notes + community, dedupe against `seen.json`, scope filter, 14-day window, score = 0.4 engagement + 0.35 recency + 0.25 topic. It posts the #1 when the score ≥ 0.5, fewer than 2 posts today and ≥ 4 h since the last post — writing `state/next_pick.json` so the scan drafts that exact item, then `post-notify.mjs`. `--dry-run` prints the top 3 and the decision.
+`fresh-check.mjs` (no Claude cost) runs the **same ranking as the scan** every 3 h, 08:00–23:00 IST (8, 11, 14, 17, 20, 23): blog + release notes + community, dedupe against `seen.json`, scope filter, 14-day window, score = 0.4 engagement + 0.35 recency + 0.25 topic. It posts the #1 when the score ≥ 0.5, fewer than 6 posts today and ≥ 2.5 h since the last post — i.e. one post per check — writing `state/next_pick.json` so the scan drafts that exact item, then `post-notify.mjs`. `--dry-run` prints the top 3 and the decision.
 
 `post-notify.mjs` runs `pulse-post.mjs --auto-pick` and emails the result (✅ posted with link / ❌ failed with log tail / ⏸ paused) via Composio `GMAIL_SEND_EMAIL` to `email_to` in `state/notify.json`. Needs `composio link gmail` once. Test with `node scripts/post-notify.mjs --test-email`.
 

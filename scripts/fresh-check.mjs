@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// 2-hourly ranked check — same ranking as the /databricks-pulse scan, without a Claude call.
+// 3-hourly ranked check — same ranking as the /databricks-pulse scan, without a Claude call.
 //
 //   node scripts/fresh-check.mjs [--dry-run]
 //
-// Cron runs this every 2 hours, 08:00–20:00 IST. Each run:
+// Cron runs this every 3 hours, 08:00–23:00 IST (8, 11, 14, 17, 20, 23). Each run:
 //   1. Pulls the same three sources as SKILL.md Step 1: blog RSS, release notes (this month and,
 //      in the first 14 days, last month) and community threads (community-fetch.mjs).
 //   2. Same dedupe + window as Steps 2/2b: drops anything already drafted (state/seen.json),
@@ -25,8 +25,8 @@ const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".
 const STATE = path.join(SKILL_ROOT, "state");
 const LOCK = path.join(STATE, "fresh-check.lock");
 const PICK_FILE = path.join(STATE, "next_pick.json");
-const MAX_POSTS_PER_DAY = 2;
-const MIN_GAP_HOURS = 4;
+const MAX_POSTS_PER_DAY = 6; // one per 3-hourly check, 08:00–23:00 IST
+const MIN_GAP_HOURS = 2.5; // checks are 3h apart; scans take ~10–15 min
 const MIN_SCORE = 0.5;
 const WINDOW_DAYS = 14;
 const DRY_RUN = process.argv.includes("--dry-run");
