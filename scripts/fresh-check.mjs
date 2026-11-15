@@ -122,7 +122,8 @@ function community() {
       url: t.url,
       title: t.title.replace(/^Re:\s*/, ""),
       summary: t.board || "",
-      published: t.posted_time ? new Date(t.posted_time) : new Date(j.fetched_at),
+      // No timestamp from the feed → assume ~2 days old rather than "just now".
+      published: t.posted_time ? new Date(t.posted_time) : new Date(Date.now() - 48 * 3.6e6),
       replies: t.reply_count || 0,
       views: t.view_count || 0,
     }));
@@ -185,6 +186,7 @@ const ranked = [];
 let dropped = 0;
 for (const it of all) {
   if (!it.url || isNaN(it.published) || it.published.getTime() < cutoff || drafted[it.url]?.drafted_at) continue;
+  if (it.source === "community" && !it.replies && !it.views) continue; // empty thread, nothing to learn from
   if (outOfScope(it)) {
     dropped++;
     continue;
